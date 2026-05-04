@@ -12,7 +12,7 @@ const error = ref('')
 
 onMounted(async () => {
   try {
-    await userStore.fetchAllUsers()
+    await userStore.fetchUsers()
   } catch (err) {
     console.error('Erro ao carregar usuários:', err)
     error.value = 'Erro ao conectar com o servidor. Verifique se o backend está rodando.'

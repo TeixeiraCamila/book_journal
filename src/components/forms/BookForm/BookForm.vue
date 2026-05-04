@@ -97,10 +97,13 @@ const parseStartEndData = (startEndData) => {
     if (typeof startEndData === 'object' && startEndData !== null) {
       formData.startDate = startEndData.start || ''
       formData.endDate = startEndData.end || ''
-    } else if (typeof startEndData === 'string') {
+    } else if (typeof startEndData === 'string' && startEndData.includes('/')) {
       const [start, end] = startEndData.split('/')
       formData.startDate = start?.trim() || ''
       formData.endDate = end?.trim() || ''
+    } else if (typeof startEndData === 'string') {
+      formData.startDate = startEndData || ''
+      formData.endDate = ''
     } else if (Array.isArray(startEndData)) {
       formData.startDate = startEndData[0] || ''
       formData.endDate = startEndData[1] || ''
@@ -230,14 +233,18 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Montar startEnd corretamente (string para o backend aceitar)
+    // Montar startEnd corretamente (objeto com datas ISO 8601)
     let startEndValue = undefined
     if (formData.startDate || formData.endDate) {
-      // Usar string simples: "2026-04-21" ou "2026-04-21/2026-04-22"
       if (formData.startDate && formData.endDate) {
-        startEndValue = `${formData.startDate}/${formData.endDate}`
+        startEndValue = {
+          start: formData.startDate,
+          end: formData.endDate
+        }
       } else {
-        startEndValue = formData.startDate || formData.endDate
+        startEndValue = {
+          start: formData.startDate || formData.endDate
+        }
       }
     }
 
