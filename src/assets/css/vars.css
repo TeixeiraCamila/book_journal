@@ -1,0 +1,50 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
+/*
+#FFCAC4
+#EFD0B1
+#C9C3AB
+#DA938F
+#B3C6D5 */
+:root {
+  --bg: linear-gradient(to bottom right, #fff9ee, white, #fff9ee);
+  --shadow: 0 1px 3px #0000001a;
+
+  --white: #fff9ee;
+
+  --accent: #fec9c3;
+  --accent_muted: #f6cec87c;
+
+  --accent2: #efd0b1;
+  --accent2_muted: #efd0b17c;
+
+  --accent3: #c8c2aa;
+  --accent3_muted: #c8c2aa7c;
+
+  --accent4: #d19793;
+  --accent4_muted: #d197937c;
+
+  --accent5: #b3c6d5;
+  --accent5_muted: #b3c6d57c;
+
+  --muted: #6b7280;
+  --black: #333;
+
+  --radius: 0.75em;
+
+  --font: clamp(0.875rem, 1rem, 1rem);
+
+  font-size: var(--font);
+  font-family: 'Sour Gummy', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --box-shadow:
+    7px 7px 15px -10px #bbcfda, -4px -4px 13px #ffffff, inset 7px 7px 3px #d1d9e659,
+    inset -11px -11px 3px #ffffff4d;
+}

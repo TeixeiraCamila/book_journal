@@ -1,0 +1,21 @@
+@import url(./css/vars.css);
+@import url(./css/style.css);
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  text-decoration: none;
+  list-style: none;
+}
+
+#app {
+  min-height: 100vh;
+  background-image: url('../assets/images/texture.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
