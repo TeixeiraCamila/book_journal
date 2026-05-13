@@ -37,7 +37,7 @@ const formData = reactive({
   wasReadIn: '',
   startDate: '',
   endDate: '',
-  cover: '',
+  coverUrl: '',
   literaryAtlas: '',
   genres: '',
   publishedBy: '',
@@ -65,12 +65,8 @@ const genresOptions = computed(() => bookStore.bookOptions?.Tags || [])
 const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || [])
 
 const coverUrl = computed(() => {
-  if (formData.cover) {
-    const urls = formData.cover
-      .split(',')
-      .map((u) => u.trim())
-      .filter(Boolean)
-    return urls[0] || null
+  if (formData.coverUrl) {
+    return formData.coverUrl.trim() || null
   }
   return null
 })
@@ -131,7 +127,7 @@ const hydrateForm = (book) => {
   formData.firstPublished = book.firstPublished || ''
   formData.iHaveCopy = book.iHaveCopy || false
   formData.wasReadIn = book.wasReadIn?.join(', ') || ''
-  formData.cover = book.cover?.join(', ') || ''
+  formData.coverUrl = book.cover?.[0] || ''
   formData.literaryAtlas = book.literaryAtlas || ''
   formData.genres = book.genres?.join(', ') || ''
   formData.publishedBy = book.publishedBy?.join(', ') || ''
@@ -233,17 +229,19 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-    // Montar startEnd corretamente (objeto com datas ISO 8601)
+// Montar startEnd corretamente (objeto com datas ISO 8601)
     let startEndValue = undefined
     if (formData.startDate || formData.endDate) {
       if (formData.startDate && formData.endDate) {
         startEndValue = {
           start: formData.startDate,
-          end: formData.endDate
+          end: formData.endDate,
+          time_zone: null
         }
       } else {
         startEndValue = {
-          start: formData.startDate || formData.endDate
+          start: formData.startDate || formData.endDate,
+          time_zone: null
         }
       }
     }
@@ -260,7 +258,7 @@ const handleSubmit = async () => {
       iHaveCopy: formData.iHaveCopy,
       wasReadIn: parseCommaSeparated(formData.wasReadIn),
       startEnd: startEndValue,
-      cover: parseCommaSeparated(formData.cover),
+      coverUrl: formData.coverUrl?.trim() || undefined,
       literaryAtlas: formData.literaryAtlas || undefined,
       genres: parseCommaSeparated(formData.genres),
       publishedBy: parseCommaSeparated(formData.publishedBy),
@@ -339,10 +337,10 @@ const handleCancel = () => {
           </div>
 
           <FormField
-            v-model="formData.cover"
+            v-model="formData.coverUrl"
             label="URL da Capa"
             placeholder="Cole a URL da imagem"
-            :error="fieldErrors.cover"
+            :error="fieldErrors.coverUrl"
           />
         </div>
 
