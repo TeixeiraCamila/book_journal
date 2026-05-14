@@ -185,6 +185,26 @@ state: () => ({
       return Math.round(total / readBooks.length)
     },
 
+    totalPagesReadInYear() {
+      const currentYear = new Date().getFullYear()
+      const readBooks = this._cachedForAvgPages.filter(
+        (book) => book.status === 'Read' && book.wasReadIn,
+      )
+      return readBooks
+        .filter((book) => book.wasReadIn.includes(currentYear.toString()))
+        .reduce((sum, book) => sum + (book.totalPages || 0), 0)
+    },
+
+    booksReadInYear() {
+      const currentYear = new Date().getFullYear()
+      const readBooks = this._cachedForAvgPages.filter(
+        (book) => book.status === 'Read' && book.wasReadIn,
+      )
+      return readBooks.filter((book) =>
+        book.wasReadIn.includes(currentYear.toString())
+      ).length
+    },
+
     /**
      * Média de avaliação em estrelas
      * Converte ⭐ para número (⭐⭐⭐ = 3)

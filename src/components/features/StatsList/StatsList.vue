@@ -13,14 +13,7 @@ let statusChart = null
 let yearChart = null
 let ChartConstructor = null
 
-const RATING_COLORS = [
-  '#b3e5fc ',
-  '#ffc98d',
-  '#e99897',
-  '#fff59d ',
-  '#c8e6c9 ',
-  '#f8bbd0 ',
-]
+const RATING_COLORS = ['#b3e5fc ', '#ffc98d', '#e99897', '#fff59d ', '#c8e6c9 ', '#f8bbd0 ']
 
 const STATUS_COLORS = ['#c8e6c9', '#b3e5fc', '#ffc98d', '#f8bbd0']
 
@@ -35,9 +28,28 @@ onUnmounted(() => {
 
 async function loadChartModule() {
   const chartModule = await import('chart.js')
-  const { Chart, PieController, BarController, BarElement, ArcElement, Tooltip, Legend, CategoryScale, LinearScale } = chartModule
+  const {
+    Chart,
+    PieController,
+    BarController,
+    BarElement,
+    ArcElement,
+    Tooltip,
+    Legend,
+    CategoryScale,
+    LinearScale,
+  } = chartModule
 
-  Chart.register(PieController, BarController, BarElement, ArcElement, Tooltip, Legend, CategoryScale, LinearScale)
+  Chart.register(
+    PieController,
+    BarController,
+    BarElement,
+    ArcElement,
+    Tooltip,
+    Legend,
+    CategoryScale,
+    LinearScale
+  )
 
   ChartConstructor = Chart
   createRatingChart()
@@ -46,9 +58,18 @@ async function loadChartModule() {
 }
 
 function destroyCharts() {
-  if (ratingChart) { ratingChart.destroy(); ratingChart = null }
-  if (statusChart) { statusChart.destroy(); statusChart = null }
-  if (yearChart) { yearChart.destroy(); yearChart = null }
+  if (ratingChart) {
+    ratingChart.destroy()
+    ratingChart = null
+  }
+  if (statusChart) {
+    statusChart.destroy()
+    statusChart = null
+  }
+  if (yearChart) {
+    yearChart.destroy()
+    yearChart = null
+  }
 }
 
 const statsByYear = computed(() => bookStore.statsByYear)
@@ -58,32 +79,42 @@ const ratingDistribution = computed(() => bookStore.ratingDistribution)
 const isLoading = computed(() => bookStore.loadingStates.all)
 
 const totalBooks = computed(() => bookStore.bookLists.all.length)
-const totalRatings = computed(() => Object.values(ratingDistribution.value).reduce((a, b) => a + b, 0))
+const totalRatings = computed(() =>
+  Object.values(ratingDistribution.value).reduce((a, b) => a + b, 0)
+)
 
 const authorsMostRead = computed(() => bookStore.authorsMostRead)
 const genresDistribution = computed(() => bookStore.genresDistribution)
 const averagePagesRead = computed(() => bookStore.averagePagesRead)
+const booksReadInYear = computed(() => bookStore.booksReadInYear)
 const averageRating = computed(() => bookStore.averageRating)
 const currentlyReading = computed(() => bookStore.currentlyReading)
 
 function createRatingChart() {
-  if (!ChartConstructor || !ratingChartRef.value || Object.keys(ratingDistribution.value).length === 0) return
+  if (
+    !ChartConstructor ||
+    !ratingChartRef.value ||
+    Object.keys(ratingDistribution.value).length === 0
+  )
+    return
   if (ratingChart) ratingChart.destroy()
 
   const dist = ratingDistribution.value
-  const labels = Object.keys(dist).map(rate => BOOK_RATE_LABELS[rate] || rate)
+  const labels = Object.keys(dist).map((rate) => BOOK_RATE_LABELS[rate] || rate)
   const data = Object.values(dist)
 
   ratingChart = new ChartConstructor(ratingChartRef.value, {
     type: 'pie',
     data: {
       labels,
-      datasets: [{
-        data,
-        backgroundColor: RATING_COLORS.slice(0, data.length),
-        borderWidth: 0,
-        hoverOffset: 8,
-      }]
+      datasets: [
+        {
+          data,
+          backgroundColor: RATING_COLORS.slice(0, data.length),
+          borderWidth: 0,
+          hoverOffset: 8,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -91,7 +122,7 @@ function createRatingChart() {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { padding: 20, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } }
+          labels: { padding: 20, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } },
         },
         tooltip: {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -102,27 +133,29 @@ function createRatingChart() {
               const value = ctx.parsed
               const percentage = ((value / totalRatings.value) * 100).toFixed(1)
               return ` ${value} livros (${percentage}%)`
-            }
-          }
-        }
-      }
+            },
+          },
+        },
+      },
     },
-    plugins: [{
-      id: 'ratingCenterText',
-      beforeDraw: (chart) => {
-        const { ctx, width, height } = chart
-        ctx.restore()
-        ctx.font = '700 1.75rem inherit'
-        ctx.fillStyle = '#111827'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(totalRatings.value, width / 2, height / 2 - 10)
-        ctx.font = '500 0.75rem inherit'
-        ctx.fillStyle = '#6b7280'
-        // ctx.fillText('avaliações', width / 2, height / 2 + 15)
-        ctx.save()
-      }
-    }]
+    plugins: [
+      {
+        id: 'ratingCenterText',
+        beforeDraw: (chart) => {
+          const { ctx, width, height } = chart
+          ctx.restore()
+          ctx.font = '700 1.75rem inherit'
+          ctx.fillStyle = '#111827'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(totalRatings.value, width / 2, height / 2 - 10)
+          ctx.font = '500 0.75rem inherit'
+          ctx.fillStyle = '#6b7280'
+          // ctx.fillText('avaliações', width / 2, height / 2 + 15)
+          ctx.save()
+        },
+      },
+    ],
   })
 }
 
@@ -134,19 +167,21 @@ function createStatusChart() {
     statusPercentages.value.read,
     statusPercentages.value.reading,
     statusPercentages.value.toBeRead,
-    statusPercentages.value.dnf
+    statusPercentages.value.dnf,
   ]
 
   statusChart = new ChartConstructor(statusChartRef.value, {
     type: 'pie',
     data: {
       labels: ['Lidos', 'Lendo', 'Para Ler', 'Abandonado'],
-      datasets: [{
-        data,
-        backgroundColor: STATUS_COLORS,
-        borderWidth: 0,
-        hoverOffset: 8,
-      }]
+      datasets: [
+        {
+          data,
+          backgroundColor: STATUS_COLORS,
+          borderWidth: 0,
+          hoverOffset: 8,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -154,31 +189,33 @@ function createStatusChart() {
       plugins: {
         legend: {
           position: 'bottom',
-          labels: { padding: 16, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } }
+          labels: { padding: 16, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } },
         },
         tooltip: {
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
           padding: 10,
           cornerRadius: 6,
           callbacks: {
-            label: (ctx) => ` ${ctx.parsed}%`
-          }
-        }
-      }
+            label: (ctx) => ` ${ctx.parsed}%`,
+          },
+        },
+      },
     },
-    plugins: [{
-      id: 'statusCenterText',
-      beforeDraw: (chart) => {
-        const { ctx, width, height } = chart
-        ctx.restore()
-        ctx.font = '700 1.5rem inherit'
-        ctx.fillStyle = '#111827'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(totalBooks.value, width / 2, height / 2)
-        ctx.save()
-      }
-    }]
+    plugins: [
+      {
+        id: 'statusCenterText',
+        beforeDraw: (chart) => {
+          const { ctx, width, height } = chart
+          ctx.restore()
+          ctx.font = '700 1.5rem inherit'
+          ctx.fillStyle = '#111827'
+          ctx.textAlign = 'center'
+          ctx.textBaseline = 'middle'
+          ctx.fillText(totalBooks.value, width / 2, height / 2)
+          ctx.save()
+        },
+      },
+    ],
   })
 }
 
@@ -187,19 +224,21 @@ function createYearChart() {
   if (yearChart) yearChart.destroy()
 
   const years = statsByYear.value.slice(0, 8).reverse()
-  const labels = years.map(y => y.year.toString())
-  const data = years.map(y => y.count)
+  const labels = years.map((y) => y.year.toString())
+  const data = years.map((y) => y.count)
 
   yearChart = new ChartConstructor(yearChartRef.value, {
     type: 'bar',
     data: {
       labels,
-      datasets: [{
-        data,
-        backgroundColor: 'rgba(139, 92, 246, 0.7)',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
+      datasets: [
+        {
+          data,
+          backgroundColor: 'rgba(139, 92, 246, 0.7)',
+          borderRadius: 6,
+          borderSkipped: false,
+        },
+      ],
     },
     options: {
       responsive: true,
@@ -212,22 +251,22 @@ function createYearChart() {
           padding: 10,
           cornerRadius: 6,
           callbacks: {
-            label: (ctx) => ` ${ctx.parsed.x} livros`
-          }
-        }
+            label: (ctx) => ` ${ctx.parsed.x} livros`,
+          },
+        },
       },
       scales: {
         x: {
           beginAtZero: true,
           grid: { display: false },
-          ticks: { font: { size: 11 } }
+          ticks: { font: { size: 11 } },
         },
         y: {
           grid: { display: false },
-          ticks: { font: { size: 11, weight: '500' } }
-        }
-      }
-    }
+          ticks: { font: { size: 11, weight: '500' } },
+        },
+      },
+    },
   })
 }
 </script>
@@ -236,9 +275,7 @@ function createYearChart() {
   <div class="stats-list">
     <h2 class="stats-list__title">Estatísticas de Leitura</h2>
 
-    <div v-if="isLoading" class="stats-list__loading">
-      Carregando estatísticas...
-    </div>
+    <div v-if="isLoading" class="stats-list__loading">Carregando estatísticas...</div>
 
     <div v-else class="stats-list__content">
       <div class="stats-list__summary">
@@ -251,45 +288,52 @@ function createYearChart() {
           <span class="stat-card__label">Páginas Lidas</span>
         </div>
         <div class="stat-card">
-          <span class="stat-card__value">{{ averagePagesRead }}</span>
-          <span class="stat-card__label">Média Páginas</span>
-        </div>
-        <div class="stat-card">
           <span class="stat-card__value">{{ averageRating }}</span>
           <span class="stat-card__label">Média Avaliação</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card__value">{{ booksReadInYear }}</span>
+          <span class="stat-card__label">Total Lidos 2026</span>
         </div>
       </div>
 
       <div class="stats-list--container">
         <div class="stats-list__section">
-          <h3 class="stats-list__section-title">Status dos Livros</h3>
+          <h3 class="stats-list__section-title">Status</h3>
 
           <div v-if="totalBooks > 0" class="stats-list__chart">
             <canvas ref="statusChartRef"></canvas>
           </div>
           <p v-else class="stats-list__empty">Nenhum livro cadastrado</p>
-
         </div>
         <div class="stats-list__section">
           <div v-if="currentlyReading && currentlyReading.length" class="stats-list__reading">
             <h3 class="stats-list__section-title">Lendo Agora</h3>
             <div class="stats-list__reading-covers">
               <div v-for="book in currentlyReading" :key="book.id" class="reading-cover">
-                <img v-if="book.cover && book.cover[0]" :src="book.cover[0]" :alt="book.name" class="reading-cover__img"
-                  loading="lazy" decoding="async" />
+                <img
+                  v-if="book.cover && book.cover[0]"
+                  :src="book.cover[0]"
+                  :alt="book.name"
+                  class="reading-cover__img"
+                  loading="lazy"
+                  decoding="async"
+                />
                 <div v-else class="reading-cover__placeholder">
                   {{ book.name?.charAt(0) || '?' }}
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
       <div class="stats-list__section">
         <h3 class="stats-list__section-title">Livros Lidos por Ano</h3>
-        <div v-if="statsByYear && statsByYear.length" class="stats-list__chart stats-list__chart--bar">
+        <div
+          v-if="statsByYear && statsByYear.length"
+          class="stats-list__chart stats-list__chart--bar"
+        >
           <canvas ref="yearChartRef"></canvas>
         </div>
         <p v-else class="stats-list__empty">Nenhum livro concluído ainda</p>
@@ -301,8 +345,10 @@ function createYearChart() {
           <div v-for="item in genresDistribution" :key="item.genre" class="genre-item">
             <span class="genre-item__name">{{ item.genre }}</span>
             <div class="genre-item__bar">
-              <div class="genre-item__fill" :style="{ width: (item.count / genresDistribution[0].count * 100) + '%' }">
-              </div>
+              <div
+                class="genre-item__fill"
+                :style="{ width: (item.count / genresDistribution[0].count) * 100 + '%' }"
+              ></div>
             </div>
             <span class="genre-item__count">{{ item.count }}</span>
           </div>

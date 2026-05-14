@@ -11,7 +11,7 @@ defineProps({
 
 defineEmits(['previous', 'next', 'changeSize']);
 
-const selects = [4, 8, 12, 18, 24, 30];
+const selects = [20, 4, 8, 12, 18, 24, 30];
 </script>
 <template>
   <div class="pagination">
@@ -33,8 +33,8 @@ const selects = [4, 8, 12, 18, 24, 30];
       <label>Itens por página:</label>
       <div class="select_wrapper">
         <select name="page-size" id="page-size" class="pagination__select--primary"
-          @change="$emit('changeSize', $event.target.value)">
-          <option v-for="size in selects" :key="size" :value="size" :selected="size === pageSize">
+          :value="pageSize" @change="$emit('changeSize', $event.target.value)">
+          <option v-for="size in selects" :key="size" :value="size">
             {{ size }}
           </option>
         </select>

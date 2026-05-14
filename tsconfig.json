@@ -23,25 +23,9 @@
     /* Path Mapping */
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/components/ui/*": ["src/components/ui/*"],
-      "@/components/forms/*": ["src/components/forms/*"],
-      "@/components/books/*": ["src/components/books/*"],
-      "@/components/layout/*": ["src/components/layout/*"],
-      "@/components/navigation/*": ["src/components/navigation/*"],
-      "@/components/feedback/*": ["src/components/feedback/*"],
-      "@/components/features/*": ["src/components/features/*"],
-      "@/stores/*": ["src/stores/*"],
-      "@/composables/*": ["src/composables/*"],
-      "@/services/*": ["src/services/*"],
-      "@/utils/*": ["src/utils/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/views/*": ["src/views/*"],
-      "@/router/*": ["src/router/*"],
-      "@/assets/*": ["src/assets/*"]
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.js"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
