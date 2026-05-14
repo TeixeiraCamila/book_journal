@@ -444,6 +444,7 @@ const navigateToEdit = (bookId) => {
   transition: all 0.3s ease;
   display: flex;
   min-height: 400px;
+  width: 100%;
 }
 
 .reading-card:hover {

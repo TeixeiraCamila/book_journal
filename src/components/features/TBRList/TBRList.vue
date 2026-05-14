@@ -1,7 +1,11 @@
 <script setup>
-import { onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
+import { onMounted, computed } from 'vue'
+
 import Button from '@/components/ui/Button.vue'
+
+const router = useRouter()
 const bookStore = useBookStore()
 
 
@@ -20,6 +24,13 @@ const showEmptyState = computed(() => {
     bookStore.bookLists.tbr.length === 0 &&
     !bookStore.hasError
 });
+
+/**
+ * Navega para editar livro
+ */
+const navigateToEdit = (bookId) => {
+  router.push(`/editar/${bookId}`)
+};
 </script>
 
 <template>
@@ -60,7 +71,7 @@ const showEmptyState = computed(() => {
     <TransitionGroup v-else name="stamp" tag="div" class="tbr-list__grid">
       <div v-for="(book, index) in bookStore.bookLists.tbr" :key="book.id" class="stamp-wrapper"
         :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }">
-        <article class="stamp">
+        <article class="stamp"  @click="navigateToEdit(book.id)">
           <div class="stamp__inner">
             <!-- Imagem -->
             <div class="stamp__image-container">
@@ -84,7 +95,7 @@ const showEmptyState = computed(() => {
         </article>
       </div>
     </TransitionGroup>
-  </div>
+  </div>  
 </template>
 
 <style scoped>
