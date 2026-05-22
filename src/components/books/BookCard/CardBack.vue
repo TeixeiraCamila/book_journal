@@ -77,14 +77,7 @@ const handleDelete = () => {
     <div class="card-back__content">
       <div class="card-back__top">
         <p class="card-back__rate" v-if="book.status === 'Read' && book.rate">
-          <img
-            height="30"
-            width="30"
-            v-for="(star, i) in book.rate.length"
-            :key="i"
-            :src="Star"
-            :alt="book.rate"
-          />
+          {{ book.rate }}
         </p>
       </div>
 
