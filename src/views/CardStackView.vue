@@ -83,11 +83,11 @@ onMounted(() => {
       <CardIntro class="stack-view__card stack-view__intro" />
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide">
+    <!-- <SwiperSlide class="stack-view__slide">
       <div class="stack-view__card stack-view__stats">
         <StatsList />
       </div>
-    </SwiperSlide>
+    </SwiperSlide> -->
 
     <SwiperSlide class="stack-view__slide">
       <div class="stack-view__card stack-view__book-list">

@@ -27,7 +27,7 @@ onMounted(async () => {
  */
 const handleEditBook = (book) => {
   router.push(`/editar/${book.id}`)
-};
+}
 </script>
 
 <template>
@@ -56,9 +56,10 @@ const handleEditBook = (book) => {
       <div class="book-list__empty-icon">📚</div>
       <h2 class="book-list__empty-title">Nenhum livro encontrado</h2>
       <p class="book-list__empty-text">
-        {{ bookStore.searchTerm || bookStore.filterStatus !== 'all'
-          ? 'Tente ajustar seus filtros de busca'
-          : 'Comece adicionando seu primeiro livro!'
+        {{
+          bookStore.searchTerm || bookStore.filterStatus !== 'all'
+            ? 'Tente ajustar seus filtros de busca'
+            : 'Comece adicionando seu primeiro livro!'
         }}
       </p>
     </div>
@@ -66,13 +67,24 @@ const handleEditBook = (book) => {
     <!-- Grid de Livros -->
     <template v-else>
       <TransitionGroup name="book-list" tag="div" class="book-list__grid">
-        <BookCard v-for="book in bookStore.allBooks" :key="book.id" :book="book" @edit="handleEditBook" />
+        <BookCard
+          v-for="book in bookStore.allBooks"
+          :key="book.id"
+          :book="book"
+          @edit="handleEditBook"
+        />
       </TransitionGroup>
 
       <!-- Paginação -->
-      <Pagination :book-count="bookStore.bookCount" :page-size="bookStore.pagination.pageSize"
-        :has-previous="bookStore.hasPreviousPage" :has-next="bookStore.hasNextPage" @previous="bookStore.previousPage"
-        @next="bookStore.nextPage" @change-size="bookStore.changePageSize" />
+      <Pagination
+        :book-count="bookStore.bookCount"
+        :page-size="bookStore.pagination.pageSize"
+        :has-previous="bookStore.hasPreviousPage"
+        :has-next="bookStore.hasNextPage"
+        @previous="bookStore.previousPage"
+        @next="bookStore.nextPage"
+        @change-size="bookStore.changePageSize"
+      />
     </template>
   </div>
 </template>
@@ -188,10 +200,14 @@ const handleEditBook = (book) => {
 
 /* ===== GRID DE LIVROS ===== */
 .book-list__grid {
-  display: grid;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  gap: 3rem 1.5rem;
+  /* display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 3rem 1.5rem;
-  flex: 1;
+  flex: 1; */
 }
 
 /* ===== ANIMAÇÕES ===== */

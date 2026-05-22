@@ -44,6 +44,12 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
+  --card-front-w: 200px;
+  --card-front-h: 200px;
+
+  --card-back-w: 200px;
+  --card-back-h: 300px;
+
   --box-shadow:
     7px 7px 15px -10px #bbcfda, -4px -4px 13px #ffffff, inset 7px 7px 3px #d1d9e659,
     inset -11px -11px 3px #ffffff4d;

@@ -2,9 +2,8 @@ import { defineStore } from 'pinia'
 import { booksAPI } from '../services/api'
 import { DEFAULT_PAGE_SIZE } from '../constants/book'
 
-
 export const useBookStore = defineStore('books', {
-state: () => ({
+  state: () => ({
     bookLists: {
       main: [],
       tbr: [],
@@ -37,7 +36,6 @@ state: () => ({
   }),
 
   getters: {
-
     allBooks: (state) => state.bookLists.main,
 
     bookCount: (state) => state.bookLists.main.length,
@@ -200,9 +198,7 @@ state: () => ({
       const readBooks = this._cachedForAvgPages.filter(
         (book) => book.status === 'Read' && book.wasReadIn,
       )
-      return readBooks.filter((book) =>
-        book.wasReadIn.includes(currentYear.toString())
-      ).length
+      return readBooks.filter((book) => book.wasReadIn.includes(currentYear.toString())).length
     },
 
     /**
@@ -316,7 +312,7 @@ state: () => ({
     async reloadCurrentPage() {
       await Promise.allSettled([
         this.fetchBooks(this.pagination.currentCursor),
-        this.fetchTbrBooks()
+        this.fetchTbrBooks(),
       ])
     },
 

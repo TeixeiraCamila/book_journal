@@ -2,7 +2,7 @@
 import tape from '@/assets/images/tape.webp'
 
 defineProps({
-  bookStatus: { type: Object, required: true },
+  bookStatus: { type: String, required: true },
   rotate: { type: String, required: false },
 })
 </script>

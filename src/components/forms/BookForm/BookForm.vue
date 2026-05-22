@@ -1,4 +1,3 @@
-<!-- component/BookForm.vue -->
 <script setup>
 import { reactive, ref, onMounted, watch, computed } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
@@ -42,6 +41,7 @@ const formData = reactive({
   genres: '',
   publishedBy: '',
   bookSeries: '',
+  quest: '',
 })
 
 const fieldErrors = ref({})
@@ -51,18 +51,19 @@ const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATU
 const rateOptions = computed(() =>
   bookStore.bookOptions?.Rate
     ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
-    : Object.keys(BOOK_RATE_LABELS),
+    : Object.keys(BOOK_RATE_LABELS)
 )
 const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK)
 const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || [])
 const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || [])
 const publishedYearOptions = computed(() =>
-  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000'),
+  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000')
 )
 const authorOptions = computed(() => bookStore.bookOptions?.Author || [])
 const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || [])
 const genresOptions = computed(() => bookStore.bookOptions?.Tags || [])
 const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || [])
+const questOptions = computed(() => bookStore.bookOptions?.Quest || [])
 
 const coverUrl = computed(() => {
   if (formData.coverUrl) {
@@ -132,6 +133,7 @@ const hydrateForm = (book) => {
   formData.genres = book.genres?.join(', ') || ''
   formData.publishedBy = book.publishedBy?.join(', ') || ''
   formData.bookSeries = book.bookSeries || ''
+  formData.quest = book.quest || ''
 
   parseStartEndData(book.startEnd)
 }
@@ -144,7 +146,7 @@ watch(
       hydrateForm(newBook)
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 // Auto-setar status para Read quando endDate for preenchido
@@ -154,7 +156,7 @@ watch(
     if (newEndDate && formData.status !== 'Read') {
       formData.status = 'Read'
     }
-  },
+  }
 )
 
 // Função auxiliar para parsing de valores separados por vírgula (importada de validation.js)
@@ -229,19 +231,19 @@ const handleSubmit = async () => {
   isSubmitting.value = true
 
   try {
-// Montar startEnd corretamente (objeto com datas ISO 8601)
+    // Montar startEnd corretamente (objeto com datas ISO 8601)
     let startEndValue = undefined
     if (formData.startDate || formData.endDate) {
       if (formData.startDate && formData.endDate) {
         startEndValue = {
           start: formData.startDate,
           end: formData.endDate,
-          time_zone: null
+          time_zone: null,
         }
       } else {
         startEndValue = {
           start: formData.startDate || formData.endDate,
-          time_zone: null
+          time_zone: null,
         }
       }
     }
@@ -263,6 +265,7 @@ const handleSubmit = async () => {
       genres: parseCommaSeparated(formData.genres),
       publishedBy: parseCommaSeparated(formData.publishedBy),
       bookSeries: formData.bookSeries || undefined,
+      quest: parseCommaSeparated(formData.quest),
     }
 
     if (props.isEdit && props.book) {
@@ -374,6 +377,14 @@ const handleCancel = () => {
               :options="seriesOptions"
               placeholder="Digite ou selecione"
               :error="fieldErrors.bookSeries"
+            />
+            <FormField
+              v-model="formData.quest"
+              label="Quest"
+              type="autocomplete"
+              :options="questOptions"
+              placeholder="Digite ou selecione"
+              :error="fieldErrors.quest"
             />
           </FormSection>
 

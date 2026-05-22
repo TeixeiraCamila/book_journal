@@ -19,18 +19,22 @@ const handleFilterChange = () => {
 const clearFilters = () => {
   localSearch.value = ''
   localStatus.value = 'all'
-  bookStore.searchTerm = ''
-  bookStore.filterStatus = 'all'
-  bookStore.fetchBooks()
-};
+  bookStore.search('')
+  bookStore.filterByStatus('all')
+}
 </script>
 
 <template>
   <div class="filters">
-    <div class="filters__search-box ">
+    <div class="filters__search-box">
       <div class="input_wrapper">
-        <input type="text" placeholder="Buscar por título ou autor..." v-model="localSearch" @keyup.enter="handleSearch"
-          class="filters__search-input" />
+        <input
+          type="text"
+          placeholder="Buscar por título..."
+          v-model="localSearch"
+          @keyup.enter="handleSearch"
+          class="filters__search-input"
+        />
       </div>
       <Button @click="handleSearch" variant="primary">
         <span> Buscar </span>
@@ -39,8 +43,11 @@ const clearFilters = () => {
 
     <div class="filters__filter-status">
       <div class="select_wrapper">
-        <select v-model="localStatus" @change="handleFilterChange"
-          class="filters__status-select filters__select--primary">
+        <select
+          v-model="localStatus"
+          @change="handleFilterChange"
+          class="filters__status-select filters__select--primary"
+        >
           <option value="all">Todos os status</option>
           <option value="Reading">Lendo</option>
           <option value="Read">Completo</option>
@@ -50,8 +57,11 @@ const clearFilters = () => {
       </div>
     </div>
 
-    <Button v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'" @click="clearFilters"
-      class="filters__clear-btn filters__btn--primary">
+    <Button
+      v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
+      @click="clearFilters"
+      class="filters__clear-btn filters__btn--primary"
+    >
       <span>Limpar filtros</span>
     </Button>
   </div>

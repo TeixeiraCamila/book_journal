@@ -106,8 +106,9 @@ onMounted(() => {
 <style scoped>
 .card-intro {
   background-color: #075832;
-  overflow: hidden;
+  background-size: contain;
   border-radius: 18px;
+  
 }
 
 .card-intro__detail img {

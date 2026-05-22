@@ -33,7 +33,7 @@ const {
   openAnimatedModal,
   closeModal,
   closeModalWithAnimation,
-  toggleFlip
+  toggleFlip,
 } = useAnimatedModal(cardEl, randomTilt)
 
 onMounted(() => {
@@ -67,53 +67,71 @@ const handleEdit = (book) => {
     emit('edit', book)
     isEditing.value = false
   }, 200)
-};
+}
 </script>
 
 <template>
   <div>
-    <div ref="cardEl" class="book-card book-card--list" :class="{
-      'book-card--animating': isAnimating,
-      'book-card--editing': isEditing
-    }"
-      :style="{ transform: `rotate(${randomTilt}deg)` }" @click="openAnimatedModal">
+    <div
+      ref="cardEl"
+      class="book-card book-card--list"
+      :class="{
+        'book-card--animating': isAnimating,
+        'book-card--editing': isEditing,
+      }"
+      :style="{ transform: `rotate(${randomTilt}deg)` }"
+      @click="openAnimatedModal"
+    >
       <CardFront :book="book" :rotate="`rotate(${randomTilt}deg)`" />
     </div>
 
     <Teleport to="body">
-      <div v-if="isModalOpen" class="book-modal__overlay" :class="{ visible: isModalVisible }" @click.self="closeModal">
+      <div
+        v-if="isModalOpen"
+        class="book-modal__overlay"
+        :class="{ visible: isModalVisible }"
+        @click.self="closeModal"
+      >
         <div class="book-modal__container" :class="{ visible: isModalVisible }" @click="toggleFlip">
-          <div class="book-card__flip" :class="{ 'book-card__flip--flipped': isFlipped }" :style="{ '--random-tilt': `${randomTilt}deg` }">
+          <div
+            class="book-card__flip"
+            :class="{ 'book-card__flip--flipped': isFlipped }"
+            :style="{ '--random-tilt': `${randomTilt}deg` }"
+          >
             <div class="book-card__face book-card__face--front">
-              <CardFront :book="book" :is-modal="true" :key="book.id" :rotate="`rotate(${randomTilt}deg)`" />
+              <CardFront
+                :book="book"
+                :is-modal="true"
+                :key="book.id"
+                :rotate="`rotate(${randomTilt}deg)`"
+              />
             </div>
 
             <div class="book-card__face book-card__face--back">
-              <CardBack :book="book" :key="book.id" :rotate="`rotate(${randomTilt}deg)`" @edit="handleEdit"
-                @delete="openDeleteDialog" @close="closeModalWithAnimation" />
+              <CardBack
+                :book="book"
+                :key="book.id"
+                :rotate="`rotate(${randomTilt}deg)`"
+                @edit="handleEdit"
+                @delete="openDeleteDialog"
+                @close="closeModalWithAnimation"
+              />
             </div>
           </div>
         </div>
       </div>
     </Teleport>
 
-    <ConfirmDialog ref="deleteDialog" title="Deletar Livro"
+    <ConfirmDialog
+      ref="deleteDialog"
+      title="Deletar Livro"
       :message="`Tem certeza que deseja deletar '${book.name}'? Esta ação não pode ser desfeita.`"
-      confirm-text="Deletar" @confirm="handleDelete" @cancel="closeModalWithAnimation" />
+      confirm-text="Deletar"
+      @confirm="handleDelete"
+      @cancel="closeModalWithAnimation"
+    />
   </div>
 </template>
-
-<style>
-:root {
-  --card-w: 200px;
-  --card-h: 200px;
-}
-
-.card-front__image {
-  width: 100%;
-  height: 100%;
-}
-</style>
 
 <style scoped>
 .book-card {
@@ -122,7 +140,7 @@ const handleEdit = (book) => {
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: var(--card-w);
+  width: var(--card-front-w);
   margin: 0 auto;
   transform-origin: center center;
   opacity: 1;
@@ -140,9 +158,15 @@ const handleEdit = (book) => {
 }
 
 @keyframes editing-pulse {
-  0% { transform: rotate(var(--random-tilt, 0deg)) scale(1); }
-  50% { transform: rotate(var(--random-tilt, 0deg)) scale(1.05); }
-  100% { transform: rotate(var(--random-tilt, 0deg)) scale(1); }
+  0% {
+    transform: rotate(var(--random-tilt, 0deg)) scale(1);
+  }
+  50% {
+    transform: rotate(var(--random-tilt, 0deg)) scale(1.05);
+  }
+  100% {
+    transform: rotate(var(--random-tilt, 0deg)) scale(1);
+  }
 }
 
 /* MODAL OVERLAY (FUNDO ESCURECIDO) */
@@ -179,8 +203,8 @@ const handleEdit = (book) => {
 
 /* FLIP WRAPPER (3D FLIP) */
 .book-card__flip {
-  width: calc(var(--card-w) * 1.1);
-  height: calc(var(--card-h) * 1.1);
+  min-width: calc(var(--card-back-w) * 1.1);
+  min-height: calc(var(--card-back-h) * 1.1);
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   perspective: 1000px;
@@ -200,7 +224,6 @@ const handleEdit = (book) => {
   background: var(--white);
   border-radius: 12px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-  min-height: 300px;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateZ(0);
 }

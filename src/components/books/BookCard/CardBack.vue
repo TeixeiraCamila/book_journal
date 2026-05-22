@@ -6,6 +6,8 @@ import CardStatus from './CardStatus.vue'
 import Button from '@/components/ui/Button.vue'
 import { PencilLine, Trash, X } from 'lucide-vue-next'
 
+import Star from '@/assets/images/star.png'
+
 const props = defineProps({
   book: { type: Object, required: true },
   rotate: { type: String, required: false },
@@ -66,7 +68,7 @@ const handleEdit = () => {
 
 const handleDelete = () => {
   emit('delete', props.book)
-};
+}
 </script>
 
 <template>
@@ -74,7 +76,16 @@ const handleDelete = () => {
     <CardStatus :rotate="rotate" :book-status="book.status" />
     <div class="card-back__content">
       <div class="card-back__top">
-        <p class="card-back__rate" v-if="book.status === 'Read' && book.rate" v-html="book.rate" />
+        <p class="card-back__rate" v-if="book.status === 'Read' && book.rate">
+          <img
+            height="30"
+            width="30"
+            v-for="(star, i) in book.rate.length"
+            :key="i"
+            :src="Star"
+            :alt="book.rate"
+          />
+        </p>
       </div>
 
       <div class="card-back__info">
