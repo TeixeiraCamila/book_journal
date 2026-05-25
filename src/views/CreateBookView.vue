@@ -6,6 +6,8 @@ import { useNotifications } from '@/composables/useNotifications'
 import BookForm from '@/components/forms/BookForm/BookForm.vue'
 import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue'
 import Button from '@/components/ui/Button.vue'
+
+// Página de criar/editar livro — gerencia carregamento e transições
 const { addNotification } = useNotifications()
 
 const route = useRoute()
@@ -63,9 +65,8 @@ const handleEditSuccess = (bookId) => {
 
 const handleCancel = () => {
   router.push('/')
-};
+}
 </script>
-
 
 <template>
   <div class="create-book-view">
@@ -139,7 +140,6 @@ const handleCancel = () => {
 }
 
 .create-book-view__content {
-  /* Add styles if needed */
 }
 
 .create-book-view__error {

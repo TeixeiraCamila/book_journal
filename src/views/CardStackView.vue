@@ -11,13 +11,9 @@ const userStore = useUserStore()
 
 const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'))
 const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'))
-const ReadingList = defineAsyncComponent(
-  () => import('@/components/features/ReadingList/ReadingList.vue'),
+const ReadingList = defineAsyncComponent(() =>
+  import('@/components/features/ReadingList/ReadingList.vue')
 )
-const StatsList = defineAsyncComponent(
-  () => import('@/components/features/StatsList/StatsList.vue'),
-)
-
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
 import 'swiper/css'
@@ -35,21 +31,17 @@ const onSlideChange = (swiper) => {
   const activeIndex = swiper.activeIndex
 
   if (activeIndex === 1) {
-    bookStore.fetchTbrBooks(undefined, 'Reading')
+    bookStore.fetchTbrBooks()
     prefetchNextSlides([2, 3])
   }
   if (activeIndex === 2) {
-    bookStore.fetchTbrBooks()
-    prefetchNextSlides([3, 4])
-  }
-  if (activeIndex === 3) {
-    prefetchNextSlides([4])
+    prefetchNextSlides([3])
   }
 }
 
 function prefetchNextSlides(slideIndices) {
   if (import.meta.env.PROD) {
-    slideIndices.forEach(index => {
+    slideIndices.forEach((index) => {
       triggerChunkPrefetch(index)
     })
   }
@@ -57,10 +49,9 @@ function prefetchNextSlides(slideIndices) {
 
 function triggerChunkPrefetch(slideIndex) {
   const chunks = {
-    1: () => import('@/components/features/StatsList/StatsList.vue'),
-    2: () => import('@/components/books/BookList/BookList.vue'),
-    3: () => import('@/components/features/ReadingList/ReadingList.vue'),
-    4: () => import('@/components/features/TBRList/TBRList.vue')
+    1: () => import('@/components/books/BookList/BookList.vue'),
+    2: () => import('@/components/features/ReadingList/ReadingList.vue'),
+    3: () => import('@/components/features/TBRList/TBRList.vue'),
   }
 
   const loader = chunks[slideIndex]
@@ -71,51 +62,65 @@ function triggerChunkPrefetch(slideIndex) {
 
 onMounted(() => {
   setTimeout(() => {
-    prefetchNextSlides([1, 2, 3, 4])
+    prefetchNextSlides([1, 2, 3])
   }, 1500)
-});
+})
 </script>
 
 <template>
-  <Swiper :effect="'cards'" :grab-cursor="true" :modules="modules" :direction="'vertical'" class="stack-view__swiper"
-    @slideChange="onSlideChange">
+  <Swiper
+    :effect="'cards'"
+    :grab-cursor="true"
+    :modules="modules"
+    :direction="'vertical'"
+    class="stack-view__swiper"
+    @slideChange="onSlideChange"
+  >
     <SwiperSlide class="stack-view__slide">
       <CardIntro class="stack-view__card stack-view__intro" />
     </SwiperSlide>
-
-    <!-- <SwiperSlide class="stack-view__slide">
-      <div class="stack-view__card stack-view__stats">
-        <StatsList />
-      </div>
-    </SwiperSlide> -->
 
     <SwiperSlide class="stack-view__slide">
       <div class="stack-view__card stack-view__book-list">
         <BookList />
 
-        <Button v-if="!userStore.isGuest" class="fab" aria-label="Adicionar novo livro" @click="navigateToCreate">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true">
-            <path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-              stroke-linejoin="round" />
+        <Button
+          v-if="!userStore.isGuest"
+          class="fab"
+          aria-label="Adicionar novo livro"
+          @click="navigateToCreate"
+        >
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 4V20M4 12H20"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
           </svg>
         </Button>
       </div>
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide">
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.bookLists.reading.length">
       <div class="stack-view__card stack-view__now">
         <ReadingList />
       </div>
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide">
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.bookLists.tbr.length">
       <div class="stack-view__card stack-view__tbr">
         <TBRList />
       </div>
     </SwiperSlide>
-
-
   </Swiper>
 </template>
 
@@ -161,19 +166,11 @@ onMounted(() => {
   content-visibility: auto;
 }
 
-
 .stack-view__now {
   background-image: url('../assets/images/cards/card_reading/bg.webp');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-}
-
-.stack-view__stats {
-  background: url('https://i.pinimg.com/736x/35/58/1f/35581fc1f541a10e7d7e56cfc5586c59.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
 }
 
 /* ===== FLOATING ACTION BUTTON ===== */

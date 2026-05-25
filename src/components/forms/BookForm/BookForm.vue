@@ -2,12 +2,15 @@
 import { reactive, ref, onMounted, watch, computed } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
 import { BOOK_STATUS_FALLBACK, BOOK_RATE_LABELS, BOOK_TYPES_FALLBACK } from '@/constants/book'
-import { useNotifications } from '@/composables/useNotifications'
+
 import { parseCommaSeparated } from '@/utils/validation'
+import { useNotifications } from '@/composables/useNotifications'
 import FormSection from '../FormSection.vue'
 import FormField from '../FormField.vue'
 import FormActions from '../FormActions.vue'
 import Button from '../../ui/Button.vue'
+
+// Recebe o livro para edição ou null para criação
 const props = defineProps({
   book: {
     type: Object,
@@ -38,15 +41,20 @@ const formData = reactive({
   endDate: '',
   coverUrl: '',
   literaryAtlas: '',
-  genres: '',
+  // Inicia como array vazio — o multi-select lida com adição/remoção
+  genres: [],
   publishedBy: '',
   bookSeries: '',
-  quest: '',
+  // Inicia como array vazio — o multi-select lida com adição/remoção
+  quest: [],
 })
 
+// Armazena erros de validação de cada campo
 const fieldErrors = ref({})
+// Impede múltiplos envios enquanto a requisição está em andamento
 const isSubmitting = ref(false)
 
+// Opções carregadas do Notion via API, com fallback para valores locais
 const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATUS_FALLBACK)
 const rateOptions = computed(() =>
   bookStore.bookOptions?.Rate
@@ -65,6 +73,7 @@ const genresOptions = computed(() => bookStore.bookOptions?.Tags || [])
 const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || [])
 const questOptions = computed(() => bookStore.bookOptions?.Quest || [])
 
+// Retorna null se vazio para não quebrar a exibição da capa
 const coverUrl = computed(() => {
   if (formData.coverUrl) {
     return formData.coverUrl.trim() || null
@@ -72,6 +81,8 @@ const coverUrl = computed(() => {
   return null
 })
 
+// Carrega as opções do Notion na montagem,
+// depois preenche o formulário se for edição
 onMounted(async () => {
   if (!bookStore.bookOptions) {
     await bookStore.fetchBookOptions()
@@ -130,10 +141,10 @@ const hydrateForm = (book) => {
   formData.wasReadIn = book.wasReadIn?.join(', ') || ''
   formData.coverUrl = book.cover?.[0] || ''
   formData.literaryAtlas = book.literaryAtlas || ''
-  formData.genres = book.genres?.join(', ') || ''
+  formData.genres = book.genres || []
   formData.publishedBy = book.publishedBy?.join(', ') || ''
   formData.bookSeries = book.bookSeries || ''
-  formData.quest = book.quest || ''
+  formData.quest = book.quest || []
 
   parseStartEndData(book.startEnd)
 }
@@ -159,25 +170,22 @@ watch(
   }
 )
 
-// Função auxiliar para parsing de valores separados por vírgula (importada de validation.js)
+// Valida campos, monta o objeto e envia para a API via store
 const handleSubmit = async () => {
-  // Resetar erros
+  // Reinicia os erros e a lista para exibir apenas os novos
   fieldErrors.value = {}
   const errorMessages = []
 
-  // Validação de título (obrigatório)
   if (!formData.name || !formData.name.trim()) {
     fieldErrors.value.name = 'Título é obrigatório'
     errorMessages.push('Título')
   }
 
-  // Validação de autor (obrigatório)
   if (!formData.author || !formData.author.trim()) {
     fieldErrors.value.author = 'Autor é obrigatório'
     errorMessages.push('Autor')
   }
 
-  // Validação de total de páginas (opcional - só valida se preenchido)
   if (formData.totalPages) {
     if (isNaN(formData.totalPages) || formData.totalPages < 0) {
       fieldErrors.value.totalPages = 'Total de páginas deve ser um número positivo'
@@ -185,7 +193,6 @@ const handleSubmit = async () => {
     }
   }
 
-  // Validação de página atual (opcional - só valida se preenchido)
   if (formData.currentlyOn) {
     if (isNaN(formData.currentlyOn) || formData.currentlyOn < 0) {
       fieldErrors.value.currentlyOn = 'Página atual deve ser um número positivo'
@@ -262,12 +269,13 @@ const handleSubmit = async () => {
       startEnd: startEndValue,
       coverUrl: formData.coverUrl?.trim() || undefined,
       literaryAtlas: formData.literaryAtlas || undefined,
-      genres: parseCommaSeparated(formData.genres),
+      genres: formData.genres,
       publishedBy: parseCommaSeparated(formData.publishedBy),
       bookSeries: formData.bookSeries || undefined,
-      quest: parseCommaSeparated(formData.quest),
+      quest: formData.quest,
     }
 
+    // Se tem ID na rota: atualiza. Senão: cria um novo livro
     if (props.isEdit && props.book) {
       await bookStore.updateBook(props.book.id, bookData)
       addNotification('Livro atualizado com sucesso!', 'success')
@@ -277,11 +285,13 @@ const handleSubmit = async () => {
       addNotification('Livro criado com sucesso!', 'success')
     }
 
-    // Resetar formulário apenas se for criação, não edição
+    // Após criar, limpa os campos. Na edição mantém os valores.
     if (!props.isEdit) {
       Object.keys(formData).forEach((key) => {
         if (typeof formData[key] === 'boolean') {
           formData[key] = false
+        } else if (Array.isArray(formData[key])) {
+          formData[key] = []
         } else {
           formData[key] = ''
         }
@@ -296,12 +306,15 @@ const handleSubmit = async () => {
   }
 }
 
+// Volta para a página anterior sem salvar
 const handleCancel = () => {
-  // Resetar formulário apenas se for criação, não edição
+  // Na criação limpa os dados; na edição o livro permanece intacto
   if (!props.isEdit) {
     Object.keys(formData).forEach((key) => {
       if (typeof formData[key] === 'boolean') {
         formData[key] = false
+      } else if (Array.isArray(formData[key])) {
+        formData[key] = []
       } else {
         formData[key] = ''
       }
@@ -381,7 +394,7 @@ const handleCancel = () => {
             <FormField
               v-model="formData.quest"
               label="Quest"
-              type="autocomplete"
+              type="multi-select"
               :options="questOptions"
               placeholder="Digite ou selecione"
               :error="fieldErrors.quest"
@@ -444,7 +457,7 @@ const handleCancel = () => {
               <FormField
                 v-model="formData.genres"
                 label="Gêneros/Tags"
-                type="autocomplete"
+                type="multi-select"
                 :options="genresOptions"
                 placeholder="Digite ou selecione"
                 :error="fieldErrors.genres"

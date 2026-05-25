@@ -1,4 +1,5 @@
 <script setup>
+// Seção do formulário com título e espaço para campos filhos
 defineProps({
   title: {
     type: String,

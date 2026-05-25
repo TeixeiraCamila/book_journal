@@ -1,7 +1,7 @@
 <script setup>
-import { defineEmits } from 'vue'
 import Button from '../ui/Button.vue'
 
+// Botões de salvar e cancelar no final do formulário
 defineProps({
   isSubmitting: {
     type: Boolean,
@@ -22,7 +22,6 @@ defineProps({
 })
 
 defineEmits(['cancel']);
-
 </script>
 
 <template>
