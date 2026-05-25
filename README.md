@@ -4,10 +4,9 @@ Sua biblioteca pessoal conectada ao Notion.
 
 ## ✨ Funcionalidades
 
-- **Cadastro de livros** — título, autor, gênero, série
+- **Cadastro de livros** — título, autor, tags/gêneros, série
 - **Controle de progresso** — páginas lidas, status (lendo, completo, abandono)
 - **Avaliações** — sistema de notas com estrelas e favoritos
-- **Estatísticas** — livros por ano, gêneros mais lidos, autores favoritos
 - **Filtragem e busca** — pesquise por título, autor ou status
 - **Interface responsiva** — funciona em qualquer dispositivo
 
@@ -21,7 +20,7 @@ Sua biblioteca pessoal conectada ao Notion.
 | **Build** | Vite |
 | **Animações** | GSAP, VueUse Motion |
 | **HTTP** | Axios |
-| **UI** | Swiper, Chart.js |
+| **UI** | Swiper |
 | **Estilo** | CSS customizado |
 
 ## 🚀 Começar
