@@ -40,14 +40,14 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', updateHeaderHeight)
-});
+})
 </script>
 <template>
   <header class="header" :class="{ 'header--fixed': isSticky }">
     <div class="header__content container flex items-center justify-between">
       <div class="header__info">
         <div class="header__logo">
-          <router-link to="{ name: 'home', params: {  }"><span class="header__logo-icon">📚</span></router-link>
+          <router-link to="{ name: 'home' }"><span class="header__logo-icon">📚</span></router-link>
         </div>
         <div>
           <h1 class="header__title">My Book Journal</h1>
@@ -56,9 +56,9 @@ onUnmounted(() => {
       </div>
 
       <div class="header__actions">
-        <router-link to="/stats" class="header__btn header__btn--stats"> 📊 Estatísticas </router-link>
-
-        <router-link to="/criar" class="header__btn header__btn--add"> ➕ Adicionar Livro </router-link>
+        <router-link to="/criar" class="header__btn header__btn--add">
+          ➕ Adicionar Livro
+        </router-link>
 
         <Button class="header__btn header__btn--logout" @click="handleLogout"><LogOut /></Button>
       </div>

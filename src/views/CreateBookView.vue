@@ -60,11 +60,11 @@ const handleSubmit = () => {
 }
 
 const handleEditSuccess = (bookId) => {
-  router.push('/')
+  router.push({ path: '/', query: { slide: '1' } })
 }
 
 const handleCancel = () => {
-  router.push('/')
+  router.push({ path: '/', query: { slide: '1' } })
 }
 </script>
 
@@ -72,7 +72,7 @@ const handleCancel = () => {
   <div class="create-book-view">
     <header class="create-book-view__header">
       <div class="create-book-view__header-content">
-        <router-link to="/" class="create-book-view__link">
+        <router-link :to="{ path: '/', query: { slide: '1' } }" class="create-book-view__link">
           <span class="create-book-view__back-icon">←</span>
           <span>Voltar para lista</span>
         </router-link>

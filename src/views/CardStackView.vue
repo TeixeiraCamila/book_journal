@@ -1,8 +1,9 @@
 <script setup>
-import { defineAsyncComponent, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 import { useBookStore } from '@/stores/bookStore'
+import { BOOK_STATUS_MAP } from '@/constants/book'
 import CardIntro from '@/components/features/Stack/CardIntro.vue'
 import Button from '@/components/ui/Button.vue'
 
@@ -20,8 +21,13 @@ import 'swiper/css'
 import 'swiper/css/effect-cards'
 
 const router = useRouter()
-const swiperRef = ref(null)
+const route = useRoute()
+const swiperInstance = ref(null)
 const modules = [EffectCards]
+
+function onSwiperInit(swiper) {
+  swiperInstance.value = swiper
+}
 
 const navigateToCreate = () => {
   router.push('/criar')
@@ -31,7 +37,8 @@ const onSlideChange = (swiper) => {
   const activeIndex = swiper.activeIndex
 
   if (activeIndex === 1) {
-    bookStore.fetchTbrBooks()
+    bookStore.fetchBooksByStatus()
+    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
     prefetchNextSlides([2, 3])
   }
   if (activeIndex === 2) {
@@ -64,6 +71,18 @@ onMounted(() => {
   setTimeout(() => {
     prefetchNextSlides([1, 2, 3])
   }, 1500)
+
+  const slideTarget = route.query.slide
+  if (slideTarget) {
+    const target = Number(slideTarget)
+    if (target >= 2) {
+      bookStore.fetchBooksByStatus()
+      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
+    }
+    nextTick(() => {
+      swiperInstance.value?.slideTo(target, 300)
+    })
+  }
 })
 </script>
 
@@ -74,6 +93,7 @@ onMounted(() => {
     :modules="modules"
     :direction="'vertical'"
     class="stack-view__swiper"
+    @swiper="onSwiperInit"
     @slideChange="onSlideChange"
   >
     <SwiperSlide class="stack-view__slide">

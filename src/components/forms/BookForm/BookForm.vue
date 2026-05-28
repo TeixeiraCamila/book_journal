@@ -1,7 +1,12 @@
 <script setup>
 import { reactive, ref, onMounted, watch, computed } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
-import { BOOK_STATUS_FALLBACK, BOOK_RATE_LABELS, BOOK_TYPES_FALLBACK } from '@/constants/book'
+import {
+  BOOK_STATUS_FALLBACK,
+  BOOK_RATE_LABELS,
+  BOOK_TYPES_FALLBACK,
+  BOOK_STATUS_MAP,
+} from '@/constants/book'
 
 import { parseCommaSeparated } from '@/utils/validation'
 import { useNotifications } from '@/composables/useNotifications'
@@ -59,13 +64,13 @@ const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATU
 const rateOptions = computed(() =>
   bookStore.bookOptions?.Rate
     ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
-    : Object.keys(BOOK_RATE_LABELS)
+    : Object.keys(BOOK_RATE_LABELS),
 )
 const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK)
 const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || [])
 const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || [])
 const publishedYearOptions = computed(() =>
-  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000')
+  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000'),
 )
 const authorOptions = computed(() => bookStore.bookOptions?.Author || [])
 const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || [])
@@ -157,17 +162,17 @@ watch(
       hydrateForm(newBook)
     }
   },
-  { immediate: true }
+  { immediate: true },
 )
 
 // Auto-setar status para Read quando endDate for preenchido
 watch(
   () => formData.endDate,
   (newEndDate) => {
-    if (newEndDate && formData.status !== 'Read') {
-      formData.status = 'Read'
+    if (newEndDate && formData.status !== BOOK_STATUS_MAP.READ) {
+      formData.status = BOOK_STATUS_MAP.READ
     }
-  }
+  },
 )
 
 // Valida campos, monta o objeto e envia para a API via store
@@ -421,7 +426,7 @@ const handleCancel = () => {
               />
 
               <FormField
-                v-if="formData.status === 'Reading'"
+                v-if="formData.status === BOOK_STATUS_MAP.READING"
                 v-model="formData.currentlyOn"
                 label="Página atual"
                 type="number"
@@ -435,7 +440,7 @@ const handleCancel = () => {
           <FormSection title="Avaliação e Classificação">
             <div class="book-form__grid">
               <FormField
-                v-if="formData.status === 'Read'"
+                v-if="formData.status === BOOK_STATUS_MAP.READ"
                 v-model="formData.rate"
                 label="Avaliação"
                 type="select"

@@ -1,7 +1,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/userStore'
-import { BOOK_TYPE_LABELS } from '@/constants/book'
+import { BOOK_TYPE_LABELS, BOOK_STATUS_MAP } from '@/constants/book'
 import CardStatus from './CardStatus.vue'
 import Button from '@/components/ui/Button.vue'
 import { PencilLine, Trash, X } from 'lucide-vue-next'
@@ -76,7 +76,7 @@ const handleDelete = () => {
     <CardStatus :rotate="rotate" :book-status="book.status" />
     <div class="card-back__content">
       <div class="card-back__top">
-        <p class="card-back__rate" v-if="book.status === 'Read' && book.rate">
+        <p class="card-back__rate" v-if="book.status === BOOK_STATUS_MAP.READ && book.rate">
           {{ book.rate }}
         </p>
       </div>

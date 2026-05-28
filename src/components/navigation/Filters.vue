@@ -1,11 +1,14 @@
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
+import { BOOK_STATUS_LABELS } from '@/constants/book'
 import Button from '../ui/Button.vue'
 
 const bookStore = useBookStore()
 const localSearch = ref(bookStore.searchTerm)
 const localStatus = ref(bookStore.filterStatus)
+
+const statusOptions = computed(() => bookStore.statusOptions)
 
 const handleSearch = () => {
   if (localSearch.value.trim() === bookStore.searchTerm) return
@@ -49,10 +52,9 @@ const clearFilters = () => {
           class="filters__status-select filters__select--primary"
         >
           <option value="all">Todos os status</option>
-          <option value="Reading">Lendo</option>
-          <option value="Read">Completo</option>
-          <option value="To be read">Para Ler</option>
-          <option value="DNF">Abondonados</option>
+          <option v-for="status in statusOptions" :key="status" :value="status">
+            {{ BOOK_STATUS_LABELS[status] || status }}
+          </option>
         </select>
       </div>
     </div>

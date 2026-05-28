@@ -2,7 +2,7 @@
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
 import { onMounted, computed } from 'vue'
-
+import { BOOK_STATUS_MAP } from '@/constants/book'
 import Button from '@/components/ui/Button.vue'
 
 const router = useRouter()
@@ -13,7 +13,7 @@ const bookStore = useBookStore()
  * Tenta recarregar lista em caso de erro
  */
 const handleRetry = async () => {
-  await bookStore.fetchTbrBooks(undefined, 'To be read')
+  await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ)
 }
 
 /**

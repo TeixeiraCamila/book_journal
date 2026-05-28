@@ -38,7 +38,7 @@ router.beforeEach((to, from, next) => {
 
   // Verifica se é usuário visitante
   if (isGuest && saved === 'guest') {
-    userStore.checkIfGuest()
+    userStore.initGuestSession()
   } else if (saved) {
     userStore.userActive = saved
   }

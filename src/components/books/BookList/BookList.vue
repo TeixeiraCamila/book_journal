@@ -18,8 +18,11 @@ onMounted(async () => {
   bookStore.filterStatus = 'all'
   bookStore.searchTerm = ''
 
-  // Busca livros
-  await bookStore.fetchBooks()
+  // Busca opções do backend e livros
+  await Promise.all([
+    bookStore.fetchBookOptions(),
+    bookStore.fetchBooks(),
+  ])
 })
 
 /**

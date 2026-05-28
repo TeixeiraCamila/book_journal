@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia'
-import { userAPI } from '@/services/api'
+import { userAPI } from '../services/api'
 
 const GUEST_USER = {
   id: 'guest',
   name: 'Visitante',
-  type: 'guest'
+  type: 'guest',
 }
 
 const STORAGE_KEYS = {
@@ -108,7 +108,7 @@ export const useUserStore = defineStore('user', {
         return false
       }
 
-      if (userId === 'guest') {
+      if (userId === GUEST_USER.id) {
         this.setGuestUser()
         return true
       }
@@ -141,20 +141,17 @@ export const useUserStore = defineStore('user', {
     setGuestUser() {
       this.userActive = { ...GUEST_USER }
       this.isGuest = true
-      this._saveActiveUser('guest')
+      this._saveActiveUser(GUEST_USER.id)
       localStorage.setItem(STORAGE_KEYS.IS_GUEST, 'true')
     },
 
-    checkIfGuest() {
-      const isGuest = localStorage.getItem(STORAGE_KEYS.IS_GUEST) === 'true'
+    initGuestSession() {
+      const stored = localStorage.getItem(STORAGE_KEYS.IS_GUEST) === 'true'
       const userId = localStorage.getItem(STORAGE_KEYS.USER)
-
-      if (isGuest && userId === 'guest') {
+      if (stored && userId === GUEST_USER.id) {
         this.isGuest = true
         this.userActive = { ...GUEST_USER }
-        return true
       }
-      return false
     },
 
     clearActiveUser() {
@@ -174,6 +171,6 @@ export const useUserStore = defineStore('user', {
       } else {
         this.error = error.message || 'Erro desconhecido'
       }
-  },
+    },
   },
 })

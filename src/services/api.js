@@ -55,6 +55,10 @@ export const booksAPI = {
   options() {
     return api.get('/api/books/options')
   },
+
+  stats() {
+    return api.get('/api/books/stats')
+  },
 }
 
 // ==== Users API ==== //

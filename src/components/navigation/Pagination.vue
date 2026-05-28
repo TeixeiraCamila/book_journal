@@ -9,16 +9,28 @@ defineProps({
   hasNext: { type: Boolean, required: true },
 })
 
-defineEmits(['previous', 'next', 'changeSize']);
+defineEmits(['previous', 'next', 'changeSize'])
 
-const selects = [20, 4, 8, 12, 18, 24, 30];
+const selects = [20, 4, 8, 12, 18, 24, 30]
 </script>
 <template>
   <div class="pagination">
-    <div class="pagination__info">
-      Mostrando {{ bookCount }} {{ bookCount === 1 ? 'livro' : 'livros' }}
+    <div class="pagination__page-size-selector">
+      <label>Itens por página:</label>
+      <div class="select_wrapper">
+        <select
+          name="page-size"
+          id="page-size"
+          class="pagination__select--primary"
+          :value="pageSize"
+          @change="$emit('changeSize', $event.target.value)"
+        >
+          <option v-for="size in selects" :key="size" :value="size">
+            {{ size }}
+          </option>
+        </select>
+      </div>
     </div>
-
     <div class="pagination__controls">
       <Button @click="$emit('previous')" :disabled="!hasPrevious">
         <span>← Anterior</span>
@@ -28,22 +40,8 @@ const selects = [20, 4, 8, 12, 18, 24, 30];
         <span>Próximo →</span>
       </Button>
     </div>
-
-    <div class="pagination__page-size-selector">
-      <label>Itens por página:</label>
-      <div class="select_wrapper">
-        <select name="page-size" id="page-size" class="pagination__select--primary"
-          :value="pageSize" @change="$emit('changeSize', $event.target.value)">
-          <option v-for="size in selects" :key="size" :value="size">
-            {{ size }}
-          </option>
-        </select>
-      </div>
-    </div>
   </div>
 </template>
-
-
 
 <style scoped>
 .pagination {
@@ -51,17 +49,12 @@ const selects = [20, 4, 8, 12, 18, 24, 30];
   flex-direction: column;
   gap: 1rem;
   align-items: center;
+  justify-content: center;
   border: 1px solid #e5e7eb;
   background: transparent;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: var(--box-shadow);
-}
-
-.pagination__info {
-  font-size: 0.875rem;
-  color: #6b7280;
-  font-weight: 500;
 }
 
 .pagination__controls {
