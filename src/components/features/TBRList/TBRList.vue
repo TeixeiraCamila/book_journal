@@ -9,25 +9,18 @@ const router = useRouter()
 const bookStore = useBookStore()
 
 
-/**
- * Tenta recarregar lista em caso de erro
- */
 const handleRetry = async () => {
   await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ)
 }
 
-/**
- * Verifica se deve mostrar estado vazio
- */
+
 const showEmptyState = computed(() => {
   return !bookStore.loadingStates.tbr &&
     bookStore.bookLists.tbr.length === 0 &&
     !bookStore.hasError
 });
 
-/**
- * Navega para editar livro
- */
+
 const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`)
 };
@@ -73,7 +66,6 @@ const navigateToEdit = (bookId) => {
         :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }">
         <article class="stamp"  @click="navigateToEdit(book.id)">
           <div class="stamp__inner">
-            <!-- Imagem -->
             <div class="stamp__image-container">
               <img v-if="book.cover?.[0]" :src="book.cover[0]" :alt="`Capa do livro ${book.name}`" class="stamp__image"
                 loading="lazy" />
@@ -83,7 +75,6 @@ const navigateToEdit = (bookId) => {
               <div class="stamp__overlay" aria-hidden="true"></div>
             </div>
 
-            <!-- Informações -->
             <div class="stamp__details">
               <h3 class="stamp__title">{{ book.name }}</h3>
               <p v-if="book.author?.length" class="stamp__author">

@@ -240,7 +240,6 @@ const navigateToEdit = (bookId) => {
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
                     <span>{{ getPagesString(book) }}</span>
-                    <span>{{ getProgressString(book) }}</span>
                   </div>
                   <div class="reading-card__progress-bar">
                     <div
