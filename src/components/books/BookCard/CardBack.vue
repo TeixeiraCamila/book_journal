@@ -103,9 +103,7 @@ const handleDelete = () => {
         <p class="card-back__text" v-if="string">
           {{ string }}
         </p>
-        <p class="card-back__text" v-if="startEndString">
-          {{ startEndString }}
-        </p>
+
         <p class="card-back__text" v-if="wasReadString">Lido em: {{ wasReadString }}</p>
 
         <ul class="card-back__genres">
@@ -132,7 +130,7 @@ const handleDelete = () => {
   display: grid;
   height: 100%;
   background: var(--white);
-  border-radius: 8px;
+  border-radius: 0.5rem;
 }
 
 .card-back__top {
@@ -145,6 +143,9 @@ const handleDelete = () => {
 
 .card-back__info {
   padding: 0 1rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }
 
 .card-back__title {
@@ -153,7 +154,6 @@ const handleDelete = () => {
 }
 
 .card-back__text {
-  margin: 0.25rem 0;
   font-size: 0.85rem;
 }
 
@@ -166,7 +166,7 @@ const handleDelete = () => {
 .card-back__genres .card-back__genre {
   padding: 3px 0.5rem;
   border: 1px solid var(--accent3);
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .card-back__actions {
@@ -180,7 +180,7 @@ const handleDelete = () => {
   background-color: transparent;
   border: none;
   padding: 4px;
-  border-radius: 12px;
+  border-radius: 0.75rem;
   cursor: pointer;
   color: var(--black);
 }

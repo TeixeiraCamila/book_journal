@@ -42,7 +42,7 @@ VITE_API_URL=
 
 **Produção** — adicione no Vercel:
 ```
-VITE_API_URL=https://notion-api-green.vercel.app/api
+VITE_API_URL= 
 ```
 
 ---
