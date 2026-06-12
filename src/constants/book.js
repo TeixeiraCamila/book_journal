@@ -11,7 +11,7 @@ export const BOOK_STATUS_FALLBACK = ['To be read', 'Reading', 'Read', 'DNF']
 
 // Objeto para mapeamento interno
 export const BOOK_STATUS_MAP = {
-  TO_READ: 'To be read',
+  TO_BE_READ: 'To be read',
   READING: 'Reading',
   READ: 'Read',
   DNF: 'DNF',

@@ -210,7 +210,13 @@ const navigateToEdit = (bookId) => {
           <div class="reading-card__content">
             <header class="reading-card__header">
               <div class="reading-card__title-group">
-                <h2 class="reading-card__title">{{ book.name }}</h2>
+                <div>
+                  <h2 class="reading-card__title">{{ book.name }}</h2>
+
+                  <div class="reading-card__type" v-if="getTypeString(book)">
+                    <span class="reading-card__value">{{ getTypeString(book) }}</span>
+                  </div>
+                </div>
                 <span class="reading-card__author">{{ getAuthorString(book) }}</span>
               </div>
             </header>
@@ -219,10 +225,6 @@ const navigateToEdit = (bookId) => {
               <div class="reading-card__info-item" v-if="getSeriesString(book)">
                 <span class="reading-card__label">Série:</span>
                 <span class="reading-card__value">{{ getSeriesString(book) }}</span>
-              </div>
-
-              <div class="reading-card__type" v-if="getTypeString(book)">
-                <span class="reading-card__value">{{ getTypeString(book) }}</span>
               </div>
 
               <div class="reading-card__info-item" v-if="hasPublicationInfo(book)">
@@ -240,7 +242,6 @@ const navigateToEdit = (bookId) => {
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
                     <span>{{ getPagesString(book) }}</span>
-                    <span>{{ getProgressString(book) }}</span>
                   </div>
                   <div class="reading-card__progress-bar">
                     <div
@@ -307,11 +308,9 @@ const navigateToEdit = (bookId) => {
 }
 
 .reading-list__title {
-  font-size: 2.5rem;
-  color: var(--currently-reading_text);
+  font-size: 2rem;
+  color: var(--black);
   text-transform: uppercase;
-  letter-spacing: 2px;
-  margin: 0 0 0.5rem 0;
   font-family: 'Raleway', sans-serif;
   font-weight: 700;
 }
@@ -349,7 +348,7 @@ const navigateToEdit = (bookId) => {
 .reading-list__error-message {
   font-size: 1.125rem;
   margin-bottom: 1.5rem;
-  color: var(--currently-reading_text);
+  color: var(--black);
 }
 
 .reading-list__retry-btn {
@@ -424,7 +423,7 @@ const navigateToEdit = (bookId) => {
   overflow: hidden;
   transition: all 0.3s ease;
   display: flex;
-  min-height: 400px;
+  gap: 2rem;
   width: 100%;
 }
 
@@ -463,17 +462,12 @@ const navigateToEdit = (bookId) => {
 
 .reading-card__content {
   flex: 1;
-  padding: 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   position: relative;
 }
-.reading-card__type {
-  position: absolute;
-  top: 0;
-  right: 0;
-}
+
 .reading-card__header {
   display: flex;
   justify-content: space-between;
@@ -485,12 +479,19 @@ const navigateToEdit = (bookId) => {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+}
+
+.reading-card__title-group > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .reading-card__title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--currently-reading_text);
+  color: var(--black);
   margin: 0;
   line-height: 1.2;
 }
@@ -583,7 +584,7 @@ const navigateToEdit = (bookId) => {
 
 .reading-card__genre {
   background: var(--accent_muted);
-  color: var(--currently-reading_text);
+  color: var(--black);
   padding: 0.25rem 0.75rem;
   border-radius: 999px;
   font-size: 0.75rem;

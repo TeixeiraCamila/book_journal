@@ -93,19 +93,6 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async fetchStats() {
-      this.statsLoading = true
-      this.error = null
-      try {
-        const { data } = await booksAPI.stats()
-        this.stats = data
-      } catch (error) {
-        this._handleError('fetchStats', error)
-        this.stats = null
-      } finally {
-        this.statsLoading = false
-      }
-    },
 
     async createBook(bookData) {
       try {
@@ -170,7 +157,7 @@ export const useBookStore = defineStore('books', {
 
       try {
         const response = await booksAPI.list({
-          pageSize: this.pagination.pageSize,
+          pageSize: 40, // Busca mais itens para preencher melhor as listas de status
           startCursor: startCursor,
           search: this.searchTerm,
           status: status,

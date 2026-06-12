@@ -123,10 +123,9 @@ Acesse `http://localhost:5173`
 | `npm run format` | Formata código com Prettier |
 | `npm run vercel-build` | Build para Vercel |
 
-## Variáveis de Ambiente
-
-```env
-VITE_API_URL=http://localhost:3000
+**Produção** — adicione no Vercel:
+```
+VITE_API_URL= 
 ```
 
 Em produção, configure a URL da API como variável de ambiente no Vercel.
