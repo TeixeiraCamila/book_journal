@@ -1,4 +1,5 @@
 <script setup>
+// Componente de campo de formulário — suporta text, number, select, checkbox, autocomplete e multi-select
 import { computed, ref } from 'vue'
 
 // Props recebidas pelo componente

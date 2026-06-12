@@ -1,4 +1,5 @@
 <script setup>
+// Fita de status sobreposta ao card — exibe o status do livro (ex: "To be read", "Reading")
 import tape from '@/assets/images/tape.webp'
 
 defineProps({

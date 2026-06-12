@@ -1,3 +1,4 @@
+// Pinia store de usuários — gerencia autenticação, sessão visitante e lista de usuários
 import { defineStore } from 'pinia'
 import { userAPI } from '../services/api'
 

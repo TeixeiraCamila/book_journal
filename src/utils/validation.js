@@ -1,5 +1,5 @@
 /**
- * Validação de formulários
+ * Validação de formulários — funções puras para validação de campos
  */
 
 // Valida se o título é obrigatório

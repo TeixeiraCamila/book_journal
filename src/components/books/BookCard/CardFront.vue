@@ -1,4 +1,5 @@
 <script setup>
+// Face frontal do card — exibe capa do livro com sobreposição de status
 import CardStatus from './CardStatus.vue'
 
 const props = defineProps({

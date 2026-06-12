@@ -1,4 +1,5 @@
 <script setup>
+// Notificação avulsa — componente de alerta com transição e ícone por tipo
 import { computed } from 'vue'
 
 import Button from '../ui/Button.vue';

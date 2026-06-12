@@ -1,4 +1,5 @@
 <script setup>
+// Lista de livros em leitura — exibe cards detalhados com barra de progresso
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
 import { PencilLine } from 'lucide-vue-next'

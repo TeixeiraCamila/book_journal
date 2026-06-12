@@ -1,4 +1,5 @@
 <script setup>
+// Lista "To Be Read" — exibe livros pendentes em formato de selos (stamps) com rotação alternada
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
 import { onMounted, computed } from 'vue'

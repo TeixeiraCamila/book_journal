@@ -1,4 +1,5 @@
 <script setup>
+// View de criação/edição de livro — gerencia carregamento assíncrono e exibe formulário
 import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
@@ -19,6 +20,7 @@ const isLoading = ref(false)
 const error = ref(null)
 const isEdit = computed(() => !!route.params.id)
 
+// Carrega dados do livro para edição — busca da store ou API se necessário
 const loadBook = async () => {
   if (!isEdit.value) return
 

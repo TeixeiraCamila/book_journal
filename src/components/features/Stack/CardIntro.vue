@@ -1,4 +1,5 @@
 <script setup>
+// Card de introdução com animações GSAP — exibe "My Book Journal" com assets decorativos
 import { ref, onMounted } from 'vue'
 import { gsap } from 'gsap'
 

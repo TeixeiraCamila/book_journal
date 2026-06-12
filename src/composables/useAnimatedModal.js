@@ -1,3 +1,4 @@
+// Composable que gerencia modal animado com flip 3D (frente/verso) para visualização de cards
 import { ref, computed } from 'vue'
 
 export function useAnimatedModal(cardEl, randomTilt) {

@@ -1,4 +1,5 @@
 <script setup>
+// Container de toasts — gerencia múltiplas notificações com animação de entrada/saída
 import Button from '../ui/Button.vue'
 const props = defineProps({
   notifications: {

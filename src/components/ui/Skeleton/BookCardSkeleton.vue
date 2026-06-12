@@ -1,3 +1,4 @@
+<!-- Skeleton para card de livro — placeholder animado (shimmer) enquanto dados carregam -->
 <template>
   <div class="book-card-skeleton">
     <div class="book-card-skeleton__front">

@@ -1,4 +1,5 @@
 <script setup>
+// View principal — stack de cards vertical com Swiper (intro, book list, reading, TBR)
 import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
@@ -10,11 +11,13 @@ import Button from '@/components/ui/Button.vue'
 const bookStore = useBookStore()
 const userStore = useUserStore()
 
+// Componentes carregados sob demanda para otimizar performance inicial
 const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'))
 const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'))
 const ReadingList = defineAsyncComponent(() =>
   import('@/components/features/ReadingList/ReadingList.vue')
 )
+// Swiper.js — biblioteca de slides com efeito de cards empilhados (vertical)
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
 import 'swiper/css'
@@ -33,6 +36,7 @@ const navigateToCreate = () => {
   router.push('/criar')
 }
 
+// Ao mudar de slide, pré-carrega dados dos próximos cards (leitura adiada)
 const onSlideChange = (swiper) => {
   const activeIndex = swiper.activeIndex
 
@@ -46,6 +50,7 @@ const onSlideChange = (swiper) => {
   }
 }
 
+// Pré-carrega chunks de componentes em produção para navegação instantânea
 function prefetchNextSlides(slideIndices) {
   if (import.meta.env.PROD) {
     slideIndices.forEach((index) => {
@@ -67,6 +72,7 @@ function triggerChunkPrefetch(slideIndex) {
   }
 }
 
+// Na montagem, pré-carrega slides e verifica se há slide alvo via query string
 onMounted(() => {
   setTimeout(() => {
     prefetchNextSlides([1, 2, 3])

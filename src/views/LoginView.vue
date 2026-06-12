@@ -1,4 +1,5 @@
 <script setup>
+// Tela de login — autentica usuário por nome/email ou permite acesso como visitante
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
@@ -19,6 +20,7 @@ onMounted(async () => {
   }
 })
 
+// Busca usuário por nome+email e redireciona para home se encontrado
 const handleLogin = () => {
   error.value = ''
   const user = userStore.users.find((u) => {
@@ -39,6 +41,7 @@ const handleLogin = () => {
   }
 }
 
+// Cria sessão de visitante (sem credenciais) e redireciona para home
 const handleGuestLogin = () => {
   error.value = ''
   userStore.setGuestUser()

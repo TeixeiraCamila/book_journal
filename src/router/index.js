@@ -1,3 +1,4 @@
+// Configuração do Vue Router — rotas com lazy loading e guard de navegação
 import { createRouter, createWebHistory } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
 
@@ -31,6 +32,7 @@ const router = createRouter({
   ],
 })
 
+// Guard de navegação — verifica autenticação e redireciona conforme necessário
 router.beforeEach((to, from, next) => {
   const userStore = useUserStore()
   const saved = localStorage.getItem('USER_LOGADO')

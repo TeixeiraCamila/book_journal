@@ -1,4 +1,5 @@
 <script setup>
+// Barra de filtros — busca por título e filtro por status com botão limpar
 import { computed, ref } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
 import { BOOK_STATUS_LABELS } from '@/constants/book'

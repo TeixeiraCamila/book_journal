@@ -1,4 +1,5 @@
 <script setup>
+// Grid de livros com filtros, paginação e estados de loading/erro/vazio
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'

@@ -1,4 +1,5 @@
 <script setup>
+// Spinner animado em formato de livro abrindo — indica carregamento com mensagem opcional
 const props = defineProps({
   message: {
     type: String,

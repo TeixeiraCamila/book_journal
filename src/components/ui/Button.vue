@@ -1,5 +1,6 @@
 
 <script setup>
+// Botão reutilizável com variantes (primary/secondary) e suporte a slot para conteúdo
 defineProps({
   variant: { type: String, default: 'primary' },
   disabled: { type: Boolean, default: false }

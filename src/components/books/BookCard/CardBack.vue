@@ -1,4 +1,5 @@
 <script setup>
+// Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/userStore'
 import { BOOK_TYPE_LABELS, BOOK_STATUS_MAP } from '@/constants/book'

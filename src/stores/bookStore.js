@@ -1,3 +1,4 @@
+// Pinia store de livros — gerencia listas, paginação, filtros e operações CRUD
 import { defineStore } from 'pinia'
 import { booksAPI } from '../services/api'
 import { BOOK_STATUS_FALLBACK, BOOK_STATUS_MAP, DEFAULT_PAGE_SIZE } from '../constants/book'
@@ -6,7 +7,7 @@ export const useBookStore = defineStore('books', {
   state: () => ({
     bookLists: { main: [], tbr: [], reading: [] },
     loadingStates: { main: false, tbr: false },
-    stats: null,
+    stats: null, // Estatísticas agregadas dos livros
     statsLoading: false,
     error: null,
     // ===== PAGINAÇÃO (CURSOR-BASED) =====
@@ -276,6 +277,7 @@ export const useBookStore = defineStore('books', {
     // ========================================
     // TRATAMENTO DE ERROS (PRIVADO)
     // ========================================
+    // Extrai e armazena mensagens de erro amigáveis baseadas no status HTTP
     _handleError(action, error) {
       console.error(`❌ Erro em ${action}:`, error)
 

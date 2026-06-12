@@ -1,4 +1,5 @@
 <script setup>
+// Formulário de criação/edição de livros — validação, hidratação e envio para API
 import { reactive, ref, onMounted, watch, computed } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
 import {

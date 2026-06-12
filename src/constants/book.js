@@ -1,6 +1,6 @@
 /**
- * Constantes relacionadas a livros
- * NOTA: Estas constantes são fallbacks - as opções principais vêm do backend via /options
+ * Constantes relacionadas a livros — fallbacks para quando o backend não retorna opções
+ * As opções principais são carregadas dinamicamente via /api/books/options
  */
 
 // Configuração de paginação

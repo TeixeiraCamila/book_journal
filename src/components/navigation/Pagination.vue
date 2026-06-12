@@ -1,4 +1,5 @@
 <script setup>
+// Paginação baseada em cursor — botões anterior/próximo e seletor de itens por página
 import { defineEmits } from 'vue'
 import Button from '../ui/Button.vue'
 

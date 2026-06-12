@@ -1,4 +1,5 @@
 <script setup>
+// Card de livro com efeito flip 3D — face frontal (capa) e verso (detalhes/ações)
 import { ref, onMounted } from 'vue'
 import { useBookStore } from '@/stores/bookStore'
 import { useNotifications } from '@/composables/useNotifications'
@@ -40,12 +41,12 @@ onMounted(() => {
   randomTilt.value = Math.random() * 6 - 3 // -3deg a +3deg
 })
 
-// Lógica de delete
+// Abre diálogo de confirmação antes de deletar o livro
 const openDeleteDialog = () => {
   deleteDialog.value?.open()
 }
 
-// Deleta livro através do store
+// Deleta o livro via store e fecha modal após sucesso
 const handleDelete = async () => {
   try {
     await bookStore.deleteBook(props.book.id)
@@ -57,7 +58,7 @@ const handleDelete = async () => {
   }
 }
 
-//  Propaga evento de edição para o componente pai
+// Fecha modal e emite evento de edição para o componente pai
 const handleEdit = (book) => {
   isEditing.value = true
   closeModal() // Fecha o modal antes de editar

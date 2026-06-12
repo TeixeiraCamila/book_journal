@@ -1,4 +1,5 @@
 <script setup>
+// Seção agrupada do formulário — título + slot para campos filhos
 // Seção do formulário com título e espaço para campos filhos
 defineProps({
   title: {

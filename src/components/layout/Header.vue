@@ -1,4 +1,5 @@
 <script setup>
+// Cabeçalho sticky com contagem de livros, link para criar e botão de logout
 import { LogOut } from 'lucide-vue-next'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useBookStore } from '@/stores/bookStore'

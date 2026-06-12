@@ -1,3 +1,4 @@
+// Composable para notificações toast — abstrai vue-toastification com tipos (success/error/warning/info)
 import { useToast } from 'vue-toastification'
 
 export function useNotifications() {
