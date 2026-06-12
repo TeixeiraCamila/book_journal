@@ -6,119 +6,112 @@ import Button from '../Button.vue';
   <div class="form-skeleton">
     <!-- Header Section -->
     <div class="form-skeleton__header">
-      <h2 class="skeleton-line skeleton-title">Adicionar Novo Livro</h2>
-      <Button class="skeleton-line skeleton-close-btn">×</Button>
+      <h2 class="form-skeleton__title">Adicionar Novo Livro</h2>
+      <Button class="form-skeleton__close-btn">×</Button>
     </div>
 
-    <!-- Form Content -->
     <form class="form-skeleton__content">
-      <!-- Section 1: Informações Básicas -->
       <div class="form-skeleton__section">
-        <h3 class="skeleton-line skeleton-section-title">Informações Básicas</h3>
+        <h3 class="form-skeleton__section-title">Informações Básicas</h3>
         <div class="form-skeleton__grid">
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Título</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Título</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Autor</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Autor</label>
+            <div class="form-skeleton__input"></div>
           </div>
         </div>
       </div>
 
-      <!-- Section 2: Status e Progresso -->
       <div class="form-skeleton__section">
-        <h3 class="skeleton-line skeleton-section-title">Status e Progresso</h3>
+        <h3 class="form-skeleton__section-title">Status e Progresso</h3>
         <div class="form-skeleton__grid">
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Status</label>
-            <div class="skeleton-line skeleton-select"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Status</label>
+            <div class="form-skeleton__select"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Total de páginas</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Total de páginas</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Página atual</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Página atual</label>
+            <div class="form-skeleton__input"></div>
           </div>
         </div>
       </div>
 
-      <!-- Section 3: Avaliação e Classificação -->
       <div class="form-skeleton__section">
-        <h3 class="skeleton-line skeleton-section-title">Avaliação e Classificação</h3>
+        <h3 class="form-skeleton__section-title">Avaliação e Classificação</h3>
         <div class="form-skeleton__grid">
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Avaliação</label>
-            <div class="skeleton-line skeleton-select"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Avaliação</label>
+            <div class="form-skeleton__select"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Tipo</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Tipo</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Gêneros/Tags</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Gêneros/Tags</label>
+            <div class="form-skeleton__input"></div>
           </div>
         </div>
       </div>
 
-      <!-- Section 4: Detalhes da Publicação -->
       <div class="form-skeleton__section">
-        <h3 class="skeleton-line skeleton-section-title">Detalhes da Publicação</h3>
+        <h3 class="form-skeleton__section-title">Detalhes da Publicação</h3>
         <div class="form-skeleton__grid">
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Ano de publicação</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Ano de publicação</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Publicado por</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Publicado por</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Série do livro</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Série do livro</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-checkbox-wrapper">
-            <div class="skeleton-line skeleton-checkbox"></div>
-            <label class="skeleton-line skeleton-checkbox-label">Possuo cópia física</label>
+          <div class="form-skeleton__field form-skeleton__field--checkbox">
+            <div class="form-skeleton__checkbox"></div>
+            <label class="form-skeleton__checkbox-label">Possuo cópia física</label>
           </div>
         </div>
       </div>
 
-      <!-- Section 5: Leitura e Metadados -->
       <div class="form-skeleton__section">
-        <h3 class="skeleton-line skeleton-section-title">Leitura e Metadados</h3>
+        <h3 class="form-skeleton__section-title">Leitura e Metadados</h3>
         <div class="form-skeleton__grid">
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Lido em</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Lido em</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Data de início</label>
-            <div class="skeleton-line skeleton-input skeleton-input--date"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Data de início</label>
+            <div class="form-skeleton__input form-skeleton__input--date"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Data de término</label>
-            <div class="skeleton-line skeleton-input skeleton-input--date"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Data de término</label>
+            <div class="form-skeleton__input form-skeleton__input--date"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Atlas literário</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Atlas literário</label>
+            <div class="form-skeleton__input"></div>
           </div>
-          <div class="skeleton-field-wrapper">
-            <label class="skeleton-line skeleton-label">Capa (URLs)</label>
-            <div class="skeleton-line skeleton-input"></div>
+          <div class="form-skeleton__field">
+            <label class="form-skeleton__label">Capa (URLs)</label>
+            <div class="form-skeleton__input"></div>
           </div>
         </div>
       </div>
 
-      <!-- Actions -->
       <div class="form-skeleton__actions">
-        <Button class="skeleton-line skeleton-button skeleton-button--primary">Salvar Livro</Button>
-        <Button class="skeleton-line skeleton-button skeleton-button--secondary">Cancelar</Button>
+        <Button class="form-skeleton__button form-skeleton__button--primary">Salvar Livro</Button>
+        <Button class="form-skeleton__button form-skeleton__button--secondary">Cancelar</Button>
       </div>
     </form>
   </div>
@@ -133,7 +126,6 @@ import Button from '../Button.vue';
   overflow: hidden;
 }
 
-/* Header - Mesmo estilo do BookForm */
 .form-skeleton__header {
   display: flex;
   justify-content: space-between;
@@ -142,7 +134,7 @@ import Button from '../Button.vue';
   border-bottom: 1px solid #e5e7eb;
 }
 
-.skeleton-title {
+.form-skeleton__title {
   font-size: 1.5rem;
   font-weight: 700;
   color: #111827;
@@ -151,28 +143,6 @@ import Button from '../Button.vue';
   margin: 0;
 }
 
-.skeleton-close-btn {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.skeleton-close-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
-}
-
-/* Content - Mesmo padding e layout do BookForm */
 .form-skeleton__content {
   flex: 1;
   padding: 2rem;
@@ -182,36 +152,33 @@ import Button from '../Button.vue';
   gap: 2rem;
 }
 
-/* Sections - Mesmo gap do BookForm */
 .form-skeleton__section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.skeleton-section-title {
+.form-skeleton__section-title {
   font-size: 1.125rem;
   font-weight: 600;
   color: #374151;
   width: 100%;
   height: 20px;
-  font-weight: 600;
 }
 
-/* Fields - Mesmo grid do BookForm */
 .form-skeleton__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1rem;
 }
 
-.skeleton-field-wrapper {
+.form-skeleton__field {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-.skeleton-label {
+.form-skeleton__label {
   font-size: 0.875rem;
   font-weight: 500;
   color: #374151;
@@ -219,8 +186,7 @@ import Button from '../Button.vue';
   height: 14px;
 }
 
-/* Inputs - Mesmo estilo do BookForm */
-.skeleton-input {
+.form-skeleton__input {
   height: 48px;
   border: 2px solid var(--accent3);
   border-radius: 8px;
@@ -233,12 +199,12 @@ import Button from '../Button.vue';
   outline: none;
 }
 
-.skeleton-input:focus {
+.form-skeleton__input:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent3_muted);
 }
 
-.skeleton-select {
+.form-skeleton__select {
   height: 48px;
   border: 2px solid var(--accent3);
   border-radius: 8px;
@@ -258,12 +224,12 @@ import Button from '../Button.vue';
   padding-right: 2.5rem;
 }
 
-.skeleton-select:focus {
+.form-skeleton__select:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent3_muted);
 }
 
-.skeleton-input--date {
+.form-skeleton__input--date {
   height: 48px;
   border: 2px solid var(--accent3);
   border-radius: 8px;
@@ -276,15 +242,15 @@ import Button from '../Button.vue';
   outline: none;
 }
 
-.skeleton-input--date:focus {
+.form-skeleton__input--date:focus {
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent3_muted);
 }
 
-/* Checkbox - Mesmo estilo do BookForm */
-.skeleton-checkbox-wrapper {
+.form-skeleton__field--checkbox {
   grid-column: 1 / -1;
   display: flex;
+  flex-direction: row;
   align-items: center;
   gap: 0.75rem;
   padding: 1rem;
@@ -293,7 +259,7 @@ import Button from '../Button.vue';
   border: 1px solid var(--accent_muted);
 }
 
-.skeleton-checkbox {
+.form-skeleton__checkbox {
   width: 20px;
   height: 20px;
   border: 2px solid var(--accent3);
@@ -301,21 +267,20 @@ import Button from '../Button.vue';
   background: var(--white);
 }
 
-.skeleton-checkbox-label {
+.form-skeleton__checkbox-label {
   font-size: 0.875rem;
   color: #374151;
   width: 200px;
   height: 16px;
 }
 
-/* Actions - Mesmo estilo do BookForm */
 .form-skeleton__actions {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
 
-.skeleton-button {
+.form-skeleton__button {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 8px;
@@ -330,35 +295,34 @@ import Button from '../Button.vue';
   height: 48px;
 }
 
-.skeleton-button:hover {
+.form-skeleton__button:hover {
   background: var(--accent_muted);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.skeleton-button:active {
+.form-skeleton__button:active {
   transform: translateY(0);
   box-shadow: var(--shadow);
 }
 
-.skeleton-button--primary {
+.form-skeleton__button--primary {
   background: var(--accent);
   color: var(--white);
   width: 140px;
 }
 
-.skeleton-button--secondary {
+.form-skeleton__button--secondary {
   background: #e5e7eb;
   color: #374151;
   width: 120px;
 }
 
-.skeleton-button--secondary:hover {
+.form-skeleton__button--secondary:hover {
   background: #d1d5db;
   transform: translateY(-1px);
 }
 
-/* Base skeleton animation */
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
@@ -368,16 +332,6 @@ import Button from '../Button.vue';
   }
 }
 
-/* Skeleton line styles */
-.skeleton-line {
-  height: 16px;
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  border-radius: 4px;
-  animation: shimmer 1.5s infinite;
-}
-
-/* Responsividade - Mesmo breakpoint do BookForm */
 @media (max-width: 768px) {
   .form-skeleton__content {
     padding: 1rem;

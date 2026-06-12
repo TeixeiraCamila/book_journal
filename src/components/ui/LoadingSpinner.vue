@@ -8,34 +8,33 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="loading_container">
-    <div class="book">
-      <div class="book__pg-shadow"></div>
-      <div class="book__pg"></div>
-      <div class="book__pg book__pg--2"></div>
-      <div class="book__pg book__pg--3"></div>
-      <div class="book__pg book__pg--4"></div>
-      <div class="book__pg book__pg--5"></div>
+  <div class="loading">
+    <div class="loading__book">
+      <div class="loading__pg-shadow"></div>
+      <div class="loading__pg"></div>
+      <div class="loading__pg loading__pg--2"></div>
+      <div class="loading__pg loading__pg--3"></div>
+      <div class="loading__pg loading__pg--4"></div>
+      <div class="loading__pg loading__pg--5"></div>
     </div>
-    <p class="loading_message">{{ props.message }}</p>
+    <p class="loading__message">{{ props.message }}</p>
   </div>
 </template>
 
 <style scoped>
-.loading_container {
+.loading {
   width: fit-content;
   margin: 0 auto;
 }
-.loading_message {
+.loading__message {
   margin-top: 1rem;
 }
-/* From Uiverse.io by anand_4957 - Colors adapted to project theme */
-.book,
-.book__pg-shadow,
-.book__pg {
+.loading__book,
+.loading__pg-shadow,
+.loading__pg {
   animation: cover 5s ease-in-out infinite;
 }
-.book {
+.loading__book {
   background-color: var(--accent);
   border-radius: 0.25em;
   box-shadow:
@@ -49,13 +48,13 @@ const props = defineProps({
   transform: translate3d(0, 0, 0);
   transform-style: preserve-3d;
 }
-.book__pg-shadow,
-.book__pg {
+.loading__pg-shadow,
+.loading__pg {
   position: absolute;
   left: 0.25em;
   width: calc(50% - 0.25em);
 }
-.book__pg-shadow {
+.loading__pg-shadow {
   animation-name: shadow;
   background-image: linear-gradient(-45deg, hsla(0, 0%, 0%, 0) 50%, hsla(0, 0%, 0%, 0.3) 50%);
   filter: blur(0.25em);
@@ -64,16 +63,16 @@ const props = defineProps({
   transform: scaleY(0);
   transform-origin: 100% 0%;
 }
-.book__pg {
+.loading__pg {
   animation-name: pg1;
   background-color: #fff;
   background-image: linear-gradient(90deg, hsla(45, 23%, 68%, 0) 87.5%, var(--accent2) 87.5%);
   height: calc(100% - 0.5em);
   transform-origin: 100% 50%;
 }
-.book__pg--2,
-.book__pg--3,
-.book__pg--4 {
+.loading__pg--2,
+.loading__pg--3,
+.loading__pg--4 {
   background-image:
     repeating-linear-gradient(var(--accent3) 0 0.125em, hsla(45, 23%, 68%, 0) 0.125em 0.5em),
     linear-gradient(90deg, hsla(45, 23%, 68%, 0) 87.5%, var(--accent2));
@@ -83,16 +82,16 @@ const props = defineProps({
     2.5em 4.125em,
     100% 100%;
 }
-.book__pg--2 {
+.loading__pg--2 {
   animation-name: pg2;
 }
-.book__pg--3 {
+.loading__pg--3 {
   animation-name: pg3;
 }
-.book__pg--4 {
+.loading__pg--4 {
   animation-name: pg4;
 }
-.book__pg--5 {
+.loading__pg--5 {
   animation-name: pg5;
 }
 

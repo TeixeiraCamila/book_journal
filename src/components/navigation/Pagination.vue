@@ -17,11 +17,11 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
   <div class="pagination">
     <div class="pagination__page-size-selector">
       <label>Itens por página:</label>
-      <div class="select_wrapper">
+      <div class="pagination__select-wrapper">
         <select
           name="page-size"
           id="page-size"
-          class="pagination__select--primary"
+          class="pagination__page-size-select"
           :value="pageSize"
           @change="$emit('changeSize', $event.target.value)"
         >
@@ -63,28 +63,6 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
   gap: 1rem;
 }
 
-.pagination__btn--primary {
-  padding: 0.5rem 1.5rem;
-  border: 1px solid #d1d5db;
-  background: var(--white);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.pagination__btn--primary:hover:not(:disabled) {
-  background: #f3f4f6;
-  border-color: var(--accent);
-  transform: translateY(-1px);
-}
-
-.pagination__btn--primary:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 .pagination__page-size-selector {
   display: flex;
   align-items: center;
@@ -101,11 +79,6 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
   .pagination__controls {
     width: 100%;
     justify-content: space-between;
-  }
-
-  .pagination__btn--primary {
-    flex: 1;
-    padding: 0.625rem 1rem;
   }
 }
 </style>

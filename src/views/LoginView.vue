@@ -52,7 +52,7 @@ const handleGuestLogin = () => {
     <!-- Card que sai por baixo do projetor -->
     <div class="login-view__content">
       <h2 class="login-view__title">Login</h2>
-      <form @submit.prevent="handleLogin">
+      <form @submit.prevent="handleLogin" class="login-view__form">
         <div class="login-view__form-group">
           <label for="name" class="login-view__label">Nome</label>
           <input id="name" v-model="name" type="text" class="login-view__input" placeholder="seu nome" required />
@@ -251,20 +251,20 @@ const handleGuestLogin = () => {
   }
 }
 
-.login-view__content button {
+.login-view__button {
   width: 100%;
 }
 
-.login-view__content h2 {
+.login-view__title {
   text-align: center;
 }
 
-.login-view__content form {
+.login-view__form {
   display: flex;
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
-}
+} 
 
 .login-view__input:focus {
   outline: none;

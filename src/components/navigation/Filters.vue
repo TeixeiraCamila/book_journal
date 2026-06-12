@@ -30,7 +30,7 @@ const clearFilters = () => {
 <template>
   <div class="filters">
     <div class="filters__search-box">
-      <div class="input_wrapper">
+      <div class="filters__input-wrapper">
         <input
           type="text"
           placeholder="Buscar por título..."
@@ -45,11 +45,11 @@ const clearFilters = () => {
     </div>
 
     <div class="filters__filter-status">
-      <div class="select_wrapper">
+      <div class="filters__select-wrapper">
         <select
           v-model="localStatus"
           @change="handleFilterChange"
-          class="filters__status-select filters__select--primary"
+          class="filters__status-select"
         >
           <option value="all">Todos os status</option>
           <option v-for="status in statusOptions" :key="status" :value="status">
@@ -62,7 +62,7 @@ const clearFilters = () => {
     <Button
       v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
       @click="clearFilters"
-      class="filters__clear-btn filters__btn--primary"
+      class="filters__clear-btn"
     >
       <span>Limpar filtros</span>
     </Button>
