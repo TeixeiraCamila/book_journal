@@ -188,6 +188,9 @@ export const useBookStore = defineStore('books', {
       }
     },
 
+    /**
+     * Busca livros com status "Read" e wasReadIn igual ao ano atual
+     */
     async fetchBooksReadThisYear() {
       this.loadingStates.thisYear = true
       this.error = null

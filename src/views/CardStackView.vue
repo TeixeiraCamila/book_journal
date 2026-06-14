@@ -1,5 +1,5 @@
-<script setup>
 // View principal — stack de cards vertical com Swiper (intro, book list, reading, TBR)
+<script setup>
 import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUserStore } from '@/stores/userStore'
@@ -217,9 +217,7 @@ onMounted(() => {
   background-position: center;
 }
 .stack-view__year {
-  background-image: url('https://i.pinimg.com/736x/be/92/00/be92008cb47d3e89d9c8d6d4c4aa7e1a.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-image: url('https://i.pinimg.com/736x/0d/aa/f1/0daaf1949ddead3cef8293ed621d54bc.jpg');
   background-position: center;
 }
 /* ===== FLOATING ACTION BUTTON ===== */

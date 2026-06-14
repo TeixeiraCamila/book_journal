@@ -1,9 +1,11 @@
+// Componente: lista livros lidos no ano atual agrupados por mês
 <script setup>
 import { useRouter } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
 import Button from '@/components/ui/Button.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { computed } from 'vue'
+import tape from '@/assets/images/tape.webp'
 
 const router = useRouter()
 const bookStore = useBookStore()
@@ -91,6 +93,12 @@ const navigateToEdit = (bookId) => {
           <div class="this-year__grid">
             <article v-for="book in section.books" :key="book.id" class="this-year-card">
               <div class="this-year-card__cover">
+
+                <div v-if="book.rate" class="card-status__tape">
+                  <p class="card-status__text">{{ book.rate }}</p>
+                  <img width="150" :src="tape" alt="" />
+                </div>
+
                 <img
                   v-if="book.cover?.[0]"
                   :src="book.cover[0]"
@@ -101,8 +109,6 @@ const navigateToEdit = (bookId) => {
                 />
                 <div v-else class="this-year-card__placeholder">📖</div>
               </div>
-
-              <div class="this-year-card__rate">{{ book.rate }}</div>
             </article>
           </div>
         </div>
@@ -187,14 +193,17 @@ const navigateToEdit = (bookId) => {
   flex-wrap: wrap;
   gap: 2rem;
 }
+.this-year__month-title {
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+}
 
 .this-year-card {
   background: white;
   padding: 1.5rem;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
   transition: all 0.3s ease;
-  gap: 2rem;
+  position: relative;
 }
 
 .this-year-card:hover {
@@ -207,12 +216,27 @@ const navigateToEdit = (bookId) => {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  overflow: hidden;
 }
 
-.this-year-card__rate {
-  display: flex;
-  justify-content: center;
+.this-year-card__cover .card-status__tape {
+  position: absolute;
+  top: -23%;
+  left: -2%;
+  z-index: 1;
+}
+
+.this-year-card__cover .card-status__tape .card-status__text {
+  position: absolute;
+  top: 40%;
+  left: 45%;
+  transform: translate(-40%, -50%);
+  width: 60%;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--black);
+  text-transform: uppercase;
+  line-height: 1.2;
 }
 
 .this-year-card__image {
