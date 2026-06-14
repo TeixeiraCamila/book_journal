@@ -223,10 +223,10 @@ const navigateToEdit = (bookId) => {
             </header>
 
             <div class="reading-card__info">
-              <div class="reading-card__info-item" v-if="getSeriesString(book)">
+              <!-- <div class="reading-card__info-item" v-if="getSeriesString(book)">
                 <span class="reading-card__label">Série:</span>
                 <span class="reading-card__value">{{ getSeriesString(book) }}</span>
-              </div>
+              </div> -->
 
               <div class="reading-card__info-item" v-if="hasPublicationInfo(book)">
                 <span class="reading-card__label">Publicação:</span>
@@ -316,6 +316,10 @@ const navigateToEdit = (bookId) => {
   font-weight: 700;
 }
 
+.reading-card__type {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+}
 .reading-list__subtitle {
   font-size: 1.125rem;
   color: var(--black);
@@ -430,7 +434,7 @@ const navigateToEdit = (bookId) => {
 
 .reading-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .reading-card__cover {
@@ -449,10 +453,7 @@ const navigateToEdit = (bookId) => {
   max-height: 200px;
   object-fit: cover;
   transition: transform 0.3s ease;
-}
-
-.reading-card:hover .reading-card__image {
-  transform: scale(1.05);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
 .reading-card__placeholder {
@@ -465,7 +466,7 @@ const navigateToEdit = (bookId) => {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
   position: relative;
 }
 

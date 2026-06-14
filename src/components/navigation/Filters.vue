@@ -30,35 +30,25 @@ const clearFilters = () => {
 
 <template>
   <div class="filters">
-    <div class="filters__search-box">
-      <div class="filters__input-wrapper">
-        <input
-          type="text"
-          placeholder="Buscar por título..."
-          v-model="localSearch"
-          @keyup.enter="handleSearch"
-          class="filters__search-input"
-        />
-      </div>
+    <div class="filters__row">
+      <input
+        type="text"
+        placeholder="Buscar por título..."
+        v-model="localSearch"
+        @keyup.enter="handleSearch"
+        class="filters__input"
+      />
       <Button @click="handleSearch" variant="primary">
-        <span> Buscar </span>
+        <span>Buscar</span>
       </Button>
     </div>
 
-    <div class="filters__filter-status">
-      <div class="filters__select-wrapper">
-        <select
-          v-model="localStatus"
-          @change="handleFilterChange"
-          class="filters__status-select"
-        >
-          <option value="all">Todos os status</option>
-          <option v-for="status in statusOptions" :key="status" :value="status">
-            {{ BOOK_STATUS_LABELS[status] || status }}
-          </option>
-        </select>
-      </div>
-    </div>
+    <select v-model="localStatus" @change="handleFilterChange" class="filters__select">
+      <option value="all">Todos os status</option>
+      <option v-for="status in statusOptions" :key="status" :value="status">
+        {{ BOOK_STATUS_LABELS[status] || status }}
+      </option>
+    </select>
 
     <Button
       v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
@@ -72,34 +62,48 @@ const clearFilters = () => {
 
 <style scoped>
 .filters {
-  background: transparent;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: var(--box-shadow);
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
   background: rgba(255, 249, 238, 0.95);
   backdrop-filter: blur(4px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: var(--box-shadow);
+  border-radius: 12px;
 }
 
-.filters__search-box {
+.filters__row {
   flex: 1;
   display: flex;
   gap: 0.5rem;
+  min-width: 200px;
 }
 
-.filters__search-input {
+.filters__input {
   flex: 1;
+  padding: 0.75em;
+  font-weight: bold;
+  border: 2px solid var(--black);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--black);
+  cursor: text;
 }
 
-@media (min-width: 640px) {
-  .filters {
-    flex-direction: row;
-  }
+.filters__select {
+  padding: 0.75em 2em 0.75em 0.75em;
+  font-weight: bold;
+  border: 2px solid var(--black);
+  border-radius: var(--radius);
+  background: var(--white);
+  color: var(--black);
+  cursor: pointer;
+  min-width: 160px;
+  width: fit-content;
 }
 </style>

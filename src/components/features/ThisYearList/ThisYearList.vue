@@ -93,7 +93,6 @@ const navigateToEdit = (bookId) => {
           <div class="this-year__grid">
             <article v-for="book in section.books" :key="book.id" class="this-year-card">
               <div class="this-year-card__cover">
-
                 <div v-if="book.rate" class="card-status__tape">
                   <p class="card-status__text">{{ book.rate }}</p>
                   <img width="150" :src="tape" alt="" />
@@ -193,6 +192,11 @@ const navigateToEdit = (bookId) => {
   flex-wrap: wrap;
   gap: 2rem;
 }
+
+.this-year__month-group {
+  width: 100%;
+}
+
 .this-year__month-title {
   text-transform: uppercase;
   margin-bottom: 1rem;
@@ -201,7 +205,7 @@ const navigateToEdit = (bookId) => {
 .this-year-card {
   background: white;
   padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   position: relative;
 }

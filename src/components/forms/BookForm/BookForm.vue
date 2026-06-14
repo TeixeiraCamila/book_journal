@@ -53,6 +53,7 @@ const formData = reactive({
   bookSeries: '',
   // Inicia como array vazio — o multi-select lida com adição/remoção
   quest: [],
+  kindleProgress: '',
 })
 
 // Armazena erros de validação de cada campo
@@ -85,6 +86,14 @@ const coverUrl = computed(() => {
     return formData.coverUrl.trim() || null
   }
   return null
+})
+
+const isKindle = computed(() => formData.type?.includes('Kindle'))
+
+watch([() => formData.kindleProgress, () => formData.totalPages], ([progress, total]) => {
+  if (progress && total && Number(progress) > 0 && Number(total) > 0) {
+    formData.currentlyOn = Math.round((Number(total) * Number(progress)) / 100)
+  }
 })
 
 // Carrega as opções do Notion na montagem,
@@ -152,6 +161,8 @@ const hydrateForm = (book) => {
   formData.bookSeries = book.bookSeries || ''
   formData.quest = book.quest || []
 
+  formData.kindleProgress = ''
+
   parseStartEndData(book.startEnd)
 }
 
@@ -166,12 +177,21 @@ watch(
   { immediate: true },
 )
 
-// Auto-setar status para Read quando endDate for preenchido
+// Auto-setar status para Read e wasReadIn quando endDate for preenchido
 watch(
   () => formData.endDate,
   (newEndDate) => {
-    if (newEndDate && formData.status !== BOOK_STATUS_MAP.READ) {
+    if (!newEndDate) return
+
+    if (formData.status !== BOOK_STATUS_MAP.READ) {
       formData.status = BOOK_STATUS_MAP.READ
+    }
+
+    if (!formData.wasReadIn) {
+      const year = new Date(newEndDate).getFullYear()
+      if (!isNaN(year)) {
+        formData.wasReadIn = String(year)
+      }
     }
   },
 )
@@ -389,22 +409,25 @@ const handleCancel = () => {
                 :error="fieldErrors.author"
               />
             </div>
-            <FormField
-              v-model="formData.bookSeries"
-              label="Série do livro"
-              type="autocomplete"
-              :options="seriesOptions"
-              placeholder="Digite ou selecione"
-              :error="fieldErrors.bookSeries"
-            />
-            <FormField
-              v-model="formData.quest"
-              label="Quest"
-              type="multi-select"
-              :options="questOptions"
-              placeholder="Digite ou selecione"
-              :error="fieldErrors.quest"
-            />
+
+            <div class="book-form__grid">
+              <FormField
+                v-model="formData.bookSeries"
+                label="Série do livro"
+                type="autocomplete"
+                :options="seriesOptions"
+                placeholder="Digite ou selecione"
+                :error="fieldErrors.bookSeries"
+              />
+              <FormField
+                v-model="formData.quest"
+                label="Quest"
+                type="multi-select"
+                :options="questOptions"
+                placeholder="Digite ou selecione"
+                :error="fieldErrors.quest"
+              />
+            </div>
           </FormSection>
 
           <!-- Status e Progresso -->
@@ -424,6 +447,15 @@ const handleCancel = () => {
                 type="number"
                 placeholder="Ex: 350"
                 :error="fieldErrors.totalPages"
+              />
+
+              <FormField
+                v-if="isKindle && formData.status === BOOK_STATUS_MAP.READING"
+                v-model="formData.kindleProgress"
+                label="Progresso Kindle (%)"
+                type="number"
+                placeholder="Ex: 75"
+                :error="fieldErrors.kindleProgress"
               />
 
               <FormField

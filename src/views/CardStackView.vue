@@ -194,8 +194,7 @@ onMounted(() => {
 
 /* Card da lista de livros com background */
 .stack-view__book-list {
-  background-image: url('../assets/images/bg-default.webp');
-  background-size: cover;
+  background-image: url('https://i.pinimg.com/736x/9d/3f/75/9d3f75194f27bd374b17c3cf13d9f633.jpg');
   background-position: center;
   display: flex;
   flex-direction: column;
