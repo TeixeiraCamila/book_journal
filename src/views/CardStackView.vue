@@ -14,9 +14,13 @@ const userStore = useUserStore()
 // Componentes carregados sob demanda para otimizar performance inicial
 const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'))
 const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'))
-const ReadingList = defineAsyncComponent(() =>
-  import('@/components/features/ReadingList/ReadingList.vue')
+const ReadingList = defineAsyncComponent(
+  () => import('@/components/features/ReadingList/ReadingList.vue'),
 )
+const ThisYearList = defineAsyncComponent(
+  () => import('@/components/features/ThisYearList/ThisYearList.vue'),
+)
+
 // Swiper.js — biblioteca de slides com efeito de cards empilhados (vertical)
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { EffectCards } from 'swiper/modules'
@@ -43,10 +47,14 @@ const onSlideChange = (swiper) => {
   if (activeIndex === 1) {
     bookStore.fetchBooksByStatus()
     bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
-    prefetchNextSlides([2, 3])
+    prefetchNextSlides([2, 3, 4])
   }
   if (activeIndex === 2) {
+    bookStore.fetchBooksReadThisYear()
     prefetchNextSlides([3])
+  }
+  if (activeIndex === 3) {
+    prefetchNextSlides([4])
   }
 }
 
@@ -64,6 +72,7 @@ function triggerChunkPrefetch(slideIndex) {
     1: () => import('@/components/books/BookList/BookList.vue'),
     2: () => import('@/components/features/ReadingList/ReadingList.vue'),
     3: () => import('@/components/features/TBRList/TBRList.vue'),
+    4: () => import('@/components/features/ThisYearList/ThisYearList.vue'),
   }
 
   const loader = chunks[slideIndex]
@@ -84,6 +93,9 @@ onMounted(() => {
     if (target >= 2) {
       bookStore.fetchBooksByStatus()
       bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
+    }
+    if (target >= 3) {
+      bookStore.fetchBooksReadThisYear()
     }
     nextTick(() => {
       swiperInstance.value?.slideTo(target, 300)
@@ -142,6 +154,12 @@ onMounted(() => {
       </div>
     </SwiperSlide>
 
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.thisYearCount > 0">
+      <div class="stack-view__card stack-view__year">
+        <ThisYearList />
+      </div>
+    </SwiperSlide>
+
     <SwiperSlide class="stack-view__slide" v-if="bookStore.bookLists.tbr.length">
       <div class="stack-view__card stack-view__tbr">
         <TBRList />
@@ -193,12 +211,17 @@ onMounted(() => {
 }
 
 .stack-view__now {
-  background-image: url('../assets/images/cards/card_reading/bg.webp');
+  background-image: url('https://i.pinimg.com/736x/be/92/00/be92008cb47d3e89d9c8d6d4c4aa7e1a.jpg');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
 }
-
+.stack-view__year {
+  background-image: url('https://i.pinimg.com/736x/be/92/00/be92008cb47d3e89d9c8d6d4c4aa7e1a.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
 /* ===== FLOATING ACTION BUTTON ===== */
 .fab {
   position: fixed;

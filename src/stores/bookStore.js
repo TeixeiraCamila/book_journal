@@ -5,8 +5,8 @@ import { BOOK_STATUS_FALLBACK, BOOK_STATUS_MAP, DEFAULT_PAGE_SIZE } from '../con
 
 export const useBookStore = defineStore('books', {
   state: () => ({
-    bookLists: { main: [], tbr: [], reading: [] },
-    loadingStates: { main: false, tbr: false },
+    bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
+    loadingStates: { main: false, tbr: false, thisYear: false },
     stats: null, // Estatísticas agregadas dos livros
     statsLoading: false,
     error: null,
@@ -44,6 +44,8 @@ export const useBookStore = defineStore('books', {
     },
 
     hasError: (state) => state.error !== null,
+
+    thisYearCount: (state) => state.bookLists.thisYear.length,
   },
 
   actions: {
@@ -93,7 +95,6 @@ export const useBookStore = defineStore('books', {
         this.loadingStates.main = false
       }
     },
-
 
     async createBook(bookData) {
       try {
@@ -187,6 +188,26 @@ export const useBookStore = defineStore('books', {
       }
     },
 
+    async fetchBooksReadThisYear() {
+      this.loadingStates.thisYear = true
+      this.error = null
+      try {
+        const year = String(new Date().getFullYear())
+        const response = await booksAPI.list({
+          pageSize: 100,
+          search: this.searchTerm,
+          status: BOOK_STATUS_MAP.READ,
+          wasReadIn: year,
+        })
+        this.bookLists.thisYear = response.data.data || []
+      } catch (error) {
+        this._handleError('fetchBooksReadThisYear', error)
+        this.bookLists.thisYear = []
+      } finally {
+        this.loadingStates.thisYear = false
+      }
+    },
+
     async fetchBookOptions() {
       try {
         const response = await booksAPI.options()
@@ -236,13 +257,6 @@ export const useBookStore = defineStore('books', {
       await this.fetchBooks()
     },
 
-    async clearSearch() {
-      this.searchTerm = ''
-      this.pagination.previousCursors = []
-
-      await this.fetchBooks()
-    },
-
     async filterByStatus(status) {
       this.filterStatus = status
       this.pagination.previousCursors = []
@@ -254,8 +268,10 @@ export const useBookStore = defineStore('books', {
       this.bookLists.main = []
       this.bookLists.tbr = []
       this.bookLists.reading = []
+      this.bookLists.wasReadIn = []
       this.loadingStates.main = false
       this.loadingStates.tbr = false
+      this.loadingStates.wasReadIn = false
       this.stats = null
       this.statsLoading = false
       this.error = null
