@@ -45,13 +45,6 @@ const booksByMonth = computed(() => {
   return sections
 })
 
-const formatDate = (dateStr) => {
-  if (!dateStr) return '—'
-  return new Date(dateStr).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: 'short',
-  })
-}
 
 const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`)
@@ -61,11 +54,9 @@ const navigateToEdit = (bookId) => {
 <template>
   <div class="this-year">
     <header class="this-year__header">
-      <h1 class="this-year__title">Lidos em {{ currentYear }}</h1>
-      <p class="this-year__subtitle">
-        {{ bookStore.thisYearCount }}
-        {{ bookStore.thisYearCount === 1 ? 'livro' : 'livros' }} lidos
-      </p>
+      <h1 class="this-year__title">
+        Lidos em <br/> {{ currentYear }}
+      </h1>
     </header>
 
     <div v-if="bookStore.hasError && !bookStore.loadingStates.thisYear" class="this-year__error">
@@ -89,13 +80,13 @@ const navigateToEdit = (bookId) => {
     <div v-else class="this-year__container">
       <div class="this-year__grid">
         <div v-for="section in booksByMonth" :key="section.label" class="this-year__month-group">
-          <h2 class="this-year__month-title">{{ section.label }}</h2>
+          <h2 class="this-year__month-title">{{ section.label }} - {{ section.books.length }}</h2>
           <div class="this-year__grid">
             <article v-for="book in section.books" :key="book.id" class="this-year-card">
               <div class="this-year-card__cover">
                 <div v-if="book.rate" class="card-status__tape">
                   <p class="card-status__text">{{ book.rate }}</p>
-                  <img width="150" :src="tape" alt="" />
+                  <img width="90" :src="tape" alt="Tape" />
                 </div>
 
                 <img
@@ -123,15 +114,15 @@ const navigateToEdit = (bookId) => {
 
 .this-year__header {
   text-align: center;
-  padding: 2rem;
-  background-image: url('/src/assets/images/cards/card_03_stats/tape-title.webp');
+  padding: 4rem 2rem;
+  background-image: url('/src/assets/images/cards/card_this_year/this-year__header.png');
   background-size: auto;
   background-repeat: no-repeat;
   background-position: center;
 }
 
 .this-year__title {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: var(--black);
   text-transform: uppercase;
   font-family: 'Raleway', sans-serif;
@@ -199,12 +190,12 @@ const navigateToEdit = (bookId) => {
 
 .this-year__month-title {
   text-transform: uppercase;
-  margin-bottom: 1rem;
+  margin-bottom: 1.75rem;
 }
 
 .this-year-card {
   background: white;
-  padding: 1.5rem;
+  padding: .5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   position: relative;
@@ -224,8 +215,7 @@ const navigateToEdit = (bookId) => {
 
 .this-year-card__cover .card-status__tape {
   position: absolute;
-  top: -23%;
-  left: -2%;
+  top:  -15%;
   z-index: 1;
 }
 
@@ -245,7 +235,7 @@ const navigateToEdit = (bookId) => {
 
 .this-year-card__image {
   width: 100%;
-  max-height: 200px;
+  max-height: 150px;
   object-fit: cover;
 }
 
