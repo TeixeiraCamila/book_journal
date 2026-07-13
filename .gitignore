@@ -46,5 +46,8 @@ __screenshots__/
 cypress/videos/
 cypress/screenshots/
 
+# Analysis
+analysis.md
+
 # Misc
 *.local
