@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 // Barra de filtros — busca por título e filtro por status com botão limpar
 import { computed, ref } from 'vue'
@@ -83,27 +84,7 @@ const clearFilters = () => {
   gap: 0.5rem;
   min-width: 200px;
 }
-
-.filters__input {
-  flex: 1;
-  padding: 0.75em;
-  font-weight: bold;
-  border: 2px solid var(--black);
-  border-radius: var(--radius);
-  background: var(--white);
-  color: var(--black);
-  cursor: text;
-}
-
-.filters__select {
-  padding: 0.75em 2em 0.75em 0.75em;
-  font-weight: bold;
-  border: 2px solid var(--black);
-  border-radius: var(--radius);
-  background: var(--white);
-  color: var(--black);
-  cursor: pointer;
-  min-width: 160px;
+.filters__row button {
   width: fit-content;
 }
 </style>

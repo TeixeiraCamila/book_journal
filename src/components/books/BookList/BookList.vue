@@ -103,7 +103,7 @@ const handleEditBook = (book) => {
 
 /* ===== CONTROLES ===== */
 .book-list__controls {
-  position: sticky;
+  /* position: sticky; */
   top: 0;
   z-index: 10;
   background: rgba(255, 249, 238, 0.95);

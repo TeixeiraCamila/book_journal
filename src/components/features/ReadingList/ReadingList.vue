@@ -683,6 +683,8 @@ const navigateToEdit = (bookId) => {
 
   .reading-card {
     min-height: auto;
+    flex-direction: column;
+    gap: 1rem;
   }
 
   .reading-card__cover {
