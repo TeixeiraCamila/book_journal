@@ -44,12 +44,14 @@ const clearFilters = () => {
       </Button>
     </div>
 
-    <select v-model="localStatus" @change="handleFilterChange" class="filters__select">
-      <option value="all">Todos os status</option>
-      <option v-for="status in statusOptions" :key="status" :value="status">
-        {{ BOOK_STATUS_LABELS[status] || status }}
-      </option>
-    </select>
+    <div class="select_wrapper">
+      <select v-model="localStatus" @change="handleFilterChange">
+        <option value="all">Todos os status</option>
+        <option v-for="status in statusOptions" :key="status" :value="status">
+          {{ BOOK_STATUS_LABELS[status] || status }}
+        </option>
+      </select>
+    </div>
 
     <Button
       v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
@@ -84,7 +86,5 @@ const clearFilters = () => {
   gap: 0.5rem;
   min-width: 200px;
 }
-.filters__row button {
-  width: fit-content;
-}
+
 </style>

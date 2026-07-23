@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 // Paginação baseada em cursor — botões anterior/próximo e seletor de itens por página
 import { defineEmits } from 'vue'
@@ -18,11 +19,10 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
   <div class="pagination">
     <div class="pagination__page-size-selector">
       <label>Itens por página:</label>
-      <div class="pagination__select-wrapper">
+      <div class="select_wrapper">
         <select
           name="page-size"
           id="page-size"
-          class="pagination__page-size-select"
           :value="pageSize"
           @change="$emit('changeSize', $event.target.value)"
         >

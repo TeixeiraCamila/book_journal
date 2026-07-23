@@ -194,20 +194,21 @@ const onMultiBlur = () => {
 
     <div class="form-field__input-wrapper">
       <!-- SELECT: Dropdown com opções pré-definidas -->
-      <select
-        v-if="type === 'select'"
-        :id="fieldId"
-        v-model="localValue"
-        class="form-field__input form-field__select"
-        :class="{ 'form-field__input--error': error }"
-        @change="$emit('update:modelValue', $event.target.value)"
-      >
-        <option value="" disabled>{{ placeholder || 'Selecione uma opção' }}</option>
+      <div v-if="type === 'select'" class="select_wrapper">
+        <select
+          :id="fieldId"
+          v-model="localValue"
+          class="form-field__input form-field__select"
+          :class="{ 'form-field__input--error': error }"
+          @change="$emit('update:modelValue', $event.target.value)"
+        >
+          <option value="" disabled>{{ placeholder || 'Selecione uma opção' }}</option>
 
-        <option v-for="option in options" :key="option" :value="option">
-          {{ labels ? labels[option] : option }}
-        </option>
-      </select>
+          <option v-for="option in options" :key="option" :value="option">
+            {{ labels ? labels[option] : option }}
+          </option>
+        </select>
+      </div>
 
       <!-- CHECKBOX: Caixa de seleção -->
       <input
@@ -410,20 +411,9 @@ const onMultiBlur = () => {
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
 }
 
-/* Select: esconde seta nativa e adiciona seta customizada */
+/* Select: cursor pointer */
 .form-field__select {
   cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23374151' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 0.75rem center;
-  padding-right: 2.5rem;
-}
-
-/* Select com erro */
-.form-field__select.form-field__input--error {
-  border-color: #dc2626;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23dc2626' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
 }
 
 /* Checkbox: tamanho e cor */
