@@ -8,7 +8,6 @@ import BookForm from '@/components/forms/BookForm/BookForm.vue'
 import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue'
 import Button from '@/components/ui/Button.vue'
 
-// Página de criar/editar livro — gerencia carregamento e transições
 const { addNotification } = useNotifications()
 
 const route = useRoute()
@@ -41,7 +40,7 @@ const loadBook = async () => {
       // Tentar buscar o livro diretamente da API
       try {
         book.value = await bookStore.fetchBookById(bookId)
-      } catch (apiError) {
+      } catch {
         throw new Error('Livro não encontrado')
       }
     }
@@ -61,7 +60,7 @@ const handleSubmit = () => {
   // Notificação já é exibida no BookForm após sucesso da operação
 }
 
-const handleEditSuccess = (bookId) => {
+const handleEditSuccess = () => {
   router.push({ path: '/', query: { slide: '1' } })
 }
 
@@ -100,7 +99,7 @@ const handleCancel = () => {
   width: 80vw;
   height: 80vh;
   background: linear-gradient(to bottom right, #eef2ff, white, #faf5ff);
-  overflow: scroll;
+  overflow: auto;
   border-radius: 12px;
 }
 
@@ -139,9 +138,6 @@ const handleCancel = () => {
   font-weight: 600;
   color: #111827;
   margin: 0;
-}
-
-.create-book-view__content {
 }
 
 .create-book-view__error {

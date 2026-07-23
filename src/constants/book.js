@@ -28,11 +28,11 @@ export const BOOK_STATUS_LABELS = {
 // Labels de avaliação
 export const BOOK_RATE_LABELS = {
   '❤': '❤️',
-  '⭐⭐⭐⭐⭐': '⭐⭐⭐⭐⭐',
-  '⭐⭐⭐⭐': '⭐⭐⭐⭐',
-  '⭐⭐⭐': '⭐⭐⭐',
-  '⭐⭐': '⭐⭐',
-  '⭐': ' ⭐',
+  '⭐⭐⭐⭐⭐': '*****',
+  '⭐⭐⭐⭐': '****',
+  '⭐⭐⭐': '***',
+  '⭐⭐': '**',
+  '⭐': '*',
 }
 
 // Tipos de livro (fallback)

@@ -6,7 +6,7 @@ import { BOOK_STATUS_FALLBACK, BOOK_STATUS_MAP, DEFAULT_PAGE_SIZE } from '../con
 export const useBookStore = defineStore('books', {
   state: () => ({
     bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
-    loadingStates: { main: false, tbr: false, thisYear: false },
+    loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
     stats: null, // Estatísticas agregadas dos livros
     statsLoading: false,
     error: null,
@@ -154,12 +154,13 @@ export const useBookStore = defineStore('books', {
     },
 
     async fetchBooksByStatus(startCursor = undefined, status = BOOK_STATUS_MAP.TO_BE_READ) {
-      this.loadingStates.tbr = true
+      this.loadingStates.tbr = status === BOOK_STATUS_MAP.TO_BE_READ
+      this.loadingStates.reading = status === BOOK_STATUS_MAP.READING
       this.error = null
 
       try {
         const response = await booksAPI.list({
-          pageSize: 40, // Busca mais itens para preencher melhor as listas de status
+          pageSize: 40,
           startCursor: startCursor,
           search: this.searchTerm,
           status: status,
@@ -177,7 +178,6 @@ export const useBookStore = defineStore('books', {
         }
       } catch (error) {
         this._handleError('fetchBooksByStatus', error)
-        // Limpa apenas a lista correspondente ao status que estava sendo buscando
         if (status === BOOK_STATUS_MAP.TO_BE_READ) {
           this.bookLists.tbr = []
         } else if (status === BOOK_STATUS_MAP.READING) {
@@ -185,6 +185,7 @@ export const useBookStore = defineStore('books', {
         }
       } finally {
         this.loadingStates.tbr = false
+        this.loadingStates.reading = false
       }
     },
 
@@ -274,6 +275,7 @@ export const useBookStore = defineStore('books', {
       this.bookLists.wasReadIn = []
       this.loadingStates.main = false
       this.loadingStates.tbr = false
+      this.loadingStates.reading = false
       this.loadingStates.wasReadIn = false
       this.stats = null
       this.statsLoading = false

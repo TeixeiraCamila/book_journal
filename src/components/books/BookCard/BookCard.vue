@@ -54,7 +54,7 @@ const handleDelete = async () => {
     // Notificação já é exibida no ConfirmDialog após sucesso da operação
     // Não é necessário duplicar aqui
   } catch (error) {
-    addNotification('Erro ao deletar livro. Tente novamente.', 'error')
+    addNotification('Erro ao deletar livro. Tente novamente.', error)
   }
 }
 
@@ -204,8 +204,8 @@ const handleEdit = (book) => {
 
 /* FLIP WRAPPER (3D FLIP) */
 .book-card__flip {
-  min-width: calc(var(--card-back-w) * 1.1);
-  min-height: calc(var(--card-back-h) * 1.1);
+  min-width: calc(var(--card_back-w) * 1.1);
+  min-height: calc(var(--card_back-h) * 1.1);
   transform-style: preserve-3d;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   perspective: 1000px;
@@ -222,9 +222,8 @@ const handleEdit = (book) => {
   padding: 1rem;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  background: var(--white);
-  border-radius: 12px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  /* background: var(--white); */
+  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18); */
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateZ(0);
 }
@@ -246,15 +245,12 @@ const handleEdit = (book) => {
 .book-card__face--back {
   z-index: 1;
 }
-
-/* Sombra dinâmica durante o flip */
-.book-card__flip--flipped .book-card__face--front {
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+.book-card__face--front , .book-card__face--back {
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
+  min-height: 220px;
+  background: var(--white);
 }
 
-.book-card__flip--flipped .book-card__face--back {
-  box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
-}
 
 /* Efeito de tilt sutil durante o flip */
 .book-card__flip--flipped {

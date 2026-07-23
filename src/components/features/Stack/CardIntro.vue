@@ -146,7 +146,7 @@ onMounted(() => {
 }
 
 .card-intro__detail-04 {
-  top: 130px;
+  bottom: -10px;
   left: -23px;
   transform: rotate(180deg);
 }

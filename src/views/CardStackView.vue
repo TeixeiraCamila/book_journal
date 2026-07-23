@@ -1,15 +1,12 @@
 // View principal — stack de cards vertical com Swiper (intro, book list, reading, TBR)
 <script setup>
 import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
+import { useRoute } from 'vue-router'
 import { useBookStore } from '@/stores/bookStore'
 import { BOOK_STATUS_MAP } from '@/constants/book'
 import CardIntro from '@/components/features/Stack/CardIntro.vue'
-import Button from '@/components/ui/Button.vue'
 
 const bookStore = useBookStore()
-const userStore = useUserStore()
 
 // Componentes carregados sob demanda para otimizar performance inicial
 const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'))
@@ -27,17 +24,12 @@ import { EffectCards } from 'swiper/modules'
 import 'swiper/css'
 import 'swiper/css/effect-cards'
 
-const router = useRouter()
 const route = useRoute()
 const swiperInstance = ref(null)
 const modules = [EffectCards]
 
 function onSwiperInit(swiper) {
   swiperInstance.value = swiper
-}
-
-const navigateToCreate = () => {
-  router.push('/criar')
 }
 
 // Ao mudar de slide, pré-carrega dados dos próximos cards (leitura adiada)
@@ -121,30 +113,6 @@ onMounted(() => {
     <SwiperSlide class="stack-view__slide">
       <div class="stack-view__card stack-view__book-list">
         <BookList />
-
-        <Button
-          v-if="!userStore.isGuest"
-          class="fab"
-          aria-label="Adicionar novo livro"
-          @click="navigateToCreate"
-        >
-          <svg
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden="true"
-          >
-            <path
-              d="M12 4V20M4 12H20"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
-          </svg>
-        </Button>
       </div>
     </SwiperSlide>
 
@@ -190,11 +158,14 @@ onMounted(() => {
   height: 100%;
   padding: 2rem;
   overflow-y: auto;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
 }
 
 /* Card da lista de livros com background */
 .stack-view__book-list {
-  background-image: url('https://i.pinimg.com/736x/9d/3f/75/9d3f75194f27bd374b17c3cf13d9f633.jpg');
+  background-image: url('../assets/images/cards/card_list/bg__blue.webp');
   background-position: center;
   display: flex;
   flex-direction: column;
@@ -202,60 +173,15 @@ onMounted(() => {
 }
 
 .stack-view__tbr {
-  background: url('https://i.pinimg.com/736x/70/c1/9f/70c19f807b5934f93167a814fb1d98ab.jpg');
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
-  content-visibility: auto;
+  background: url('../assets/images/cards/card_list/bg__green__01.webp');
 }
 
 .stack-view__now {
   background-image: url('https://i.pinimg.com/736x/be/92/00/be92008cb47d3e89d9c8d6d4c4aa7e1a.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center;
 }
 .stack-view__year {
   background-image: url('https://i.pinimg.com/736x/0d/aa/f1/0daaf1949ddead3cef8293ed621d54bc.jpg');
-  background-position: center;
 }
-/* ===== FLOATING ACTION BUTTON ===== */
-.fab {
-  position: fixed;
-  bottom: 2rem;
-  right: 2rem;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: none;
-  background: var(--accent3);
-  color: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 1000;
-}
-
-.fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-}
-
-.fab:active {
-  transform: scale(0.95);
-}
-
-.fab svg {
-  transition: transform 0.2s ease;
-}
-
-.fab:hover svg {
-  transform: rotate(90deg);
-}
-
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
   .stack-view__swiper {
@@ -265,13 +191,6 @@ onMounted(() => {
 
   .stack-view__card {
     padding: 1rem;
-  }
-
-  .fab {
-    bottom: 1rem;
-    right: 1rem;
-    width: 48px;
-    height: 48px;
   }
 }
 </style>

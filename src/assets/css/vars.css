@@ -39,8 +39,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --card-front-w: 200px;
-  --card-front-h: 200px;
+  --card-front-w: 150px;
+  --card-front-h: 150px;
 
   --card-back-w: 200px;
   --card-back-h: 300px;

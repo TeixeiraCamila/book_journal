@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/userStore'
 import { BOOK_TYPE_LABELS, BOOK_STATUS_MAP } from '@/constants/book'
 import CardStatus from './CardStatus.vue'
 import Button from '@/components/ui/Button.vue'
-import { PencilLine, Trash, X } from 'lucide-vue-next'
+import { PencilLine, Trash } from 'lucide-vue-next'
 
 import Star from '@/assets/images/star.png'
 
@@ -37,22 +37,6 @@ const string = computed(() => {
   return ''
 })
 
-const startEndString = computed(() => {
-  const se = props.book.startEnd
-
-  if (!se?.start && !se?.end) return ''
-
-  const parts = []
-  if (se?.start) {
-    parts.push(new Date(se.start).toLocaleDateString('pt-BR'))
-  }
-  if (se?.end) {
-    parts.push(new Date(se.end).toLocaleDateString('pt-BR'))
-  }
-
-  return `Lido de ${parts.join(' até ')}`
-})
-
 const wasReadString = computed(() => {
   if (!props.book.wasReadIn?.length) return ''
   return props.book.wasReadIn.join(', ')
@@ -73,52 +57,60 @@ const handleDelete = () => {
 </script>
 
 <template>
-  <div class="card-back">
+  <div class="card_back">
     <CardStatus :rotate="rotate" :book-status="book.status" />
-    <div class="card-back__content">
-      <div class="card-back__top">
-        <p class="card-back__rate" v-if="book.status === BOOK_STATUS_MAP.READ && book.rate">
-          {{ book.rate }}
+    <div class="card_back__content">
+      <div class="card_back__top">
+        <p class="card_back__rate" v-if="book.status === BOOK_STATUS_MAP.READ && book.rate">
+          <img
+            v-for="(rate, i) in book.rate"
+            :key="i"
+            height="20"
+            width="20"
+            :src="Star"
+            alt="star"
+            class="card_back__rate-star"
+          />
         </p>
       </div>
 
-      <div class="card-back__info">
-        <div class="card-back__label">
-          <h4 class="card-back__title">{{ book.name }}</h4>
+      <div class="card_back__info">
+        <div class="card_back__label">
+          <h4 class="card_back__title">{{ book.name }}</h4>
         </div>
 
-        <p class="card-back__text" v-if="book.bookSeries">Série: {{ book.bookSeries }}</p>
+        <p class="card_back__text" v-if="book.bookSeries">Série: {{ book.bookSeries }}</p>
 
-        <p class="card-back__text" v-if="book.author?.length">
+        <p class="card_back__text" v-if="book.author?.length">
           <span v-if="book.literaryAtlas" v-html="book.literaryAtlas" />
           {{ book.author.join(', ') }}
         </p>
 
         <div v-if="book.total && book.currentlyOn">
-          <p class="card-back__text">Páginas: {{ book.currentlyOn }} / {{ book.totalPages }}</p>
-          <p class="card-back__text">Progresso: {{ book.currentlyOn }} / {{ book.total }}</p>
+          <p class="card_back__text">Páginas: {{ book.currentlyOn }} / {{ book.totalPages }}</p>
+          <p class="card_back__text">Progresso: {{ book.currentlyOn }} / {{ book.total }}</p>
         </div>
 
-        <p class="card-back__text" v-if="typeString">Tipo: {{ typeString }}</p>
+        <p class="card_back__text" v-if="typeString">Tipo: {{ typeString }}</p>
 
-        <p class="card-back__text" v-if="string">
+        <p class="card_back__text" v-if="string">
           {{ string }}
         </p>
 
-        <p class="card-back__text" v-if="wasReadString">Lido em: {{ wasReadString }}</p>
+        <p class="card_back__text" v-if="wasReadString">Lido em: {{ wasReadString }}</p>
 
-        <ul class="card-back__genres">
-          <li v-for="(genre, index) in book.genres" :key="index" class="card-back__genre">
+        <ul class="card_back__genres">
+          <li v-for="(genre, index) in book.genres" :key="index" class="card_back__genre">
             {{ genre }}
           </li>
         </ul>
       </div>
 
-      <div class="card-back__actions" v-if="!userStore.isGuest">
-        <Button class="card-back__action-btn" @click="handleEdit" variant="secondary">
+      <div class="card_back__actions" v-if="!userStore.isGuest">
+        <Button class="card_back__action-btn" @click="handleEdit" variant="secondary">
           <PencilLine />
         </Button>
-        <Button class="card-back__action-btn" @click="handleDelete" variant="secondary">
+        <Button class="card_back__action-btn" @click="handleDelete" variant="secondary">
           <Trash />
         </Button>
       </div>
@@ -127,57 +119,55 @@ const handleDelete = () => {
 </template>
 
 <style>
-.card-back__content {
-  display: grid;
-  height: 100%;
-  background: var(--white);
-  border-radius: 0.5rem;
+.card_back__content {
+  background-color: var(--white);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: var(--card_back-w);
 }
 
-.card-back__top {
+.card_back__top {
   display: flex;
   justify-content: flex-end;
-  padding: 1rem;
   overflow: hidden;
-  z-index: 11;
 }
 
-.card-back__info {
-  padding: 0 1rem 1rem;
+.card_back__info {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
 }
 
-.card-back__title {
+.card_back__title {
   margin: 0;
   font-size: 1rem;
 }
 
-.card-back__text {
+.card_back__text {
   font-size: 0.85rem;
 }
 
-.card-back__genres {
+.card_back__genres {
   display: flex;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.card-back__genres .card-back__genre {
+.card_back__genres .card_back__genre {
   padding: 3px 0.5rem;
   border: 1px solid var(--accent3);
   border-radius: 0.75rem;
 }
 
-.card-back__actions {
+.card_back__actions {
   display: flex;
   gap: 1rem;
-  padding: 0 1rem 1rem;
-  place-self: flex-end;
+  justify-content: flex-end;
 }
 
-.card-back__actions .card-back__action-btn {
+.card_back__actions .card_back__action-btn {
   background-color: transparent;
   border: none;
   padding: 4px;
@@ -186,7 +176,7 @@ const handleDelete = () => {
   color: var(--black);
 }
 
-.card-back__actions .card-back__action-btn:hover {
+.card_back__actions .card_back__action-btn:hover {
   background-color: var(--accent_muted);
 }
 </style>

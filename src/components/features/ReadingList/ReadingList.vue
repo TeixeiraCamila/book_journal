@@ -80,16 +80,6 @@ const getPagesString = (book) => {
 }
 
 /**
- * Formata string de progresso de leitura
- */
-const getProgressString = (book) => {
-  if (!book.totalPages || !book.currentlyOn) return ''
-
-  const progress = calculateProgress(book.currentlyOn, book.totalPages)
-  return `Progresso: ${book.currentlyOn} / ${book.totalPages} (${progress}%)`
-}
-
-/**
  * Formata string de tipo
  */
 const getTypeString = (book) => {
@@ -98,23 +88,7 @@ const getTypeString = (book) => {
 }
 
 /**
- * Formata string de série
- */
-const getSeriesString = (book) => {
-  if (!book.bookSeries) return ''
-  return `Série: ${book.bookSeries}`
-}
-
-/**
- * Formata string de avaliação
- */
-const formatRating = (rate) => {
-  if (!rate) return ''
-  return rate.replace(/<[^>]*>/g, '').trim()
-}
-
-/**
- * Formata notas adicionais
+ * Retorna notas adicionais
  */
 const getAdditionalNotes = (book) => {
   const notes = []
@@ -138,13 +112,6 @@ const hasPublicationInfo = (book) => {
 }
 
 /**
- * Verifica se há notas adicionais
- */
-const hasAdditionalNotes = (book) => {
-  return !!(book.notes || (book.tags && book.tags.length > 0))
-}
-
-/**
  * Navega para editar livro
  */
 const navigateToEdit = (bookId) => {
@@ -162,7 +129,7 @@ const navigateToEdit = (bookId) => {
       </p>
     </header>
 
-    <div v-if="bookStore.hasError && !bookStore.loadingStates.tbr" class="reading-list__error">
+    <div v-if="bookStore.hasError && !bookStore.loadingStates.reading" class="reading-list__error">
       <div class="reading-list__error-icon">⚠️</div>
       <p class="reading-list__error-message">{{ bookStore.error }}</p>
       <Button
@@ -173,12 +140,12 @@ const navigateToEdit = (bookId) => {
       </Button>
     </div>
 
-    <LoadingSpinner v-else-if="bookStore.loadingStates.tbr">
+    <LoadingSpinner v-else-if="bookStore.loadingStates.reading">
       <p>Carregando livros em leitura...</p>
     </LoadingSpinner>
 
     <div
-      v-else-if="bookStore.bookLists.reading.length === 0 && !bookStore.loadingStates.tbr"
+      v-else-if="bookStore.bookLists.reading.length === 0 && !bookStore.loadingStates.reading"
       class="reading-list__empty"
     >
       <div class="reading-list__empty-icon">📚</div>
@@ -223,11 +190,6 @@ const navigateToEdit = (bookId) => {
             </header>
 
             <div class="reading-card__info">
-              <!-- <div class="reading-card__info-item" v-if="getSeriesString(book)">
-                <span class="reading-card__label">Série:</span>
-                <span class="reading-card__value">{{ getSeriesString(book) }}</span>
-              </div> -->
-
               <div class="reading-card__info-item" v-if="hasPublicationInfo(book)">
                 <span class="reading-card__label">Publicação:</span>
                 <span class="reading-card__value">{{ getPublicationString(book) }}</span>
@@ -266,7 +228,7 @@ const navigateToEdit = (bookId) => {
                 </div>
               </div>
 
-              <div class="reading-card__info-item" v-if="hasAdditionalNotes(book)">
+              <div class="reading-card__info-item" v-if="getAdditionalNotes(book).length > 0">
                 <span class="reading-card__label">Notas:</span>
                 <div class="reading-card__notes">
                   <p
@@ -302,7 +264,7 @@ const navigateToEdit = (bookId) => {
 .reading-list__header {
   text-align: center;
   padding: 2rem;
-  background-image: url('/src/assets/images/cards/card_03_stats/tape-title.webp');
+  background-image: url('../../../assets/images/cards/card_03_stats/tape-title.webp');
   background-size: auto;
   background-repeat: no-repeat;
   background-position: center;
@@ -316,10 +278,6 @@ const navigateToEdit = (bookId) => {
   font-weight: 700;
 }
 
-.reading-card__type {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  padding: 0.5rem;
-}
 .reading-list__subtitle {
   font-size: 1.125rem;
   color: var(--black);
@@ -371,23 +329,6 @@ const navigateToEdit = (bookId) => {
   background: #c27a76;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(218, 147, 143, 0.3);
-}
-
-/* Estado de Loading */
-.reading-list__spinner {
-  width: 3rem;
-  height: 3rem;
-  border: 3px solid var(--accent_muted);
-  border-top-color: var(--accent3);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 1rem;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* Estado Vazio */
@@ -490,33 +431,17 @@ const navigateToEdit = (bookId) => {
   align-items: center;
 }
 
+.reading-card__type {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  padding: 0.5rem;
+}
+
 .reading-card__title {
   font-size: 1.5rem;
   font-weight: 700;
   color: var(--black);
   margin: 0;
   line-height: 1.2;
-}
-
-.reading-card__rating {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.25rem;
-}
-
-.reading-card__rate-label {
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 600;
-}
-
-.reading-card__rate-value {
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--accent);
 }
 
 /* Informações */
@@ -529,11 +454,6 @@ const navigateToEdit = (bookId) => {
 .reading-card__info-item {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-}
-.reading-card__info-item.noFlex {
-  flex-direction: row;
-  align-items: center;
   gap: 0.5rem;
 }
 .reading-card__label {
@@ -639,46 +559,10 @@ const navigateToEdit = (bookId) => {
   transform: translateY(-2px);
 }
 
-/* ===== BLOB ANIMATIONS ===== */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-  }
-
-  50% {
-    transform: translateY(-10px) rotate(1deg);
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.6;
-  }
-
-  50% {
-    transform: translate(-50%, -50%) scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    transform: translateX(-50%) translateY(0px) scale(1);
-  }
-
-  50% {
-    transform: translateX(-50%) translateY(-15px) scale(1.05);
-  }
-}
-
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
   .reading-list__grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .reading-card {

@@ -38,7 +38,7 @@ defineProps({
   transform: unset;
 }
 
-.card-back .card-status__tape .card-status__text {
+.card_back .card-status__tape .card-status__text {
   display: none;
 }
 </style>
