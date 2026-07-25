@@ -47,12 +47,7 @@ const clearFilters = () => {
         @keyup.enter="handleSearch"
         class="filters__input"
       />
-      <Button @click="handleSearch" variant="primary">
-        <span>Buscar</span>
-      </Button>
-    </div>
-
-    <div class="filters__row">
+      <Button @click="handleSearch" variant="secondary"> Buscar </Button>
       <div class="select_wrapper">
         <select v-model="localStatus" @change="handleFilterChange">
           <option value="all">Todos os status</option>
@@ -64,13 +59,15 @@ const clearFilters = () => {
         <Button
           v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
           @click="clearFilters"
-          class="filters__clear-btn"
+          variant="secondary"
         >
-          <span>Limpar filtros</span>
+          Limpar filtros
         </Button>
       </div>
+    </div>
 
-      <Button v-if="!userStore.isGuest" class="filters__add-btn" @click="navigateToCreate">
+    <div class="filters__row">
+      <Button v-if="!userStore.isGuest" @click="navigateToCreate">
         <svg
           width="20"
           height="20"
@@ -98,10 +95,12 @@ const clearFilters = () => {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  border-radius: 12px;
   width: calc(100% - 3rem);
   padding: 1rem;
+  position: sticky;
+  top: 0;
   height: 80vh;
+  justify-content: space-between;
 }
 
 .filters__row {
@@ -114,27 +113,5 @@ const clearFilters = () => {
 
 .filters__row button {
   width: 100%;
-}
-
-.filters__add-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: var(--accent3);
-  color: white;
-  border: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  width: 100%;
-}
-
-.filters__add-btn:hover {
-  background: var(--accent);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(218, 147, 143, 0.3);
 }
 </style>

@@ -177,7 +177,7 @@ onMounted(() => {
 }
 
 .stack-view__now {
-  background-image: url('https://i.pinimg.com/736x/be/92/00/be92008cb47d3e89d9c8d6d4c4aa7e1a.jpg');
+  background-image: url('../assets/images/cards/card_reading/yellow__bg.webp');
 }
 .stack-view__year {
   background-image: url('https://i.pinimg.com/736x/0d/aa/f1/0daaf1949ddead3cef8293ed621d54bc.jpg');

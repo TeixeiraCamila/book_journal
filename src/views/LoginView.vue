@@ -66,12 +66,12 @@ const handleGuestLogin = () => {
             required />
         </div>
         <Button type="submit" class="login-view__button">
-          <span>Entrar</span>
+          Entrar
         </Button>
       </form>
       <div class="login-view__guest-container">
         <Button type="button" class="login-view__guest-btn" @click="handleGuestLogin">
-          <span>Entrar como Visitante</span>
+          Entrar como Visitante
         </Button>
       </div>
       <div v-if="error" class="login-view__error-message">

@@ -41,7 +41,7 @@ const navigateToEdit = (bookId) => {
     <div v-if="bookStore.hasError && !bookStore.loadingStates.tbr" class="tbr-list__error">
       <div class="tbr-list__error-icon">⚠️</div>
       <p class="tbr-list__error-message">{{ bookStore.error }}</p>
-      <Button class="tbr-list__retry-btn" @click="handleRetry">
+      <Button @click="handleRetry">
         Tentar Novamente
       </Button>
     </div>

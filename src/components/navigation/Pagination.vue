@@ -34,11 +34,11 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
     </div>
     <div class="pagination__controls">
       <Button @click="$emit('previous')" :disabled="!hasPrevious">
-        <span>← Anterior</span>
+        ← Anterior
       </Button>
 
       <Button @click="$emit('next')" :disabled="!hasNext">
-        <span>Próximo →</span>
+        Próximo →
       </Button>
     </div>
   </div>
@@ -51,11 +51,8 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
   gap: 1rem;
   align-items: center;
   justify-content: center;
-  border: 1px solid #e5e7eb;
   background: transparent;
-  border-radius: 12px;
   padding: 1rem;
-  box-shadow: var(--box-shadow);
 }
 
 .pagination__controls {

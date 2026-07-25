@@ -60,8 +60,8 @@ defineExpose({
           </div>
 
           <div class="confirm-dialog__footer">
-            <Button @click="handleCancel" class="confirm-dialog__btn confirm-dialog__btn--secondary">Cancelar</Button>
-            <Button @click="handleConfirm" class="confirm-dialog__btn confirm-dialog__btn--danger">
+            <Button @click="handleCancel" variant="secondary">Cancelar</Button>
+            <Button @click="handleConfirm" variant="danger">
               {{ confirmText }}
             </Button>
           </div>
@@ -119,31 +119,6 @@ defineExpose({
   justify-content: flex-end;
 }
 
-.confirm-dialog__btn {
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  border: none;
-}
-
-.confirm-dialog__btn--secondary {
-  background: var(--color-book-card__face--background-mute);
-  color: var(--color-text);
-}
-
-.confirm-dialog__btn--secondary:hover {
-  background: var(--color-border-hover);
-}
-
-.confirm-dialog__btn--danger {
-  background: #dc2626;
-  color: var(--black);
-}
-.confirm-dialog__btn--danger:hover {
-  background: #b91c1c;
-}
 
 /* Animação de entrada */
 .fade-enter-active,

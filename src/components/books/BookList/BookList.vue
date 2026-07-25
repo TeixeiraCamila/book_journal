@@ -114,6 +114,7 @@ const handleEditBook = (book) => {
 .book-list__controls {
   min-width: 250px;
   position: relative;
+  height: 100%;
   background-color: #e6dedc;
   background-image: linear-gradient(-90deg, #5a7da480 50%, transparent 50%),
     linear-gradient(#5a7da480 50%, transparent 50%);
@@ -184,22 +185,6 @@ const handleEditBook = (book) => {
   margin-bottom: 1.5rem;
 }
 
-.book-list__retry-btn {
-  padding: 0.75rem 2rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.book-list__retry-btn:hover {
-  background: var(--accent2);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(218, 147, 143, 0.3);
-}
 
 /* Estado Vazio */
 .book-list__empty-icon {

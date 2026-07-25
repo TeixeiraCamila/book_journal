@@ -61,7 +61,7 @@ const navigateToEdit = (bookId) => {
 
     <div v-if="bookStore.hasError && !bookStore.loadingStates.thisYear" class="this-year__error">
       <p class="this-year__error-message">{{ bookStore.error }}</p>
-      <Button class="this-year__retry-btn" @click="bookStore.fetchBooksReadThisYear()">
+      <Button @click="bookStore.fetchBooksReadThisYear()">
         Tentar Novamente
       </Button>
     </div>
@@ -155,16 +155,6 @@ const navigateToEdit = (bookId) => {
 .this-year__error-message {
   font-size: 1.125rem;
   margin-bottom: 1.5rem;
-}
-
-.this-year__retry-btn {
-  padding: 0.75rem 2rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .this-year__empty-title {
