@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 
 <script setup>
 // Botão reutilizável com variantes (primary/secondary/danger) e suporte a slot
@@ -37,7 +38,6 @@ defineEmits(['click']);
 
 /* ---- SECONDARY ---- */
 .btn--secondary .btn__inner {
-  background: white;
   color: var(--black);
   border-color: var(--black);
 }

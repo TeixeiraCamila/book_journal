@@ -211,7 +211,7 @@ const handleEditBook = (book) => {
   display: flex;
   flex: 1;
   flex-wrap: wrap;
-  gap: 3rem 1.5rem;
+  gap: 3rem 2.5rem;
 }
 
 /* ===== ANIMAÇÕES ===== */

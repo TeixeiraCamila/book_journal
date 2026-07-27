@@ -249,6 +249,7 @@ const handleEdit = (book) => {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
   min-height: 220px;
   background: var(--white);
+  min-height: 300px;
 }
 
 
