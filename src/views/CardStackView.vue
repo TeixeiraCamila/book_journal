@@ -161,6 +161,7 @@ onMounted(() => {
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+  position: relative;
 }
 
 /* Card da lista de livros com background */
@@ -177,10 +178,10 @@ onMounted(() => {
 }
 
 .stack-view__now {
-  background-image: url('../assets/images/cards/card_reading/yellow__bg.webp');
+  background-image: url('../assets/images/cards/card_this_year/yellow__bg.webp');
 }
 .stack-view__year {
-  background-image: url('https://i.pinimg.com/736x/0d/aa/f1/0daaf1949ddead3cef8293ed621d54bc.jpg');
+  background-image: url('../assets/images/cards/card_this_year/yellow__bg.webp');
 }
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {
