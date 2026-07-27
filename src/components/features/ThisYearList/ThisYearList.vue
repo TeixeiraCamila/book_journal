@@ -5,7 +5,8 @@ import { useBookStore } from '@/stores/bookStore'
 import Button from '@/components/ui/Button.vue'
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { computed } from 'vue'
-import tape from '@/assets/images/tape.webp'
+// import tape from '@/assets/images/tape.webp'
+import CardStatus from '@/components/books/BookCard/CardStatus.vue'
 
 const router = useRouter()
 const bookStore = useBookStore()
@@ -45,7 +46,6 @@ const booksByMonth = computed(() => {
   return sections
 })
 
-
 const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`)
 }
@@ -53,17 +53,19 @@ const navigateToEdit = (bookId) => {
 
 <template>
   <div class="this-year">
-    <header class="this-year__header">
+    <img id="right-image" src="@/assets/images/cards/card_this_year/right.webp" alt="" />
+    <img id="letf-top-image" src="@/assets/images/cards/card_this_year/left_bottom.webp" alt="" />
+    <img id="letf-bottom-image" src="@/assets/images/cards/card_this_year/left_top.webp" alt="" />
+    <!-- <header class="this-year__header">
       <h1 class="this-year__title">
-        Lidos em <br/> {{ currentYear }}
+        Lidos em <br />
+        {{ currentYear }}
       </h1>
-    </header>
+    </header> -->
 
     <div v-if="bookStore.hasError && !bookStore.loadingStates.thisYear" class="this-year__error">
       <p class="this-year__error-message">{{ bookStore.error }}</p>
-      <Button @click="bookStore.fetchBooksReadThisYear()">
-        Tentar Novamente
-      </Button>
+      <Button @click="bookStore.fetchBooksReadThisYear()"> Tentar Novamente </Button>
     </div>
 
     <LoadingSpinner v-else-if="bookStore.loadingStates.thisYear">
@@ -84,10 +86,7 @@ const navigateToEdit = (bookId) => {
           <div class="this-year__grid">
             <article v-for="book in section.books" :key="book.id" class="this-year-card">
               <div class="this-year-card__cover">
-                <div v-if="book.rate" class="card-status__tape">
-                  <p class="card-status__text">{{ book.rate }}</p>
-                  <img width="90" :src="tape" alt="Tape" />
-                </div>
+                <CardStatus :back="true" :book="book" />
 
                 <img
                   v-if="book.cover?.[0]"
@@ -107,11 +106,33 @@ const navigateToEdit = (bookId) => {
   </div>
 </template>
 
+<style>
+.this-year-card__cover .card-status__tape img {
+  max-width: 100px;
+}
+</style>
+
 <style scoped>
 .this-year {
   min-height: 100%;
 }
-
+.this-year #right-image {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+}
+.this-year #letf-bottom-image {
+  position: fixed;
+  top: 0;
+  left: -9%;
+  max-height: 95%;
+}
+.this-year #letf-top-image {
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-height: 95%;
+}
 .this-year__header {
   text-align: center;
   padding: 4rem 2rem;
@@ -163,9 +184,10 @@ const navigateToEdit = (bookId) => {
 }
 
 .this-year__container {
-  max-width: 1200px;
+  max-width: 800px;
   margin: 0 auto;
   padding: 2rem;
+  position: relative;
 }
 
 .this-year__grid {
@@ -185,7 +207,7 @@ const navigateToEdit = (bookId) => {
 
 .this-year-card {
   background: white;
-  padding: .5rem;
+  padding: 0.5rem;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
   position: relative;
@@ -205,7 +227,8 @@ const navigateToEdit = (bookId) => {
 
 .this-year-card__cover .card-status__tape {
   position: absolute;
-  top:  -15%;
+  top: -15%;
+  left: 50%;
   z-index: 1;
 }
 

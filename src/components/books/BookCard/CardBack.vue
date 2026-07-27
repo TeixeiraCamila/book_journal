@@ -2,12 +2,11 @@
 // Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
 import { computed } from 'vue'
 import { useUserStore } from '@/stores/userStore'
-import { BOOK_TYPE_LABELS, BOOK_STATUS_MAP } from '@/constants/book'
+import { BOOK_TYPE_LABELS } from '@/constants/book'
 import CardStatus from './CardStatus.vue'
 import Button from '@/components/ui/Button.vue'
 import { PencilLine, Trash } from 'lucide-vue-next'
 
-import Star from '@/assets/images/star.png'
 
 const props = defineProps({
   book: { type: Object, required: true },
@@ -58,21 +57,9 @@ const handleDelete = () => {
 
 <template>
   <div class="card_back">
-    <CardStatus :rotate="rotate" :book-status="book.status" />
+    <CardStatus :rotate="rotate" :book-status="book.status" :back="true" :book="book" />
     <div class="card_back__content">
-      <div class="card_back__top">
-        <p class="card_back__rate" v-if="book.status === BOOK_STATUS_MAP.READ && book.rate">
-          <img
-            v-for="(rate, i) in book.rate"
-            :key="i"
-            height="20"
-            width="20"
-            :src="Star"
-            alt="star"
-            class="card_back__rate-star"
-          />
-        </p>
-      </div>
+      
 
       <div class="card_back__info">
         <div class="card_back__label">
@@ -132,6 +119,9 @@ const handleDelete = () => {
   display: flex;
   justify-content: flex-end;
   overflow: hidden;
+  position: absolute;
+  top: 13px;
+  left: 22%;
 }
 
 .card_back__info {
