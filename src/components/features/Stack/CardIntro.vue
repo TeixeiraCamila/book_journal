@@ -92,9 +92,9 @@ onMounted(() => {
       <img class="card-intro__coffee" :src="coffee" alt="" />
     </div>
     <div class="card-intro__content">
-      <img class="card-intro__content__image" :src="paper01" alt="" />
+      <img class="card-intro__content-image" :src="paper01" alt="" />
 
-      <img class="card-intro__content__detail" :src="luck" alt="" />
+      <img class="card-intro__content-detail" :src="luck" alt="" />
 
       <h1 ref="animatedElements" class="card-intro__title">
         <p>My Book</p>
@@ -120,23 +120,7 @@ onMounted(() => {
 .card-intro__detail-01,
 .card-intro__detail-03,
 .card-intro__detail-05,
-.card-intro__content__detail {
-  top: 0;
-}
-
-.card-intro__detail-02 {
-  bottom: 0;
-}
-
-.card-intro__detail-01,
-.card-intro__detail-02,
-.card-intro__cloud {
-  right: 0;
-}
-
-.card-intro__detail-03,
-.card-intro__detail-05,
-.card-intro__content__detail {
+.card-intro__content-detail {
   left: 0;
 }
 
@@ -182,12 +166,12 @@ onMounted(() => {
   transform: translate(-50%, -50%);
 }
 
-.card-intro__content__detail {
+.card-intro__content-detail {
   position: absolute;
   max-width: 35%;
 }
 
-.card-intro__content__image {
+.card-intro__content-image {
   max-width: 400px;
 }
 

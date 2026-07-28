@@ -53,9 +53,9 @@ const navigateToEdit = (bookId) => {
 
 <template>
   <div class="this-year">
-    <img id="right-image" src="@/assets/images/cards/card_this_year/right.webp" alt="" />
-    <img id="letf-top-image" src="@/assets/images/cards/card_this_year/left_bottom.webp" alt="" />
-    <img id="letf-bottom-image" src="@/assets/images/cards/card_this_year/left_top.webp" alt="" />
+    <img class="this-year__image--right" src="@/assets/images/cards/card_this_year/right.webp" alt="" />
+    <img class="this-year__image--left-bottom" src="@/assets/images/cards/card_this_year/left_bottom.webp" alt="" />
+    <img class="this-year__image--left-top" src="@/assets/images/cards/card_this_year/left_top.webp" alt="" />
     <!-- <header class="this-year__header">
       <h1 class="this-year__title">
         Lidos em <br />
@@ -116,18 +116,18 @@ const navigateToEdit = (bookId) => {
 .this-year {
   min-height: 100%;
 }
-.this-year #right-image {
+.this-year__image--right {
   position: fixed;
   bottom: 0;
   right: 0;
 }
-.this-year #letf-bottom-image {
+.this-year__image--left-bottom {
   position: fixed;
   top: 0;
   left: -9%;
   max-height: 95%;
 }
-.this-year #letf-top-image {
+.this-year__image--left-top {
   position: fixed;
   top: 0;
   left: 0;

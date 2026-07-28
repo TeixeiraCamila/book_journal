@@ -1,6 +1,6 @@
-<script>
+<script setup>
 // Skeleton para formulário — placeholder visual durante carregamento assíncrono de dados
-import Button from '../Button.vue';
+import Button from '../Button.vue'
 </script>
 
 <template>
