@@ -50,12 +50,12 @@ router.beforeEach((to, from, next) => {
 
   // precisa de autenticação e o usuário não está logado
   if (requiresAuth && !isAuthenticated) {
-    next({ name: 'login' })
+    return next({ name: 'login' })
   }
 
   // se o usuário está logado e tenta acessar o login
   else if (to.name === 'login' && isAuthenticated) {
-    next({ name: 'home' })
+    return next({ name: 'home' })
   } else {
     next()
   }

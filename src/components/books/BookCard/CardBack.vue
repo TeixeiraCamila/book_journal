@@ -7,6 +7,7 @@ import CardStatus from './CardStatus.vue'
 import Button from '@/components/ui/Button.vue'
 import { PencilLine, Trash } from 'lucide-vue-next'
 
+import { useBookFormatters } from '@/composables/useBookFormatters'
 
 const props = defineProps({
   book: { type: Object, required: true },
@@ -17,24 +18,9 @@ const emit = defineEmits(['edit', 'delete'])
 
 const userStore = useUserStore()
 
-const string = computed(() => {
-  const publisher = props.book.publishedBy?.[0]
-  const year = props.book.firstPublished
+const { getPublicationString } = useBookFormatters()
 
-  if (publisher && year) {
-    return `Published by ${publisher} in ${year}`
-  }
-
-  if (publisher) {
-    return `Published by ${publisher}`
-  }
-
-  if (year) {
-    return `First published in ${year}`
-  }
-
-  return ''
-})
+const string = computed(() => getPublicationString(props.book))
 
 const wasReadString = computed(() => {
   if (!props.book.wasReadIn?.length) return ''
@@ -59,8 +45,6 @@ const handleDelete = () => {
   <div class="card_back">
     <CardStatus :rotate="rotate" :book-status="book.status" :back="true" :book="book" />
     <div class="card_back__content">
-      
-
       <div class="card_back__info">
         <div class="card_back__label">
           <h4 class="card_back__title">{{ book.name }}</h4>

@@ -66,13 +66,13 @@ const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATU
 const rateOptions = computed(() =>
   bookStore.bookOptions?.Rate
     ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
-    : Object.keys(BOOK_RATE_LABELS),
+    : Object.keys(BOOK_RATE_LABELS)
 )
 const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK)
 const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || [])
 const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || [])
 const publishedYearOptions = computed(() =>
-  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000'),
+  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000')
 )
 const authorOptions = computed(() => bookStore.bookOptions?.Author || [])
 const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || [])
@@ -174,7 +174,7 @@ watch(
       hydrateForm(newBook)
     }
   },
-  { immediate: true },
+  { immediate: true }
 )
 
 // Auto-setar status para Read e wasReadIn quando endDate for preenchido
@@ -193,8 +193,16 @@ watch(
         formData.wasReadIn = String(year)
       }
     }
-  },
+  }
 )
+
+const resetFormData = () => {
+  Object.keys(formData).forEach((key) => {
+    if (typeof formData[key] === 'boolean') formData[key] = false
+    else if (Array.isArray(formData[key])) formData[key] = []
+    else formData[key] = ''
+  })
+}
 
 // Valida campos, monta o objeto e envia para a API via store
 const handleSubmit = async () => {
@@ -313,15 +321,7 @@ const handleSubmit = async () => {
 
     // Após criar, limpa os campos. Na edição mantém os valores.
     if (!props.isEdit) {
-      Object.keys(formData).forEach((key) => {
-        if (typeof formData[key] === 'boolean') {
-          formData[key] = false
-        } else if (Array.isArray(formData[key])) {
-          formData[key] = []
-        } else {
-          formData[key] = ''
-        }
-      })
+      resetFormData()
     }
 
     emit('submit')
@@ -336,15 +336,7 @@ const handleSubmit = async () => {
 const handleCancel = () => {
   // Na criação limpa os dados; na edição o livro permanece intacto
   if (!props.isEdit) {
-    Object.keys(formData).forEach((key) => {
-      if (typeof formData[key] === 'boolean') {
-        formData[key] = false
-      } else if (Array.isArray(formData[key])) {
-        formData[key] = []
-      } else {
-        formData[key] = ''
-      }
-    })
+    resetFormData()
   }
 
   emit('cancel')

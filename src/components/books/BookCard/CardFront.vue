@@ -1,10 +1,11 @@
+<!-- eslint-disable no-unused-vars -->
 <script setup>
 // Face frontal do card — exibe capa do livro com sobreposição de status
 import CardStatus from './CardStatus.vue'
 
 const props = defineProps({
   book: { type: Object, required: true },
-  rotate: { type: String, required: false },
+  rotate: { type: String, required: false }
 });
 </script>
 
@@ -17,7 +18,7 @@ const props = defineProps({
       width="100"
       height="150"
       :src="book.cover[0]"
-      :alt="book.cover[0]"
+      :alt="book.name"
       loading="lazy"
       decoding="async"
     />

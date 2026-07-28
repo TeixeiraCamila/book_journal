@@ -1,3 +1,4 @@
+<!-- eslint-disable no-unused-vars -->
 <script setup>
 // Diálogo de confirmação modal — usado para deletar livros com confirmação do usuário
 import { ref } from 'vue'
@@ -8,6 +9,7 @@ const props = defineProps({
   title: { type: String, default: 'Confirmar ação' },
   message: { type: String, required: true },
   confirmText: { type: String, default: 'Confirmar' },
+  onConfirm: { type: Function, default: null },
 })
 
 const emit = defineEmits(['confirm', 'cancel'])
@@ -25,11 +27,13 @@ const close = () => {
 
 const handleConfirm = async () => {
   try {
-    await emit('confirm')
-    addNotification('Livro deletado com sucesso!', 'success')
-    close()
+    if (props.onConfirm) {
+      await props.onConfirm()
+      addNotification('Livro deletado com sucesso!')
+      close()
+    }
   } catch (error) {
-    addNotification('Erro ao deletar livro. Tente novamente.', 'error')
+    addNotification('Erro ado deletar o livro', error)
   }
 }
 
@@ -42,8 +46,7 @@ const handleCancel = () => {
 defineExpose({
   open,
   close,
-});
-
+})
 </script>
 
 <template>
@@ -118,7 +121,6 @@ defineExpose({
   gap: 0.75rem;
   justify-content: flex-end;
 }
-
 
 /* Animação de entrada */
 .fade-enter-active,

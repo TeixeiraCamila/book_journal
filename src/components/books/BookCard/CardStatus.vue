@@ -16,7 +16,7 @@ defineProps({
 <template>
   <div class="card-status__tape" :style="{ transform: `translateX(-50%) ${rotate || ''}` }">
     <p class="card-status__text">{{ bookStatus }}</p>
-    <img width="150" :src="tape" alt="" />
+    <img width="130" :src="tape" alt="" />
     <div class="card_back__top" v-if="back">
       <p class="card_back__rate" v-if="book.status === BOOK_STATUS_MAP.READ && book.rate">
         <img

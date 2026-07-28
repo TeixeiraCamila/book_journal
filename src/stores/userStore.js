@@ -1,6 +1,9 @@
 // Pinia store de usuários — gerencia autenticação, sessão visitante e lista de usuários
 import { defineStore } from 'pinia'
 import { userAPI } from '../services/api'
+import { extractErrorMessage } from '@/utils/errorHandler'
+
+const { _handleError } = extractErrorMessage()
 
 const GUEST_USER = {
   id: 'guest',
@@ -45,7 +48,7 @@ export const useUserStore = defineStore('user', {
 
         return response.data
       } catch (error) {
-        this._handleError('fetchUsers', error)
+        _handleError('fetchUsers', error)
         throw error
       } finally {
         this.loading = false
@@ -62,7 +65,7 @@ export const useUserStore = defineStore('user', {
 
         return this.users
       } catch (error) {
-        this._handleError('fetchAllUsers', error)
+        _handleError('fetchAllUsers', error)
         throw error
       } finally {
         this.loading = false
@@ -91,7 +94,7 @@ export const useUserStore = defineStore('user', {
         this.userActive = data
         return data
       } catch (error) {
-        this._handleError('fetchUser', error)
+        _handleError('fetchUser', error)
         throw error
       } finally {
         this.loading = false
@@ -162,16 +165,5 @@ export const useUserStore = defineStore('user', {
       localStorage.removeItem(STORAGE_KEYS.IS_GUEST)
     },
 
-    _handleError(action, error) {
-      console.error(`❌ Erro em ${action}:`, error)
-
-      if (error.response) {
-        this.error = error.response.data?.message || error.message
-      } else if (error.request) {
-        this.error = 'Erro de conexão. Verifique sua internet.'
-      } else {
-        this.error = error.message || 'Erro desconhecido'
-      }
-    },
   },
 })

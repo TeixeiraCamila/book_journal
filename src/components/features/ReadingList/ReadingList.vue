@@ -8,43 +8,17 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { BOOK_STATUS_MAP } from '@/constants/book'
 const router = useRouter()
 const bookStore = useBookStore()
-
+import {
+  getAuthorString,
+  getPagesString,
+  getPublicationString,
+} from '@/composables/useBookFormatters.js'
 /**
  * Formata data para exibição em português
  */
 const formatDate = (dateString) => {
   if (!dateString) return ''
   return new Date(dateString).toLocaleDateString('pt-BR')
-}
-
-/**
- * Calcula porcentagem de progresso
- */
-const calculateProgress = (currentlyOn, total) => {
-  if (!currentlyOn || !total || total === 0) return 0
-  return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100)
-}
-
-/**
- * Formata string de publicação
- */
-const getPublicationString = (book) => {
-  const publisher = book.publishedBy?.[0]
-  const year = book.firstPublished
-
-  if (publisher && year) {
-    return `Publicado por ${publisher} em ${year}`
-  }
-
-  if (publisher) {
-    return `Publicado por ${publisher}`
-  }
-
-  if (year) {
-    return `Primeira publicação em ${year}`
-  }
-
-  return 'Informação de publicação não disponível'
 }
 
 /**
@@ -59,24 +33,6 @@ const getReadingPeriodString = (book) => {
   const end = formatDate(se.end)
 
   return `Lido de ${start} até ${end}`
-}
-
-/**
- * Formata string de autor com atlas literário
- */
-const getAuthorString = (book) => {
-  const literaryAtlas = book.literaryAtlas ? `${book.literaryAtlas} ` : ''
-  return `${literaryAtlas}${book.author.join(', ')}`
-}
-
-/**
- * Formata string de páginas e progresso
- */
-const getPagesString = (book) => {
-  if (!book.totalPages || !book.currentlyOn) return ''
-
-  const progress = calculateProgress(book.currentlyOn, book.totalPages)
-  return `Páginas: ${book.currentlyOn} / ${book.totalPages} (${progress}%)`
 }
 
 /**

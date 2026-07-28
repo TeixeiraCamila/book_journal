@@ -83,8 +83,10 @@ textarea {
 
 /* SELECT WRAPPER */
 .select_wrapper {
-  position: relative;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
 }
 
 

@@ -132,6 +132,12 @@ const handleEditBook = (book) => {
 }
 
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
+.bool-list-content {
+  display: flex;
+  align-items: center;
+  margin: 0 auto;
+  flex-direction: column;
+}
 .book-list__state {
   display: flex;
   flex-direction: column;
@@ -184,7 +190,6 @@ const handleEditBook = (book) => {
   color: #991b1b;
   margin-bottom: 1.5rem;
 }
-
 
 /* Estado Vazio */
 .book-list__empty-icon {

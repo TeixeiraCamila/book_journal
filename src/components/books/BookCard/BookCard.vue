@@ -128,6 +128,7 @@ const handleEdit = (book) => {
       title="Deletar Livro"
       :message="`Tem certeza que deseja deletar '${book.name}'? Esta ação não pode ser desfeita.`"
       confirm-text="Deletar"
+      :on-confirm="() => bookStore.deleteBook(book.id)"
       @confirm="handleDelete"
       @cancel="closeModalWithAnimation"
     />
@@ -245,13 +246,13 @@ const handleEdit = (book) => {
 .book-card__face--back {
   z-index: 1;
 }
-.book-card__face--front , .book-card__face--back {
+.book-card__face--front,
+.book-card__face--back {
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
   min-height: 220px;
   background: var(--white);
   min-height: 300px;
 }
-
 
 /* Efeito de tilt sutil durante o flip */
 .book-card__flip--flipped {
