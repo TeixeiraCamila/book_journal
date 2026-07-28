@@ -9,6 +9,7 @@ import './assets/main.css'
 // vue-toastification: biblioteca de notificações toast
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import { TOAST_CONFIG } from "@/constants/toast";
 
 const app = createApp(App)
 
@@ -18,15 +19,6 @@ app.use(createPinia())
 app.use(router)
 
 // Configuração do vue-toastification
-app.use(Toast, {
-  position: 'top-right',
-  timeout: 3000,
-  closeOnClick: true,
-  pauseOnFocusLoss: true,
-  pauseOnHover: true,
-  draggable: true,
-  progress: true,
-  icon: true
-})
+app.use(Toast, TOAST_CONFIG)
 
 app.mount('#app')

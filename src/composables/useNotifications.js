@@ -1,5 +1,6 @@
 // Composable para notificações toast — abstrai vue-toastification com tipos (success/error/warning/info)
 import { useToast } from 'vue-toastification'
+import { TOAST_CONFIG } from '@/constants/toast'
 
 export function useNotifications() {
   const toast = useToast()
@@ -10,12 +11,7 @@ export function useNotifications() {
     }
 
     const toastOptions = {
-      timeout: 3000,
-      closeOnClick: true,
-      pauseOnFocusLoss: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: true,
+      ...TOAST_CONFIG,
       ...options,
     }
 

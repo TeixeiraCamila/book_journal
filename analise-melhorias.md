@@ -19,7 +19,7 @@
 |-----------------|-----------|--------|
 | `getAuthorString`, `getPagesString`, `getPublicationString` | `CardBack.vue` + `ReadingList.vue` | ✅ |
 | Loading/Error/Empty states (mesmo template) | `BookList`, `ReadingList`, `TBRList`, `ThisYearList` | ❌ |
-| Toast config (timeout, position, etc.) | `main.js` + `useNotifications.js` | ❌ |
+| Toast config (timeout, position, etc.) | `main.js` + `useNotifications.js` | ✅ |
 | `_handleError` (lógica similar) | `bookStore.js` + `userStore.js` | ✅ |
 | Form reset `Object.keys(formData).forEach(...)` | `BookForm.vue` linhas 316 e 339 | ✅ |
 | `closeModal` e `closeModalWithAnimation` | `useAnimatedModal.js` — funções idênticas | ❌ |
