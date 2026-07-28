@@ -1,34 +1,34 @@
 <script setup>
 // Grid de livros com filtros, paginação e estados de loading/erro/vazio
-import { onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import BookCard from '@/components/books/BookCard/BookCard.vue'
-import BookCardSkeleton from '@/components/ui/Skeleton/BookCardSkeleton.vue'
-import Pagination from '@/components/navigation/Pagination.vue'
-import Filters from '@/components/navigation/Filters.vue'
-import Button from '@/components/ui/Button.vue'
-const bookStore = useBookStore()
-const router = useRouter()
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import BookCard from '@/components/books/BookCard/BookCard.vue';
+import BookCardSkeleton from '@/components/ui/Skeleton/BookCardSkeleton.vue';
+import Pagination from '@/components/navigation/Pagination.vue';
+import Filters from '@/components/navigation/Filters.vue';
+import Button from '@/components/ui/Button.vue';
+const bookStore = useBookStore();
+const router = useRouter();
 
 /**
  * Carrega livros ao montar o componente
  */
 onMounted(async () => {
   // Configura filtros iniciais
-  bookStore.filterStatus = 'all'
-  bookStore.searchTerm = ''
+  bookStore.filterStatus = 'all';
+  bookStore.searchTerm = '';
 
   // Busca opções do backend e livros
-  await Promise.all([bookStore.fetchBookOptions(), bookStore.fetchBooks()])
-})
+  await Promise.all([bookStore.fetchBookOptions(), bookStore.fetchBooks()]);
+});
 
 /**
  * Redireciona para página de edição
  */
 const handleEditBook = (book) => {
-  router.push(`/editar/${book.id}`)
-}
+  router.push(`/editar/${book.id}`);
+};
 </script>
 
 <template>
@@ -110,25 +110,6 @@ const handleEditBook = (book) => {
   left: 200px;
   width: fit-content;
   height: 100%;
-}
-.book-list__controls {
-  min-width: 250px;
-  position: relative;
-  height: 100%;
-  background-color: #e6dedc;
-  background-image: linear-gradient(-90deg, #5a7da480 50%, transparent 50%),
-    linear-gradient(#5a7da480 50%, transparent 50%);
-  background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
-}
-.book-list__controls::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: -15px;
-  width: 50px;
-  height: 100%;
-  background: url('../../../assets/images/cards/card_list/blue__lace.webp') repeat-y;
 }
 
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
@@ -214,9 +195,9 @@ const handleEditBook = (book) => {
 .book-list__grid {
   padding: 2rem;
   display: flex;
-  flex: 1;
   flex-wrap: wrap;
   gap: 3rem 2.5rem;
+  justify-content: center;
 }
 
 /* ===== ANIMAÇÕES ===== */
@@ -241,32 +222,19 @@ const handleEditBook = (book) => {
 }
 
 /* ===== RESPONSIVIDADE ===== */
-@media (max-width: 1024px) {
-  .book-list__grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 2rem 1rem;
-  }
-}
 
 @media (max-width: 768px) {
   .book-list {
     gap: 1rem;
+    flex-direction: column;
   }
 
-  .book-list__grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1.5rem 0.75rem;
+  .filters {
+    height: fit-content;
   }
 
   .book-list__state {
     padding: 2rem 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .book-list__grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem 0.5rem;
   }
 }
 </style>

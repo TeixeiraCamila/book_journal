@@ -1,4 +1,5 @@
 export function extractErrorMessage(error) {
+  if (!error) return 'Erro desconhecido'
   if (error.response) {
     const status = error.response.status
     const message = error.response.data?.message || error.message

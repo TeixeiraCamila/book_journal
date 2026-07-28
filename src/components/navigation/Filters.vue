@@ -1,40 +1,40 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 // Barra de filtros — busca por título e filtro por status com botão limpar
-import { computed, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import { useUserStore } from '@/stores/userStore'
-import { BOOK_STATUS_LABELS } from '@/constants/book'
-import Button from '../ui/Button.vue'
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import { useUserStore } from '@/stores/userStore';
+import { BOOK_STATUS_LABELS } from '@/constants/book';
+import Button from '../ui/Button.vue';
 
-const bookStore = useBookStore()
-const userStore = useUserStore()
-const router = useRouter()
-const localSearch = ref(bookStore.searchTerm)
-const localStatus = ref(bookStore.filterStatus)
+const bookStore = useBookStore();
+const userStore = useUserStore();
+const router = useRouter();
+const localSearch = ref(bookStore.searchTerm);
+const localStatus = ref(bookStore.filterStatus);
 
-const statusOptions = computed(() => bookStore.statusOptions)
+const statusOptions = computed(() => bookStore.statusOptions);
 
 const navigateToCreate = () => {
-  router.push('/criar')
-}
+  router.push('/criar');
+};
 
 const handleSearch = () => {
-  if (localSearch.value.trim() === bookStore.searchTerm) return
-  bookStore.search(localSearch.value)
-}
+  if (localSearch.value.trim() === bookStore.searchTerm) return;
+  bookStore.search(localSearch.value);
+};
 
 const handleFilterChange = () => {
-  bookStore.filterByStatus(localStatus.value)
-}
+  bookStore.filterByStatus(localStatus.value);
+};
 
 const clearFilters = () => {
-  localSearch.value = ''
-  localStatus.value = 'all'
-  bookStore.search('')
-  bookStore.filterByStatus('all')
-}
+  localSearch.value = '';
+  localStatus.value = 'all';
+  bookStore.search('');
+  bookStore.filterByStatus('all');
+};
 </script>
 
 <template>
@@ -94,21 +94,33 @@ const clearFilters = () => {
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  width: calc(100% - 3rem);
   padding: 1rem;
   position: sticky;
   top: 0;
   height: 80vh;
   justify-content: space-between;
+  background-color: #e6dedc;
+  background-image: linear-gradient(-90deg, #5a7da480 50%, transparent 50%),
+    linear-gradient(#5a7da480 50%, transparent 50%);
+  background-size: 20px 20px;
+  background-position: 0 0, 10px 10px;
 }
-
+.filters::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: -15px;
+  width: 50px;
+  height: 100%;
+  background: url('@/assets/images/cards/card_list/blue__lace.webp') repeat-y;
+}
 .filters__row {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   min-width: 200px;
+  z-index: 1;
 }
 
 .filters__row button {

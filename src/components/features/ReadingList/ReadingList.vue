@@ -8,11 +8,14 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
 import { BOOK_STATUS_MAP } from '@/constants/book'
 const router = useRouter()
 const bookStore = useBookStore()
-import {
-  getAuthorString,
-  getPagesString,
-  getPublicationString,
-} from '@/composables/useBookFormatters.js'
+import { useBookFormatters } from '@/composables/useBookFormatters.js'
+
+const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters()
+
+const calculateProgress = (currentlyOn, total) => {
+  if (!currentlyOn || !total || total === 0) return 0
+  return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100)
+}
 /**
  * Formata data para exibição em português
  */
