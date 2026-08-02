@@ -11,10 +11,10 @@ import {
 
 import { parseCommaSeparated } from '@/utils/validation'
 import { useNotifications } from '@/composables/useNotifications'
-import FormSection from '../FormSection.vue'
-import FormField from '../FormField.vue'
-import FormActions from '../FormActions.vue'
-import Button from '../../ui/Button.vue'
+import FormSection from '@/components/forms/FormSection.vue'
+import FormField from '@/components/forms/FormField.vue'
+import FormActions from '@/components/forms/FormActions.vue'
+import Button from '@/components/ui/Button.vue'
 
 // Recebe o livro para edição ou null para criação
 const props = defineProps({

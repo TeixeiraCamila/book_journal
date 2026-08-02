@@ -223,7 +223,7 @@ const navigateToEdit = (bookId) => {
 .reading-list__header {
   text-align: center;
   padding: 2rem;
-  background-image: url('../../../assets/images/cards/card_03_stats/tape-title.webp');
+  background-image: url('@/assets/images/cards/card_stats/tape-title.webp');
   background-size: auto;
   background-repeat: no-repeat;
   background-position: center;

@@ -3,7 +3,7 @@
 // Diálogo de confirmação modal — usado para deletar livros com confirmação do usuário
 import { ref } from 'vue'
 import { useNotifications } from '@/composables/useNotifications'
-import Button from '../ui/Button.vue'
+import Button from '@/components/ui/Button.vue'
 
 const props = defineProps({
   title: { type: String, default: 'Confirmar ação' },

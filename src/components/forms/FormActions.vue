@@ -1,6 +1,6 @@
 <script setup>
 // Botões de ação do formulário — salvar (com estado de envio) e cancelar
-import Button from '../ui/Button.vue'
+import Button from '@/components/ui/Button.vue'
 
 // Botões de salvar e cancelar no final do formulário
 defineProps({

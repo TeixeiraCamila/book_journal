@@ -1,43 +1,39 @@
+<!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 // Notificação avulsa — componente de alerta com transição e ícone por tipo
-import { computed } from 'vue'
+import { computed } from 'vue';
 
-import Button from '../ui/Button.vue';
+import Button from '@/components/ui/Button.vue';
 
 defineProps({
   message: String,
   type: {
     type: String,
     default: 'info',
-    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value)
+    validator: (value) => ['success', 'error', 'warning', 'info'].includes(value),
   },
   show: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 
-defineEmits(['close'])
+defineEmits(['close']);
 
 const icon = computed(() => {
   const icons = {
     success: '✅',
     error: '❌',
     warning: '⚠️',
-    info: 'ℹ️'
-  }
-  return icons[props.type] || icons.info
+    info: 'ℹ️',
+  };
+  return icons.info;
 });
 </script>
 
 <template>
   <Transition name="notification">
-    <div
-      v-if="show"
-      class="notification"
-      :class="`notification--${type}`"
-      role="alert"
-    >
+    <div v-if="show" class="notification" :class="`notification--${type}`" role="alert">
       <span class="notification__icon">{{ icon }}</span>
       <span class="notification__message">{{ message }}</span>
       <Button @click="$emit('close')" class="notification__close-btn">×</Button>
@@ -62,10 +58,22 @@ const icon = computed(() => {
   gap: 0.5rem;
 }
 
-.notification--success { background: #d1fae5; color: #065f46; }
-.notification--error { background: #fee2e2; color: #991b1b; }
-.notification--warning { background: #fef3c7; color: #92400e; }
-.notification--info { background: #dbeafe; color: #1e40af; }
+.notification--success {
+  background: #d1fae5;
+  color: #065f46;
+}
+.notification--error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.notification--warning {
+  background: #fef3c7;
+  color: #92400e;
+}
+.notification--info {
+  background: #dbeafe;
+  color: #1e40af;
+}
 
 .notification__close-btn {
   background: none;

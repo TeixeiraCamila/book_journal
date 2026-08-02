@@ -6,7 +6,7 @@ import { useRouter } from 'vue-router';
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import { BOOK_STATUS_LABELS } from '@/constants/book';
-import Button from '../ui/Button.vue';
+import Button from '@/components/ui/Button.vue';
 
 const bookStore = useBookStore();
 const userStore = useUserStore();
@@ -109,7 +109,7 @@ const clearFilters = () => {
   content: '';
   position: absolute;
   top: 0;
-  right: -15px;
+  right: -45px;
   width: 50px;
   height: 100%;
   background: url('@/assets/images/cards/card_list/blue__lace.webp') repeat-y;

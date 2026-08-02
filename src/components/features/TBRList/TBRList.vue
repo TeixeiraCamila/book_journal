@@ -1,35 +1,31 @@
 <script setup>
 // Lista "To Be Read" — exibe livros pendentes em formato de selos (stamps) com rotação alternada
-import { useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import { onMounted, computed } from 'vue'
-import { BOOK_STATUS_MAP } from '@/constants/book'
-import Button from '@/components/ui/Button.vue'
+import { useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import { computed } from 'vue';
+import { BOOK_STATUS_MAP } from '@/constants/book';
+import Button from '@/components/ui/Button.vue';
 
-const router = useRouter()
-const bookStore = useBookStore()
-
+const router = useRouter();
+const bookStore = useBookStore();
 
 const handleRetry = async () => {
-  await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ)
-}
-
+  await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ);
+};
 
 const showEmptyState = computed(() => {
-  return !bookStore.loadingStates.tbr &&
-    bookStore.bookLists.tbr.length === 0 &&
-    !bookStore.hasError
+  return (
+    !bookStore.loadingStates.tbr && bookStore.bookLists.tbr.length === 0 && !bookStore.hasError
+  );
 });
 
-
 const navigateToEdit = (bookId) => {
-  router.push(`/editar/${bookId}`)
+  router.push(`/editar/${bookId}`);
 };
 </script>
 
 <template>
   <div class="tbr-list">
-
     <header class="tbr-list__header">
       <h1 class="tbr-list__title">To Be Read</h1>
       <p class="tbr-list__subtitle">
@@ -37,21 +33,16 @@ const navigateToEdit = (bookId) => {
       </p>
     </header>
 
-
     <div v-if="bookStore.hasError && !bookStore.loadingStates.tbr" class="tbr-list__error">
       <div class="tbr-list__error-icon">⚠️</div>
       <p class="tbr-list__error-message">{{ bookStore.error }}</p>
-      <Button @click="handleRetry">
-        Tentar Novamente
-      </Button>
+      <Button @click="handleRetry"> Tentar Novamente </Button>
     </div>
-
 
     <div v-else-if="bookStore.loadingStates.tbr" class="tbr-list__loading">
       <div class="tbr-list__spinner"></div>
       <p>Carregando livros...</p>
     </div>
-
 
     <div v-else-if="showEmptyState" class="tbr-list__empty">
       <div class="tbr-list__empty-icon">📚</div>
@@ -61,18 +52,24 @@ const navigateToEdit = (bookId) => {
       </p>
     </div>
 
-
     <TransitionGroup v-else name="stamp" tag="div" class="tbr-list__grid">
-      <div v-for="(book, index) in bookStore.bookLists.tbr" :key="book.id" class="stamp-wrapper"
-        :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }">
-        <article class="stamp"  @click="navigateToEdit(book.id)">
+      <div
+        v-for="(book, index) in bookStore.bookLists.tbr"
+        :key="book.id"
+        class="stamp-wrapper"
+        :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }"
+      >
+        <article class="stamp" @click="navigateToEdit(book.id)">
           <div class="stamp__inner">
             <div class="stamp__image-container">
-              <img v-if="book.cover?.[0]" :src="book.cover[0]" :alt="`Capa do livro ${book.name}`" class="stamp__image"
-                loading="lazy" />
-              <div v-else class="stamp__placeholder" aria-label="Sem capa disponível">
-                📖
-              </div>
+              <img
+                v-if="book.cover?.[0]"
+                :src="book.cover[0]"
+                :alt="`Capa do livro ${book.name}`"
+                class="stamp__image"
+                loading="lazy"
+              />
+              <div v-else class="stamp__placeholder" aria-label="Sem capa disponível">📖</div>
               <div class="stamp__overlay" aria-hidden="true"></div>
             </div>
 
@@ -87,7 +84,7 @@ const navigateToEdit = (bookId) => {
         </article>
       </div>
     </TransitionGroup>
-  </div>  
+  </div>
 </template>
 
 <style scoped>
@@ -99,7 +96,7 @@ const navigateToEdit = (bookId) => {
 /* ===== HEADER ===== */
 .tbr-list__header {
   text-align: center;
-  background-image: url('../assets/images/cards/card_03_stats/tape-title.webp');
+  background-image: url('@/assets/images/cards/card_stats/tape-title.webp');
   background-repeat: no-repeat;
   background-position: center;
   background-origin: content-box;
