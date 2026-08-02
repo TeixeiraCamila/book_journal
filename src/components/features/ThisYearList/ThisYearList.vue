@@ -116,6 +116,9 @@ const navigateToEdit = (bookId) => {
 .this-year {
   min-height: 100%;
 }
+.this-year img {
+  max-width: 300px;
+}
 .this-year__image--right {
   position: fixed;
   bottom: 0;
@@ -184,16 +187,15 @@ const navigateToEdit = (bookId) => {
 }
 
 .this-year__container {
-  max-width: 800px;
+  max-width: 700px;
   margin: 0 auto;
-  padding: 2rem;
   position: relative;
 }
 
 .this-year__grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .this-year__month-group {
