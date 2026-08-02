@@ -1,28 +1,30 @@
 <script setup>
 // Card de introdução com animações GSAP — exibe "My Book Journal" com assets decorativos
-import { ref, onMounted } from 'vue'
-import { gsap } from 'gsap'
+import { ref, onMounted } from 'vue';
+import { gsap } from 'gsap';
 
 // Import assets
-import bgRTop from '@/assets/images/cards/card_01_intro/bg-r_top.webp'
-import bgRBottom from '@/assets/images/cards/card_01_intro/bg-r_bottom.webp'
-import paper02 from '@/assets/images/cards/card_01_intro/paper-02.webp'
-import paper06 from '@/assets/images/cards/card_01_intro/paper-06.webp'
-import paper5 from '@/assets/images/cards/card_01_intro/paper-5.webp'
-import cloud from '@/assets/images/cards/card_01_intro/cloude.webp'
-import start from '@/assets/images/cards/card_01_intro/start.webp'
-import coffee from '@/assets/images/cards/card_01_intro/coffee.webp'
-import paper01 from '@/assets/images/cards/card_01_intro/paper-01.webp'
-import luck from '@/assets/images/cards/card_01_intro/luck.webp'
 
-const animatedElements = ref()
+import paperCenter from '@/assets/images/cards/card_intro/paper-center.webp';
+import paperLeft from '@/assets/images/cards/card_intro/paper-left.webp';
+import paperLeftBottom from '@/assets/images/cards/card_intro/paper-left-bottom.webp';
+import paperLeftTop from '@/assets/images/cards/card_intro/paper-left-top.webp';
+import paperRightTop from '@/assets/images/cards/card_intro/paper-right-top.webp';
+import paperRightBottom from '@/assets/images/cards/card_intro/paper-right-bottom.webp';
+
+import cloud from '@/assets/images/cards/card_intro/cloude.webp';
+import start from '@/assets/images/cards/card_intro/start.webp';
+import coffee from '@/assets/images/cards/card_intro/coffee.webp';
+import luck from '@/assets/images/cards/card_intro/luck.webp';
+
+const animatedElements = ref();
 
 function anime() {
   const tl = gsap.timeline({
     defaults: { ease: 'power3.out' },
-  })
+  });
 
-  const elements = animatedElements.value.querySelectorAll('p')
+  const elements = animatedElements.value.querySelectorAll('p');
 
   tl.from(
     elements,
@@ -34,71 +36,73 @@ function anime() {
       ease: 'back.out(1.7)',
       stagger: 0.1,
     },
-    '-=1.2',
-  )
+    '-=1.2'
+  );
 
   // Animate cloud from right to left
   tl.from(
-    '.card-intro__cloud',
+    '#card-intro__cloud',
     {
       x: 100,
       opacity: 0,
       duration: 2,
       ease: 'power2.out',
     },
-    '-=2.5',
-  )
+    '-=2.5'
+  );
 
   // Animate start descending
   tl.from(
-    '.card-intro__start',
+    '#card-intro__start',
     {
       y: -100,
       opacity: 0,
       duration: 2,
       ease: 'bounce.out',
     },
-    '-=2',
-  )
+    '-=2'
+  );
 
   // Animate coffee appearing
   tl.from(
-    '.card-intro__coffee',
+    '#card-intro__coffee',
     {
       opacity: 0,
       scale: 0.5,
       duration: 1.5,
       ease: 'back.out(1.7)',
     },
-    '-=1.5',
-  )
+    '-=1.5'
+  );
 }
 
 onMounted(() => {
-  anime()
+  anime();
 });
 </script>
 
 <template>
   <div class="card-intro">
     <div class="card-intro__detail">
-      <img class="card-intro__detail-01" :src="bgRTop" alt="" />
-      <img class="card-intro__detail-02" :src="bgRBottom" alt="" />
-      <img class="card-intro__detail-03" :src="paper02" alt="" />
-      <img class="card-intro__detail-04" :src="paper06" alt="" />
-      <img class="card-intro__detail-05" :src="paper5" alt="" />
-      <img class="card-intro__cloud" :src="cloud" alt="" />
-      <img class="card-intro__start" :src="start" alt="" />
-      <img class="card-intro__coffee" :src="coffee" alt="" />
+      <img :src="paperLeftBottom" id="card-intro__detail-02" />
+      <img :src="paperLeft" id="card-intro__detail-01" />
+      <img :src="paperLeftTop" id="card-intro__detail-03" />
+      <img :src="paperRightTop" id="card-intro__detail-04" />
+      <img :src="paperRightBottom" id="card-intro__detail-05" />
+
+      <img id="card-intro__cloud" :src="cloud" alt="" />
+      <img id="card-intro__start" :src="start" alt="" />
+      <img id="card-intro__coffee" :src="coffee" alt="" />
     </div>
     <div class="card-intro__content">
-      <img class="card-intro__content-image" :src="paper01" alt="" />
-
-      <img class="card-intro__content-detail" :src="luck" alt="" />
+      <img :src="paperCenter" id="card-intro__content-image" alt="" />
+      <img :src="luck" id="card-intro__content-detail" alt="" />
 
       <h1 ref="animatedElements" class="card-intro__title">
-        <p>My Book</p>
-        <p>Journal</p>
+        <p>
+          My Book <br />
+          Journal
+        </p>
       </h1>
     </div>
   </div>
@@ -109,15 +113,37 @@ onMounted(() => {
   background-color: #075832;
   background-size: contain;
   border-radius: 18px;
-  
+  overflow: hidden;
 }
 
 .card-intro__detail img {
   position: absolute;
-  z-index: 1;
 }
-
-.card-intro__detail-01,
+#card-intro__detail-01 {
+  left: -10px;
+  top: 0;
+  height: 100%;
+}
+#card-intro__detail-02 {
+  left: 0;
+  bottom: 0;
+  max-height: 600px;
+}
+#card-intro__detail-03 {
+  left: -7%;
+  top: -15%;
+  max-height: 600px;
+}
+#card-intro__detail-04 {
+  max-width: 350px;
+  top: -10%;
+  right: -47px;
+}
+#card-intro__detail-05 {
+  bottom: 0;
+  right: -47px;
+}
+/* .card-intro__detail-01,
 .card-intro__detail-03,
 .card-intro__detail-05,
 .card-intro__content-detail {
@@ -137,28 +163,29 @@ onMounted(() => {
 
 .card-intro__detail-05 {
   max-width: 500px;
-}
+} */
 
-.card-intro__cloud {
+#card-intro__cloud {
   top: 20%;
+  right: -10%;
+  max-width: 56%;
 }
 
-.card-intro__start {
+#card-intro__start {
   top: -5%;
   right: 70%;
   max-height: 60%;
 }
 
-.card-intro__detail img.card-intro__coffee {
-  bottom: 4%;
-  left: 54%;
-  max-height: 50%;
+#card-intro__coffee {
+  bottom: 6%;
+  left: 47%;
+  max-height: 33%;
   z-index: 20;
 }
 
 .card-intro__content {
   position: absolute;
-  z-index: 10;
   text-align: center;
   width: fit-content;
   left: 50%;
@@ -166,12 +193,14 @@ onMounted(() => {
   transform: translate(-50%, -50%);
 }
 
-.card-intro__content-detail {
+#card-intro__content-detail {
   position: absolute;
   max-width: 35%;
+  top: -17%;
+  right: -16%;
 }
 
-.card-intro__content-image {
+#card-intro__content-image {
   max-width: 400px;
 }
 
