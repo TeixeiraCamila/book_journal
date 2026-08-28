@@ -1,0 +1,53 @@
+/* Isolamento do vue-toastification dos resets/estilos globais do projeto */
+/* Importado após o CSS da biblioteca para preservar o visual oficial dos toasts */
+
+.Vue-Toastification__container,
+.Vue-Toastification__toast,
+.Vue-Toastification__toast-body,
+.Vue-Toastification__icon,
+.Vue-Toastification__progress-bar {
+  box-sizing: border-box;
+  text-decoration: none;
+  list-style: none;
+  margin: 0 1rem;
+  font: inherit;
+}
+
+.Vue-Toastification__toast {
+  box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.1), 0 6px 10px 0 rgba(0, 0, 0, 0.1), 0 1px 18px 0 rgba(0, 0, 0, 0.1);
+  width: 350px;
+  height: auto;
+  transform: none;
+  transition: none;
+  cursor: default;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.Vue-Toastification__close-button {
+  height: auto;
+  width: auto;
+  font: inherit;
+  font-weight: bold;
+  font-size: 24px;
+  line-height: 24px;
+  background: transparent;
+  outline: none;
+  border: none;
+  padding: 0;
+  padding-left: 10px;
+  color: #fff;
+  opacity: 0.3;
+  transform: none;
+  transition: visibility 0s, opacity 0.2s linear;
+  appearance: auto;
+  -webkit-appearance: auto;
+  box-shadow: none;
+}
+
+.Vue-Toastification__close-button:hover {
+  transform: none;
+  box-shadow: none;
+  opacity: 1;
+}

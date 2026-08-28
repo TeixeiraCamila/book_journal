@@ -32,8 +32,6 @@ export { default as Filters } from './navigation/Filters.vue';
 export { default as SearchBar } from './navigation/SearchBar.vue';
 
 // Feedback Components
-export { default as Notification } from './feedback/Notification.vue';
-export { default as ToastContainer } from './feedback/ToastContainer.vue';
 export { default as ConfirmDialog } from './feedback/ConfirmDialog.vue';
 
 // Feature Components

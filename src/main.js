@@ -9,6 +9,8 @@ import './assets/main.css';
 // vue-toastification: biblioteca de notificações toast
 import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+// Isola os toasts dos resets/estilos globais do projeto
+import './assets/css/toast-override.css';
 import { TOAST_CONFIG } from '@/constants/toast';
 
 const app = createApp(App);
