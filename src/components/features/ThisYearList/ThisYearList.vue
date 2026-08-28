@@ -1,61 +1,73 @@
 // Componente: lista livros lidos no ano atual agrupados por mês
 <script setup>
-import { useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import Button from '@/components/ui/Button.vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import { computed } from 'vue'
+import { useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import Button from '@/components/ui/Button.vue';
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import { computed } from 'vue';
 // import tape from '@/assets/images/tape.webp'
-import CardStatus from '@/components/books/BookCard/CardStatus.vue'
+import CardStatus from '@/components/books/BookCard/CardStatus.vue';
 
-const router = useRouter()
-const bookStore = useBookStore()
-const currentYear = new Date().getFullYear()
+const router = useRouter();
+const bookStore = useBookStore();
+const currentYear = new Date().getFullYear();
 
 function getMonthFromBook(book) {
-  const dataStr = book.startEnd?.end || book.startEnd?.start
-  if (!dataStr) return null
-  const date = new Date(dataStr)
-  if (isNaN(date)) return null
+  const dataStr = book.startEnd?.end || book.startEnd?.start;
+  if (!dataStr) return null;
+  const date = new Date(dataStr);
+  if (isNaN(date)) return null;
   return {
     month: date.getMonth(),
     label: date.toLocaleDateString('pt-BR', { month: 'long' }),
     year: date.getFullYear(),
-  }
+  };
 }
 
 const booksByMonth = computed(() => {
-  const groups = {}
-  const noDateBooks = []
+  const groups = {};
+  const noDateBooks = [];
   for (const book of bookStore.bookLists.thisYear) {
-    const m = getMonthFromBook(book)
+    const m = getMonthFromBook(book);
     if (!m) {
-      noDateBooks.push(book)
-      continue
+      noDateBooks.push(book);
+      continue;
     }
-    const key = `${m.year}-${String(m.month).padStart(2, '0')}`
-    if (!groups[key]) groups[key] = { label: m.label, books: [] }
-    groups[key].books.push(book)
+    const key = `${m.year}-${String(m.month).padStart(2, '0')}`;
+    if (!groups[key]) groups[key] = { label: m.label, books: [] };
+    groups[key].books.push(book);
   }
   const sections = Object.entries(groups)
     .sort(([a], [b]) => a.localeCompare(b))
-    .map(([, v]) => v)
+    .map(([, v]) => v);
   if (noDateBooks.length) {
-    sections.push({ label: 'Sem data', books: noDateBooks })
+    sections.push({ label: 'Sem data', books: noDateBooks });
   }
-  return sections
-})
+  return sections;
+});
 
 const navigateToEdit = (bookId) => {
-  router.push(`/editar/${bookId}`)
-}
+  router.push(`/editar/${bookId}`);
+};
 </script>
 
 <template>
   <div class="this-year">
-    <img class="this-year__image--right" src="@/assets/images/cards/card_this_year/right.webp" alt="" />
-    <img class="this-year__image--left-bottom" src="@/assets/images/cards/card_this_year/left_bottom.webp" alt="" />
-    <img class="this-year__image--left-top" src="@/assets/images/cards/card_this_year/left_top.webp" alt="" />
+    <img
+      class="this-year__image--right"
+      src="@/assets/images/cards/card_this_year/right.webp"
+      alt=""
+    />
+    <img
+      class="this-year__image--left-bottom"
+      src="@/assets/images/cards/card_this_year/left_bottom.webp"
+      alt=""
+    />
+    <img
+      class="this-year__image--left-top"
+      src="@/assets/images/cards/card_this_year/left_top.webp"
+      alt=""
+    />
     <!-- <header class="this-year__header">
       <h1 class="this-year__title">
         Lidos em <br />

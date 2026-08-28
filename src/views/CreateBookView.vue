@@ -1,72 +1,72 @@
 <script setup>
 // View de criação/edição de livro — gerencia carregamento assíncrono e exibe formulário
-import { ref, onMounted, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import { useNotifications } from '@/composables/useNotifications'
-import BookForm from '@/components/forms/BookForm/BookForm.vue'
-import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue'
-import Button from '@/components/ui/Button.vue'
+import { ref, onMounted, computed, watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import { useNotifications } from '@/composables/useNotifications';
+import BookForm from '@/components/forms/BookForm/BookForm.vue';
+import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue';
+import Button from '@/components/ui/Button.vue';
 
-const { addNotification } = useNotifications()
+const { addNotification } = useNotifications();
 
-const route = useRoute()
-const router = useRouter()
-const bookStore = useBookStore()
+const route = useRoute();
+const router = useRouter();
+const bookStore = useBookStore();
 
-const book = ref(null)
-const isLoading = ref(false)
-const error = ref(null)
-const isEdit = computed(() => !!route.params.id)
+const book = ref(null);
+const isLoading = ref(false);
+const error = ref(null);
+const isEdit = computed(() => !!route.params.id);
 
 // Carrega dados do livro para edição — busca da store ou API se necessário
 const loadBook = async () => {
-  if (!isEdit.value) return
+  if (!isEdit.value) return;
 
-  const bookId = route.params.id
-  isLoading.value = true
-  error.value = null
+  const bookId = route.params.id;
+  isLoading.value = true;
+  error.value = null;
 
   try {
     // Primeiro, garantir que temos os livros carregados
     if (bookStore.allBooks.length === 0) {
-      await bookStore.fetchBooks()
+      await bookStore.fetchBooks();
     }
 
     // Buscar livro pelo ID
-    book.value = bookStore.getBookById(bookId)
+    book.value = bookStore.getBookById(bookId);
 
     if (!book.value) {
       // Tentar buscar o livro diretamente da API
       try {
-        book.value = await bookStore.fetchBookById(bookId)
+        book.value = await bookStore.fetchBookById(bookId);
       } catch {
-        throw new Error('Livro não encontrado')
+        throw new Error('Livro não encontrado');
       }
     }
   } catch (err) {
-    error.value = err.message || 'Erro ao carregar livro'
-    addNotification(error.value, 'error')
+    error.value = err.message || 'Erro ao carregar livro';
+    addNotification(error.value, 'error');
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 // Carregar livro quando o componente for montado ou quando o ID da rota mudar
-onMounted(loadBook)
-watch(() => route.params.id, loadBook)
+onMounted(loadBook);
+watch(() => route.params.id, loadBook);
 
 const handleSubmit = () => {
   // Notificação já é exibida no BookForm após sucesso da operação
-}
+};
 
 const handleEditSuccess = () => {
-  router.push({ path: '/', query: { slide: '1' } })
-}
+  router.push({ path: '/', query: { slide: '1' } });
+};
 
 const handleCancel = () => {
-  router.push({ path: '/', query: { slide: '1' } })
-}
+  router.push({ path: '/', query: { slide: '1' } });
+};
 </script>
 
 <template>
@@ -89,7 +89,14 @@ const handleCancel = () => {
         <p>{{ error }}</p>
         <Button @click="loadBook" class="create-book-view__retry-btn">Tentar novamente</Button>
       </div>
-      <BookForm v-else :book="book" :is-edit="isEdit" @submit="handleSubmit" @cancel="handleCancel" @edit-success="handleEditSuccess" />
+      <BookForm
+        v-else
+        :book="book"
+        :is-edit="isEdit"
+        @submit="handleSubmit"
+        @cancel="handleCancel"
+        @edit-success="handleEditSuccess"
+      />
     </main>
   </div>
 </template>

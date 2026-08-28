@@ -1,81 +1,81 @@
 <script setup>
 // Lista de livros em leitura — exibe cards detalhados com barra de progresso
-import { useRouter } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import { PencilLine } from 'lucide-vue-next'
-import Button from '@/components/ui/Button.vue'
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue'
-import { BOOK_STATUS_MAP } from '@/constants/book'
-const router = useRouter()
-const bookStore = useBookStore()
-import { useBookFormatters } from '@/composables/useBookFormatters.js'
+import { useRouter } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import { PencilLine } from 'lucide-vue-next';
+import Button from '@/components/ui/Button.vue';
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import { BOOK_STATUS_MAP } from '@/constants/book';
+const router = useRouter();
+const bookStore = useBookStore();
+import { useBookFormatters } from '@/composables/useBookFormatters.js';
 
-const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters()
+const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters();
 
 const calculateProgress = (currentlyOn, total) => {
-  if (!currentlyOn || !total || total === 0) return 0
-  return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100)
-}
+  if (!currentlyOn || !total || total === 0) return 0;
+  return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100);
+};
 /**
  * Formata data para exibição em português
  */
 const formatDate = (dateString) => {
-  if (!dateString) return ''
-  return new Date(dateString).toLocaleDateString('pt-BR')
-}
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('pt-BR');
+};
 
 /**
  * Formata string de período de leitura
  */
 const getReadingPeriodString = (book) => {
-  const se = book.startEnd
+  const se = book.startEnd;
 
-  if (!se?.start || !se?.end) return ''
+  if (!se?.start || !se?.end) return '';
 
-  const start = formatDate(se.start)
-  const end = formatDate(se.end)
+  const start = formatDate(se.start);
+  const end = formatDate(se.end);
 
-  return `Lido de ${start} até ${end}`
-}
+  return `Lido de ${start} até ${end}`;
+};
 
 /**
  * Formata string de tipo
  */
 const getTypeString = (book) => {
-  if (!book.type?.length) return ''
-  return ` ${book.type.join(', ')}`
-}
+  if (!book.type?.length) return '';
+  return ` ${book.type.join(', ')}`;
+};
 
 /**
  * Retorna notas adicionais
  */
 const getAdditionalNotes = (book) => {
-  const notes = []
+  const notes = [];
 
   if (book.notes) {
-    notes.push(book.notes)
+    notes.push(book.notes);
   }
 
   if (book.tags?.length) {
-    notes.push(`Tags: ${book.tags.join(', ')}`)
+    notes.push(`Tags: ${book.tags.join(', ')}`);
   }
 
-  return notes
-}
+  return notes;
+};
 
 /**
  * Verifica se há informações de publicação
  */
 const hasPublicationInfo = (book) => {
-  return !!(book.publishedBy?.[0] || book.firstPublished)
-}
+  return !!(book.publishedBy?.[0] || book.firstPublished);
+};
 
 /**
  * Navega para editar livro
  */
 const navigateToEdit = (bookId) => {
-  router.push(`/editar/${bookId}`)
-}
+  router.push(`/editar/${bookId}`);
+};
 </script>
 
 <template>

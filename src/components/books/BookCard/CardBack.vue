@@ -1,44 +1,44 @@
 <script setup>
 // Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
-import { computed } from 'vue'
-import { useUserStore } from '@/stores/userStore'
-import { BOOK_TYPE_LABELS } from '@/constants/book'
-import CardStatus from './CardStatus.vue'
-import Button from '@/components/ui/Button.vue'
-import { PencilLine, Trash } from 'lucide-vue-next'
+import { computed } from 'vue';
+import { useUserStore } from '@/stores/userStore';
+import { BOOK_TYPE_LABELS } from '@/constants/book';
+import CardStatus from './CardStatus.vue';
+import Button from '@/components/ui/Button.vue';
+import { PencilLine, Trash } from 'lucide-vue-next';
 
-import { useBookFormatters } from '@/composables/useBookFormatters'
+import { useBookFormatters } from '@/composables/useBookFormatters';
 
 const props = defineProps({
   book: { type: Object, required: true },
   rotate: { type: String, required: false },
-})
+});
 
-const emit = defineEmits(['edit', 'delete'])
+const emit = defineEmits(['edit', 'delete']);
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const { getPublicationString } = useBookFormatters()
+const { getPublicationString } = useBookFormatters();
 
-const string = computed(() => getPublicationString(props.book))
+const string = computed(() => getPublicationString(props.book));
 
 const wasReadString = computed(() => {
-  if (!props.book.wasReadIn?.length) return ''
-  return props.book.wasReadIn.join(', ')
-})
+  if (!props.book.wasReadIn?.length) return '';
+  return props.book.wasReadIn.join(', ');
+});
 
 const typeString = computed(() => {
-  if (!props.book.type?.length) return ''
-  return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ')
-})
+  if (!props.book.type?.length) return '';
+  return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ');
+});
 
 const handleEdit = () => {
-  emit('edit', props.book)
-}
+  emit('edit', props.book);
+};
 
 const handleDelete = () => {
-  emit('delete', props.book)
-}
+  emit('delete', props.book);
+};
 </script>
 
 <template>

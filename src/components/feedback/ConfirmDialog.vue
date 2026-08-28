@@ -1,52 +1,52 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
 // Diálogo de confirmação modal — usado para deletar livros com confirmação do usuário
-import { ref } from 'vue'
-import { useNotifications } from '@/composables/useNotifications'
-import Button from '@/components/ui/Button.vue'
+import { ref } from 'vue';
+import { useNotifications } from '@/composables/useNotifications';
+import Button from '@/components/ui/Button.vue';
 
 const props = defineProps({
   title: { type: String, default: 'Confirmar ação' },
   message: { type: String, required: true },
   confirmText: { type: String, default: 'Confirmar' },
   onConfirm: { type: Function, default: null },
-})
+});
 
-const emit = defineEmits(['confirm', 'cancel'])
+const emit = defineEmits(['confirm', 'cancel']);
 
-const { addNotification } = useNotifications()
-const isOpen = ref(false)
+const { addNotification } = useNotifications();
+const isOpen = ref(false);
 
 const open = () => {
-  isOpen.value = true
-}
+  isOpen.value = true;
+};
 
 const close = () => {
-  isOpen.value = false
-}
+  isOpen.value = false;
+};
 
 const handleConfirm = async () => {
   try {
     if (props.onConfirm) {
-      await props.onConfirm()
-      addNotification('Livro deletado com sucesso!')
-      close()
+      await props.onConfirm();
+      addNotification('Livro deletado com sucesso!');
+      close();
     }
   } catch (error) {
-    addNotification('Erro ado deletar o livro', error)
+    addNotification('Erro ado deletar o livro', error);
   }
-}
+};
 
 const handleCancel = () => {
-  emit('cancel')
-  close()
-}
+  emit('cancel');
+  close();
+};
 
 // Expõe métodos para componente pai
 defineExpose({
   open,
   close,
-})
+});
 </script>
 
 <template>
@@ -73,8 +73,6 @@ defineExpose({
     </Transition>
   </Teleport>
 </template>
-
-
 
 <style scoped>
 .confirm-dialog__overlay {

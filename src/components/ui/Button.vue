@@ -4,8 +4,8 @@
 // Botão reutilizável com variantes (primary/secondary/danger) e suporte a slot
 defineProps({
   variant: { type: String, default: 'primary' },
-  disabled: { type: Boolean, default: false }
-})
+  disabled: { type: Boolean, default: false },
+});
 defineEmits(['click']);
 </script>
 
@@ -35,13 +35,11 @@ defineEmits(['click']);
   --button_outline_color: var(--accent);
 }
 
-
 /* ---- SECONDARY ---- */
 .btn--secondary .btn__inner {
   color: var(--black);
   border-color: var(--black);
 }
-
 
 /* ---- DANGER ---- */
 .btn--danger {

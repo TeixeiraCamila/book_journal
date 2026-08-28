@@ -1,16 +1,16 @@
 <script setup>
 // Fita de status sobreposta ao card — exibe o status do livro (ex: "To be read", "Reading")
-import tape from '@/assets/images/tape_2.webp'
-import { BOOK_STATUS_MAP } from '@/constants/book'
+import tape from '@/assets/images/tape_2.webp';
+import { BOOK_STATUS_MAP } from '@/constants/book';
 
-import Star from '@/assets/images/star.png'
+import Star from '@/assets/images/star.png';
 
 defineProps({
   bookStatus: { type: String, required: true },
   rotate: { type: String, required: false },
   back: { type: String, required: false },
   book: { type: Object, required: true },
-})
+});
 </script>
 
 <template>

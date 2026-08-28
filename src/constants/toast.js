@@ -8,5 +8,5 @@ export const TOAST_CONFIG = {
   pauseOnHover: true,
   draggable: true,
   progress: true,
-  icon: true
-}
+  icon: true,
+};

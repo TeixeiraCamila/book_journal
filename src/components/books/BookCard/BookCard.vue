@@ -1,30 +1,30 @@
 <script setup>
 // Card de livro com efeito flip 3D — face frontal (capa) e verso (detalhes/ações)
-import { ref, onMounted } from 'vue'
-import { useBookStore } from '@/stores/bookStore'
-import { useNotifications } from '@/composables/useNotifications'
-import ConfirmDialog from '@/components/feedback/ConfirmDialog.vue'
-import CardFront from './CardFront.vue'
-import CardBack from './CardBack.vue'
+import { ref, onMounted } from 'vue';
+import { useBookStore } from '@/stores/bookStore';
+import { useNotifications } from '@/composables/useNotifications';
+import ConfirmDialog from '@/components/feedback/ConfirmDialog.vue';
+import CardFront from './CardFront.vue';
+import CardBack from './CardBack.vue';
 
-import { useAnimatedModal } from '@/composables/useAnimatedModal.js'
+import { useAnimatedModal } from '@/composables/useAnimatedModal.js';
 
-const { addNotification } = useNotifications()
+const { addNotification } = useNotifications();
 
 const props = defineProps({
   book: {
     type: Object,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['edit'])
+const emit = defineEmits(['edit']);
 
-const bookStore = useBookStore()
-const deleteDialog = ref(null)
-const cardEl = ref(null)
-const randomTilt = ref(0)
-const isEditing = ref(false)
+const bookStore = useBookStore();
+const deleteDialog = ref(null);
+const cardEl = ref(null);
+const randomTilt = ref(0);
+const isEditing = ref(false);
 
 const {
   isModalOpen,
@@ -35,40 +35,40 @@ const {
   closeModal,
   closeModalWithAnimation,
   toggleFlip,
-} = useAnimatedModal(cardEl, randomTilt)
+} = useAnimatedModal(cardEl, randomTilt);
 
 onMounted(() => {
-  randomTilt.value = Math.random() * 6 - 3 // -3deg a +3deg
-})
+  randomTilt.value = Math.random() * 6 - 3; // -3deg a +3deg
+});
 
 // Abre diálogo de confirmação antes de deletar o livro
 const openDeleteDialog = () => {
-  deleteDialog.value?.open()
-}
+  deleteDialog.value?.open();
+};
 
 // Deleta o livro via store e fecha modal após sucesso
 const handleDelete = async () => {
   try {
-    await bookStore.deleteBook(props.book.id)
-    closeModal() // Fecha o modal após deletar
+    await bookStore.deleteBook(props.book.id);
+    closeModal(); // Fecha o modal após deletar
     // Notificação já é exibida no ConfirmDialog após sucesso da operação
     // Não é necessário duplicar aqui
   } catch (error) {
-    addNotification('Erro ao deletar livro. Tente novamente.', error)
+    addNotification('Erro ao deletar livro. Tente novamente.', error);
   }
-}
+};
 
 // Fecha modal e emite evento de edição para o componente pai
 const handleEdit = (book) => {
-  isEditing.value = true
-  closeModal() // Fecha o modal antes de editar
+  isEditing.value = true;
+  closeModal(); // Fecha o modal antes de editar
 
   // Pequeno delay para garantir o fechamento do modal antes de emitir o evento
   setTimeout(() => {
-    emit('edit', book)
-    isEditing.value = false
-  }, 200)
-}
+    emit('edit', book);
+    isEditing.value = false;
+  }, 200);
+};
 </script>
 
 <template>

@@ -4,10 +4,10 @@
  */
 
 // Configuração de paginação
-export const DEFAULT_PAGE_SIZE = 20
+export const DEFAULT_PAGE_SIZE = 20;
 
 // Status dos livros (fallback)
-export const BOOK_STATUS_FALLBACK = ['To be read', 'Reading', 'Read', 'DNF']
+export const BOOK_STATUS_FALLBACK = ['To be read', 'Reading', 'Read', 'DNF'];
 
 // Objeto para mapeamento interno
 export const BOOK_STATUS_MAP = {
@@ -15,7 +15,7 @@ export const BOOK_STATUS_MAP = {
   READING: 'Reading',
   READ: 'Read',
   DNF: 'DNF',
-}
+};
 
 // Mapeamento para exibição em português
 export const BOOK_STATUS_LABELS = {
@@ -23,7 +23,7 @@ export const BOOK_STATUS_LABELS = {
   Reading: 'Lendo',
   Read: 'Completo',
   DNF: 'Abandonado',
-}
+};
 
 // Labels de avaliação
 export const BOOK_RATE_LABELS = {
@@ -33,10 +33,10 @@ export const BOOK_RATE_LABELS = {
   '⭐⭐⭐': '***',
   '⭐⭐': '**',
   '⭐': '*',
-}
+};
 
 // Tipos de livro (fallback)
-export const BOOK_TYPES_FALLBACK = ['🎧 Audiobook', '📱 Kindle', '📔 Mangá', '📘 Paper']
+export const BOOK_TYPES_FALLBACK = ['🎧 Audiobook', '📱 Kindle', '📔 Mangá', '📘 Paper'];
 
 // Labels de tipo para exibição
 export const BOOK_TYPE_LABELS = {
@@ -44,4 +44,4 @@ export const BOOK_TYPE_LABELS = {
   '📱 Kindle': 'Kindle 📱',
   '📔 Mangá': 'Mangá 📔',
   '📘 Paper': 'Papel 📘',
-}
+};

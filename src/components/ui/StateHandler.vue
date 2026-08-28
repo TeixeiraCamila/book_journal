@@ -7,7 +7,7 @@ defineProps({
   emptyTitle: { type: String, default: 'Nenhum item encontrado' },
   emptyText: { type: String, default: '' },
   onRetry: { type: Function, default: null },
-})
+});
 </script>
 
 <template>

@@ -1,11 +1,11 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
 // Face frontal do card — exibe capa do livro com sobreposição de status
-import CardStatus from './CardStatus.vue'
+import CardStatus from './CardStatus.vue';
 
 const props = defineProps({
   book: { type: Object, required: true },
-  rotate: { type: String, required: false }
+  rotate: { type: String, required: false },
 });
 </script>
 
@@ -22,10 +22,15 @@ const props = defineProps({
       loading="lazy"
       decoding="async"
     />
-    <img v-else class="card-front__image" src="https://placehold.co/226x354" :alt="book.name" loading="lazy" />
+    <img
+      v-else
+      class="card-front__image"
+      src="https://placehold.co/226x354"
+      :alt="book.name"
+      loading="lazy"
+    />
   </picture>
 </template>
-
 
 <style>
 .card-front__image {

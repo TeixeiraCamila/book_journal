@@ -1,19 +1,19 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
 // Paginação baseada em cursor — botões anterior/próximo e seletor de itens por página
-import { defineEmits } from 'vue'
-import Button from '@/components/ui/Button.vue'
+import { defineEmits } from 'vue';
+import Button from '@/components/ui/Button.vue';
 
 defineProps({
   bookCount: { type: Number, required: true },
   pageSize: { type: Number, required: true },
   hasPrevious: { type: Boolean, required: true },
   hasNext: { type: Boolean, required: true },
-})
+});
 
-defineEmits(['previous', 'next', 'changeSize'])
+defineEmits(['previous', 'next', 'changeSize']);
 
-const selects = [20, 4, 8, 12, 18, 24, 30]
+const selects = [20, 4, 8, 12, 18, 24, 30];
 </script>
 <template>
   <div class="pagination">
@@ -33,13 +33,9 @@ const selects = [20, 4, 8, 12, 18, 24, 30]
       </div>
     </div>
     <div class="pagination__controls">
-      <Button @click="$emit('previous')" :disabled="!hasPrevious">
-        ← Anterior
-      </Button>
+      <Button @click="$emit('previous')" :disabled="!hasPrevious"> ← Anterior </Button>
 
-      <Button @click="$emit('next')" :disabled="!hasNext">
-        Próximo →
-      </Button>
+      <Button @click="$emit('next')" :disabled="!hasNext"> Próximo → </Button>
     </div>
   </div>
 </template>

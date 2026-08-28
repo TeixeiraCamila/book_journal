@@ -36,7 +36,7 @@ function anime() {
       ease: 'back.out(1.7)',
       stagger: 0.1,
     },
-    '-=1.2'
+    '-=1.2',
   );
 
   // Animate cloud from right to left
@@ -48,7 +48,7 @@ function anime() {
       duration: 2,
       ease: 'power2.out',
     },
-    '-=2.5'
+    '-=2.5',
   );
 
   // Animate start descending
@@ -60,7 +60,7 @@ function anime() {
       duration: 2,
       ease: 'bounce.out',
     },
-    '-=2'
+    '-=2',
   );
 
   // Animate coffee appearing
@@ -72,7 +72,7 @@ function anime() {
       duration: 1.5,
       ease: 'back.out(1.7)',
     },
-    '-=1.5'
+    '-=1.5',
   );
 }
 

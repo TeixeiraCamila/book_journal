@@ -1,6 +1,6 @@
 <script setup>
 // Componente de campo de formulário — suporta text, number, select, checkbox, autocomplete e multi-select
-import { computed, ref } from 'vue'
+import { computed, ref } from 'vue';
 
 // Props recebidas pelo componente
 const props = defineProps({
@@ -60,127 +60,135 @@ const props = defineProps({
     type: [String, Number],
     default: undefined,
   },
-})
+});
 
 // Eventos emitidos para o pai (v-model)
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue']);
 
 // Estados reativos
-const showSuggestions = ref(false)
-const inputRef = ref(null)
-const multiSearchText = ref('')
-const showMultiSuggestions = ref(false)
-const multiInputRef = ref(null)
+const showSuggestions = ref(false);
+const inputRef = ref(null);
+const multiSearchText = ref('');
+const showMultiSuggestions = ref(false);
+const multiInputRef = ref(null);
 
 // Ponte entre v-model do pai e o input (text, number, select, checkbox)
 const localValue = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
-})
+});
 // Ponte entre v-model do pai e as tags (multi-select usa array)
 const localMultiValue = computed({
   get: () => (Array.isArray(props.modelValue) ? props.modelValue : []),
   set: (value) => emit('update:modelValue', value),
-})
+});
 
 // ID único para associar o <label> ao <input>
-const fieldId = computed(() => `field-${Math.random().toString(36).substr(2, 9)}`)
+const fieldId = computed(() => `field-${Math.random().toString(36).substr(2, 9)}`);
 
 // Converte o type do Vue para o atributo type do HTML (ex: "number" → number)
 const inputType = computed(() => {
   switch (props.type) {
-    case 'number': return 'number'
-    case 'email': return 'email'
-    case 'date': return 'date'
-    case 'password': return 'password'
-    case 'url': return 'url'
-    default: return 'text'
+    case 'number':
+      return 'number';
+    case 'email':
+      return 'email';
+    case 'date':
+      return 'date';
+    case 'password':
+      return 'password';
+    case 'url':
+      return 'url';
+    default:
+      return 'text';
   }
-})
+});
 
 // Filtra as opções conforme o texto digitado (máx 10 resultados)
 const filteredOptions = computed(() => {
-  if (!props.options?.length || !localValue.value) return []
+  if (!props.options?.length || !localValue.value) return [];
 
-  const search = String(localValue.value).toLowerCase()
-  return props.options.filter((opt) => String(opt).toLowerCase().includes(search)).slice(0, 10)
-})
+  const search = String(localValue.value).toLowerCase();
+  return props.options.filter((opt) => String(opt).toLowerCase().includes(search)).slice(0, 10);
+});
 
 // Filtra as opções do multi-select, excluindo as já selecionadas
 const multiFilteredOptions = computed(() => {
-  if (!props.options?.length || !multiSearchText.value) return []
-  const search = multiSearchText.value.toLowerCase()
-  const selectedLower = localMultiValue.value.map((v) => String(v).toLowerCase())
+  if (!props.options?.length || !multiSearchText.value) return [];
+  const search = multiSearchText.value.toLowerCase();
+  const selectedLower = localMultiValue.value.map((v) => String(v).toLowerCase());
   return props.options
     .filter((opt) => {
-      const optStr = String(opt).toLowerCase()
-      return optStr.includes(search) && !selectedLower.includes(optStr)
+      const optStr = String(opt).toLowerCase();
+      return optStr.includes(search) && !selectedLower.includes(optStr);
     })
-    .slice(0, 10)
-})
+    .slice(0, 10);
+});
 
 // Mostra "+ Adicionar" apenas se o texto não existe nas opções e não foi selecionado
 const multiCanAddNew = computed(() => {
-  if (!multiSearchText.value) return false
-  const trimmed = multiSearchText.value.trim()
-  if (!trimmed) return false
-  if (multiFilteredOptions.value.length > 0) return false
+  if (!multiSearchText.value) return false;
+  const trimmed = multiSearchText.value.trim();
+  if (!trimmed) return false;
+  if (multiFilteredOptions.value.length > 0) return false;
   const alreadySelected = localMultiValue.value.some(
-    (val) => String(val).toLowerCase() === trimmed.toLowerCase()
-  )
-  return !alreadySelected
-})
+    (val) => String(val).toLowerCase() === trimmed.toLowerCase(),
+  );
+  return !alreadySelected;
+});
 
 // Métodos
 
 // Seleciona uma sugestão e preenche o input
 const selectSuggestion = (option) => {
-  localValue.value = option
-  showSuggestions.value = false
-}
+  localValue.value = option;
+  showSuggestions.value = false;
+};
 
 // Mostra o dropdown ao focar o input com opções disponíveis
 const onInputFocus = () => {
-  if (props.options?.length) showSuggestions.value = true
-}
+  if (props.options?.length) showSuggestions.value = true;
+};
 
 // Mostra o dropdown quando o usuário digita no multi-select
 const onMultiInput = () => {
-  showMultiSuggestions.value = multiSearchText.value.length > 0
-}
+  showMultiSuggestions.value = multiSearchText.value.length > 0;
+};
 
 // Adiciona um valor à lista, ignorando duplicatas (case-insensitive)
 const addMultiValue = (val) => {
-  const trimmed = val.trim()
-  if (!trimmed) return
+  const trimmed = val.trim();
+  if (!trimmed) return;
 
-  const searchLower = trimmed.toLowerCase()
-  const alreadySelected = localMultiValue.value.some((v) => String(v).toLowerCase() === searchLower)
+  const searchLower = trimmed.toLowerCase();
+  const alreadySelected = localMultiValue.value.some(
+    (v) => String(v).toLowerCase() === searchLower,
+  );
   if (alreadySelected) {
-    multiSearchText.value = ''
-    showMultiSuggestions.value = false
-    return
+    multiSearchText.value = '';
+    showMultiSuggestions.value = false;
+    return;
   }
-  localMultiValue.value = [...localMultiValue.value, trimmed]
-  multiSearchText.value = ''
-  showMultiSuggestions.value = false
-  multiInputRef.value?.focus()
-}
+  localMultiValue.value = [...localMultiValue.value, trimmed];
+  multiSearchText.value = '';
+  showMultiSuggestions.value = false;
+  multiInputRef.value?.focus();
+};
 
 // Remove um valor da lista pelo índice
 const removeMultiValue = (index) => {
-  localMultiValue.value = localMultiValue.value.filter((_, i) => i !== index)
-}
+  localMultiValue.value = localMultiValue.value.filter((_, i) => i !== index);
+};
 
 // Mostra o dropdown ao focar no input do multi-select
 const onMultiFocus = () => {
-  if (props.options?.length) showMultiSuggestions.value = true
-}
+  if (props.options?.length) showMultiSuggestions.value = true;
+};
 
 // Esconde o dropdown com delay para permitir clique na opção
 const onMultiBlur = () => {
-  setTimeout(() => (showMultiSuggestions.value = false), 200)
-}
+  setTimeout(() => (showMultiSuggestions.value = false), 200);
+};
 </script>
 
 <template>
@@ -268,8 +276,8 @@ const onMultiBlur = () => {
               multiCanAddNew
                 ? addMultiValue(multiSearchText)
                 : multiFilteredOptions.length === 1
-                ? addMultiValue(multiFilteredOptions[0])
-                : null
+                  ? addMultiValue(multiFilteredOptions[0])
+                  : null
             "
           />
           <!-- Sugestões filtradas ou "+ Adicionar" para novos valores -->
@@ -329,7 +337,6 @@ const onMultiBlur = () => {
     <span v-if="error" class="form-field__error">{{ error }}</span>
   </div>
 </template>
-
 
 <style scoped>
 /* Container principal do campo */

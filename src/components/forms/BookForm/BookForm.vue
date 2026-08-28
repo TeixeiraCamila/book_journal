@@ -1,20 +1,20 @@
 <script setup>
 // Formulário de criação/edição de livros — validação, hidratação e envio para API
-import { reactive, ref, onMounted, watch, computed } from 'vue'
-import { useBookStore } from '@/stores/bookStore'
+import { reactive, ref, onMounted, watch, computed } from 'vue';
+import { useBookStore } from '@/stores/bookStore';
 import {
   BOOK_STATUS_FALLBACK,
   BOOK_RATE_LABELS,
   BOOK_TYPES_FALLBACK,
   BOOK_STATUS_MAP,
-} from '@/constants/book'
+} from '@/constants/book';
 
-import { parseCommaSeparated } from '@/utils/validation'
-import { useNotifications } from '@/composables/useNotifications'
-import FormSection from '@/components/forms/FormSection.vue'
-import FormField from '@/components/forms/FormField.vue'
-import FormActions from '@/components/forms/FormActions.vue'
-import Button from '@/components/ui/Button.vue'
+import { parseCommaSeparated } from '@/utils/validation';
+import { useNotifications } from '@/composables/useNotifications';
+import FormSection from '@/components/forms/FormSection.vue';
+import FormField from '@/components/forms/FormField.vue';
+import FormActions from '@/components/forms/FormActions.vue';
+import Button from '@/components/ui/Button.vue';
 
 // Recebe o livro para edição ou null para criação
 const props = defineProps({
@@ -26,11 +26,11 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const emit = defineEmits(['cancel', 'submit', 'edit-success'])
-const bookStore = useBookStore()
-const { addNotification } = useNotifications()
+const emit = defineEmits(['cancel', 'submit', 'edit-success']);
+const bookStore = useBookStore();
+const { addNotification } = useNotifications();
 
 const formData = reactive({
   name: '',
@@ -54,238 +54,238 @@ const formData = reactive({
   // Inicia como array vazio — o multi-select lida com adição/remoção
   quest: [],
   kindleProgress: '',
-})
+});
 
 // Armazena erros de validação de cada campo
-const fieldErrors = ref({})
+const fieldErrors = ref({});
 // Impede múltiplos envios enquanto a requisição está em andamento
-const isSubmitting = ref(false)
+const isSubmitting = ref(false);
 
 // Opções carregadas do Notion via API, com fallback para valores locais
-const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATUS_FALLBACK)
+const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATUS_FALLBACK);
 const rateOptions = computed(() =>
   bookStore.bookOptions?.Rate
     ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
-    : Object.keys(BOOK_RATE_LABELS)
-)
-const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK)
-const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || [])
-const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || [])
+    : Object.keys(BOOK_RATE_LABELS),
+);
+const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK);
+const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || []);
+const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || []);
 const publishedYearOptions = computed(() =>
-  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000')
-)
-const authorOptions = computed(() => bookStore.bookOptions?.Author || [])
-const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || [])
-const genresOptions = computed(() => bookStore.bookOptions?.Tags || [])
-const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || [])
-const questOptions = computed(() => bookStore.bookOptions?.Quest || [])
+  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000'),
+);
+const authorOptions = computed(() => bookStore.bookOptions?.Author || []);
+const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || []);
+const genresOptions = computed(() => bookStore.bookOptions?.Tags || []);
+const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || []);
+const questOptions = computed(() => bookStore.bookOptions?.Quest || []);
 
 // Retorna null se vazio para não quebrar a exibição da capa
 const coverUrl = computed(() => {
   if (formData.coverUrl) {
-    return formData.coverUrl.trim() || null
+    return formData.coverUrl.trim() || null;
   }
-  return null
-})
+  return null;
+});
 
-const isKindle = computed(() => formData.type?.includes('Kindle'))
+const isKindle = computed(() => formData.type?.includes('Kindle'));
 
 watch([() => formData.kindleProgress, () => formData.totalPages], ([progress, total]) => {
   if (progress && total && Number(progress) > 0 && Number(total) > 0) {
-    formData.currentlyOn = Math.round((Number(total) * Number(progress)) / 100)
+    formData.currentlyOn = Math.round((Number(total) * Number(progress)) / 100);
   }
-})
+});
 
 // Carrega as opções do Notion na montagem,
 // depois preenche o formulário se for edição
 onMounted(async () => {
   if (!bookStore.bookOptions) {
-    await bookStore.fetchBookOptions()
+    await bookStore.fetchBookOptions();
   }
 
   if (props.book && props.isEdit) {
-    hydrateForm(props.book)
+    hydrateForm(props.book);
   }
-})
+});
 
 // Função auxiliar para parsing robusto de startEnd
 const parseStartEndData = (startEndData) => {
   if (!startEndData) {
-    formData.startDate = ''
-    formData.endDate = ''
-    return
+    formData.startDate = '';
+    formData.endDate = '';
+    return;
   }
 
   try {
     if (typeof startEndData === 'object' && startEndData !== null) {
-      formData.startDate = startEndData.start || ''
-      formData.endDate = startEndData.end || ''
+      formData.startDate = startEndData.start || '';
+      formData.endDate = startEndData.end || '';
     } else if (typeof startEndData === 'string' && startEndData.includes('/')) {
-      const [start, end] = startEndData.split('/')
-      formData.startDate = start?.trim() || ''
-      formData.endDate = end?.trim() || ''
+      const [start, end] = startEndData.split('/');
+      formData.startDate = start?.trim() || '';
+      formData.endDate = end?.trim() || '';
     } else if (typeof startEndData === 'string') {
-      formData.startDate = startEndData || ''
-      formData.endDate = ''
+      formData.startDate = startEndData || '';
+      formData.endDate = '';
     } else if (Array.isArray(startEndData)) {
-      formData.startDate = startEndData[0] || ''
-      formData.endDate = startEndData[1] || ''
+      formData.startDate = startEndData[0] || '';
+      formData.endDate = startEndData[1] || '';
     } else {
-      formData.startDate = ''
-      formData.endDate = ''
+      formData.startDate = '';
+      formData.endDate = '';
     }
   } catch {
-    formData.startDate = ''
-    formData.endDate = ''
+    formData.startDate = '';
+    formData.endDate = '';
   }
-}
+};
 
 // Função auxiliar para preencher formData a partir de um livro
 const hydrateForm = (book) => {
-  if (!book) return
+  if (!book) return;
 
-  formData.name = book.name || ''
-  formData.author = book.author?.join(', ') || ''
-  formData.status = book.status || ''
-  formData.rate = book.rate || ''
-  formData.totalPages = book.totalPages || ''
-  formData.currentlyOn = book.currentlyOn || ''
-  formData.type = book.type?.join(', ') || ''
-  formData.firstPublished = book.firstPublished || ''
-  formData.iHaveCopy = book.iHaveCopy || false
-  formData.wasReadIn = book.wasReadIn?.join(', ') || ''
-  formData.coverUrl = book.cover?.[0] || ''
-  formData.literaryAtlas = book.literaryAtlas || ''
-  formData.genres = book.genres || []
-  formData.publishedBy = book.publishedBy?.join(', ') || ''
-  formData.bookSeries = book.bookSeries || ''
-  formData.quest = book.quest || []
+  formData.name = book.name || '';
+  formData.author = book.author?.join(', ') || '';
+  formData.status = book.status || '';
+  formData.rate = book.rate || '';
+  formData.totalPages = book.totalPages || '';
+  formData.currentlyOn = book.currentlyOn || '';
+  formData.type = book.type?.join(', ') || '';
+  formData.firstPublished = book.firstPublished || '';
+  formData.iHaveCopy = book.iHaveCopy || false;
+  formData.wasReadIn = book.wasReadIn?.join(', ') || '';
+  formData.coverUrl = book.cover?.[0] || '';
+  formData.literaryAtlas = book.literaryAtlas || '';
+  formData.genres = book.genres || [];
+  formData.publishedBy = book.publishedBy?.join(', ') || '';
+  formData.bookSeries = book.bookSeries || '';
+  formData.quest = book.quest || [];
 
-  formData.kindleProgress = ''
+  formData.kindleProgress = '';
 
-  parseStartEndData(book.startEnd)
-}
+  parseStartEndData(book.startEnd);
+};
 
 // Watch para atualizar o form quando o livro mudar (caso o book seja carregado assíncronamente)
 watch(
   () => props.book,
   (newBook) => {
     if (newBook && props.isEdit) {
-      hydrateForm(newBook)
+      hydrateForm(newBook);
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // Auto-setar status para Read e wasReadIn quando endDate for preenchido
 watch(
   () => formData.endDate,
   (newEndDate) => {
-    if (!newEndDate) return
+    if (!newEndDate) return;
 
     if (formData.status !== BOOK_STATUS_MAP.READ) {
-      formData.status = BOOK_STATUS_MAP.READ
+      formData.status = BOOK_STATUS_MAP.READ;
     }
 
     if (!formData.wasReadIn) {
-      const year = new Date(newEndDate).getFullYear()
+      const year = new Date(newEndDate).getFullYear();
       if (!isNaN(year)) {
-        formData.wasReadIn = String(year)
+        formData.wasReadIn = String(year);
       }
     }
-  }
-)
+  },
+);
 
 const resetFormData = () => {
   Object.keys(formData).forEach((key) => {
-    if (typeof formData[key] === 'boolean') formData[key] = false
-    else if (Array.isArray(formData[key])) formData[key] = []
-    else formData[key] = ''
-  })
-}
+    if (typeof formData[key] === 'boolean') formData[key] = false;
+    else if (Array.isArray(formData[key])) formData[key] = [];
+    else formData[key] = '';
+  });
+};
 
 // Valida campos, monta o objeto e envia para a API via store
 const handleSubmit = async () => {
   // Reinicia os erros e a lista para exibir apenas os novos
-  fieldErrors.value = {}
-  const errorMessages = []
+  fieldErrors.value = {};
+  const errorMessages = [];
 
   if (!formData.name || !formData.name.trim()) {
-    fieldErrors.value.name = 'Título é obrigatório'
-    errorMessages.push('Título')
+    fieldErrors.value.name = 'Título é obrigatório';
+    errorMessages.push('Título');
   }
 
   if (!formData.author || !formData.author.trim()) {
-    fieldErrors.value.author = 'Autor é obrigatório'
-    errorMessages.push('Autor')
+    fieldErrors.value.author = 'Autor é obrigatório';
+    errorMessages.push('Autor');
   }
 
   if (formData.totalPages) {
     if (isNaN(formData.totalPages) || formData.totalPages < 0) {
-      fieldErrors.value.totalPages = 'Total de páginas deve ser um número positivo'
-      errorMessages.push('Total de páginas')
+      fieldErrors.value.totalPages = 'Total de páginas deve ser um número positivo';
+      errorMessages.push('Total de páginas');
     }
   }
 
   if (formData.currentlyOn) {
     if (isNaN(formData.currentlyOn) || formData.currentlyOn < 0) {
-      fieldErrors.value.currentlyOn = 'Página atual deve ser um número positivo'
-      errorMessages.push('Página atual')
+      fieldErrors.value.currentlyOn = 'Página atual deve ser um número positivo';
+      errorMessages.push('Página atual');
     } else if (formData.totalPages && Number(formData.currentlyOn) > Number(formData.totalPages)) {
-      fieldErrors.value.currentlyOn = 'Página atual não pode ser maior que o total'
-      errorMessages.push('Página atual')
+      fieldErrors.value.currentlyOn = 'Página atual não pode ser maior que o total';
+      errorMessages.push('Página atual');
     }
   }
 
   // Validação de ano (opcional - só valida se preenchido)
   if (formData.firstPublished) {
-    const currentYear = new Date().getFullYear()
+    const currentYear = new Date().getFullYear();
     if (!/^\d{4}$/.test(formData.firstPublished)) {
-      fieldErrors.value.firstPublished = 'Ano deve ter 4 dígitos'
-      errorMessages.push('Ano de publicação')
+      fieldErrors.value.firstPublished = 'Ano deve ter 4 dígitos';
+      errorMessages.push('Ano de publicação');
     } else if (
       Number(formData.firstPublished) < 1000 ||
       Number(formData.firstPublished) > currentYear + 1
     ) {
-      fieldErrors.value.firstPublished = `Ano deve estar entre 1000 e ${currentYear + 1}`
-      errorMessages.push('Ano de publicação')
+      fieldErrors.value.firstPublished = `Ano deve estar entre 1000 e ${currentYear + 1}`;
+      errorMessages.push('Ano de publicação');
     }
   }
 
   // Validação de datas (opcional - só valida se ambas preenchidas)
   if (formData.startDate && formData.endDate) {
-    const start = new Date(formData.startDate)
-    const end = new Date(formData.endDate)
+    const start = new Date(formData.startDate);
+    const end = new Date(formData.endDate);
 
     if (start > end) {
-      fieldErrors.value.endDate = 'Data de término deve ser posterior à data de início'
-      errorMessages.push('Data de término')
+      fieldErrors.value.endDate = 'Data de término deve ser posterior à data de início';
+      errorMessages.push('Data de término');
     }
   }
 
   // Só mostra notificação se houver erros
   if (errorMessages.length > 0) {
-    addNotification(`Corrija: ${errorMessages.join(', ')}`, 'error')
-    return
+    addNotification(`Corrija: ${errorMessages.join(', ')}`, 'error');
+    return;
   }
 
-  isSubmitting.value = true
+  isSubmitting.value = true;
 
   try {
     // Montar startEnd corretamente (objeto com datas ISO 8601)
-    let startEndValue = undefined
+    let startEndValue = undefined;
     if (formData.startDate || formData.endDate) {
       if (formData.startDate && formData.endDate) {
         startEndValue = {
           start: formData.startDate,
           end: formData.endDate,
           time_zone: null,
-        }
+        };
       } else {
         startEndValue = {
           start: formData.startDate || formData.endDate,
           time_zone: null,
-        }
+        };
       }
     }
 
@@ -307,40 +307,40 @@ const handleSubmit = async () => {
       publishedBy: parseCommaSeparated(formData.publishedBy),
       bookSeries: formData.bookSeries || undefined,
       quest: formData.quest,
-    }
+    };
 
     // Se tem ID na rota: atualiza. Senão: cria um novo livro
     if (props.isEdit && props.book) {
-      await bookStore.updateBook(props.book.id, bookData)
-      addNotification('Livro atualizado com sucesso!', 'success')
-      emit('edit-success', props.book.id)
+      await bookStore.updateBook(props.book.id, bookData);
+      addNotification('Livro atualizado com sucesso!', 'success');
+      emit('edit-success', props.book.id);
     } else {
-      await bookStore.createBook(bookData)
-      addNotification('Livro criado com sucesso!', 'success')
+      await bookStore.createBook(bookData);
+      addNotification('Livro criado com sucesso!', 'success');
     }
 
     // Após criar, limpa os campos. Na edição mantém os valores.
     if (!props.isEdit) {
-      resetFormData()
+      resetFormData();
     }
 
-    emit('submit')
+    emit('submit');
   } catch {
-    addNotification(`Erro ao ${props.isEdit ? 'atualizar' : 'criar'} livro`, 'error')
+    addNotification(`Erro ao ${props.isEdit ? 'atualizar' : 'criar'} livro`, 'error');
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
 // Volta para a página anterior sem salvar
 const handleCancel = () => {
   // Na criação limpa os dados; na edição o livro permanece intacto
   if (!props.isEdit) {
-    resetFormData()
+    resetFormData();
   }
 
-  emit('cancel')
-}
+  emit('cancel');
+};
 </script>
 
 <template>

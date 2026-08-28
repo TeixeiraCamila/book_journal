@@ -1,16 +1,19 @@
 <script setup>
 // Container de toasts — gerencia múltiplas notificações com animação de entrada/saída
-import Button from '@/components/ui/Button.vue'
+import Button from '@/components/ui/Button.vue';
 const props = defineProps({
   notifications: {
     type: Array,
-    required: true
-  }
-})
+    required: true,
+  },
+});
 
 const removeNotification = (id) => {
-  props.notifications.splice(props.notifications.findIndex(n => n.id === id), 1)
-}
+  props.notifications.splice(
+    props.notifications.findIndex((n) => n.id === id),
+    1,
+  );
+};
 </script>
 
 <template>
@@ -23,7 +26,15 @@ const removeNotification = (id) => {
         :class="`toast--${notification.type}`"
         role="alert"
       >
-        <span class="toast__icon">{{ notification.type === 'success' ? '✅' : notification.type === 'error' ? '❌' : notification.type === 'warning' ? '⚠️' : 'ℹ️' }}</span>
+        <span class="toast__icon">{{
+          notification.type === 'success'
+            ? '✅'
+            : notification.type === 'error'
+              ? '❌'
+              : notification.type === 'warning'
+                ? '⚠️'
+                : 'ℹ️'
+        }}</span>
         <span class="toast__message">{{ notification.message }}</span>
         <Button @click="removeNotification(notification.id)" class="toast__close">×</Button>
       </div>
@@ -47,7 +58,9 @@ const removeNotification = (id) => {
   background: white;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  box-shadow:
+    0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
   padding: 12px 16px;
   display: flex;
   align-items: center;
@@ -56,10 +69,18 @@ const removeNotification = (id) => {
   animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.toast--success { border-left: 4px solid #10b981; }
-.toast--error { border-left: 4px solid #ef4444; }
-.toast--warning { border-left: 4px solid #f59e0b; }
-.toast--info { border-left: 4px solid #3b82f6; }
+.toast--success {
+  border-left: 4px solid #10b981;
+}
+.toast--error {
+  border-left: 4px solid #ef4444;
+}
+.toast--warning {
+  border-left: 4px solid #f59e0b;
+}
+.toast--info {
+  border-left: 4px solid #3b82f6;
+}
 
 .toast__icon {
   font-size: 18px;

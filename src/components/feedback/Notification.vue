@@ -41,8 +41,6 @@ const icon = computed(() => {
   </Transition>
 </template>
 
-
-
 <style scoped>
 .notification {
   position: fixed;

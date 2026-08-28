@@ -1,73 +1,83 @@
 <script setup>
 // Tela de login — autentica usuário por nome/email ou permite acesso como visitante
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '@/stores/userStore'
-import Button from '@/components/ui/Button.vue'
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
+import Button from '@/components/ui/Button.vue';
 
-const router = useRouter()
-const userStore = useUserStore()
-const name = ref('')
-const email = ref('')
-const error = ref('')
+const router = useRouter();
+const userStore = useUserStore();
+const name = ref('');
+const email = ref('');
+const error = ref('');
 
 onMounted(async () => {
   try {
-    await userStore.fetchUsers()
+    await userStore.fetchUsers();
   } catch (err) {
-    console.error('Erro ao carregar usuários:', err)
-    error.value = 'Erro ao conectar com o servidor. Verifique se o backend está rodando.'
+    console.error('Erro ao carregar usuários:', err);
+    error.value = 'Erro ao conectar com o servidor. Verifique se o backend está rodando.';
   }
-})
+});
 
 // Busca usuário por nome+email e redireciona para home se encontrado
 const handleLogin = () => {
-  error.value = ''
+  error.value = '';
   const user = userStore.users.find((u) => {
     if (u.type === 'person' && u.person?.email) {
       return (
         u.person.email.toLowerCase() === email.value.toLowerCase() &&
         u.name.toLowerCase() === name.value.toLowerCase()
-      )
+      );
     }
-    return false
-  })
+    return false;
+  });
   if (user) {
-    userStore.setActiveUser(user.id)
-    localStorage.setItem('USER_LOGADO', user.id)
-    router.push({ name: 'home' })
+    userStore.setActiveUser(user.id);
+    localStorage.setItem('USER_LOGADO', user.id);
+    router.push({ name: 'home' });
   } else {
-    error.value = 'Usuário não encontrado. Verifique seu nome e email.'
+    error.value = 'Usuário não encontrado. Verifique seu nome e email.';
   }
-}
+};
 
 // Cria sessão de visitante (sem credenciais) e redireciona para home
 const handleGuestLogin = () => {
-  error.value = ''
-  userStore.setGuestUser()
-  router.push({ name: 'home' })
+  error.value = '';
+  userStore.setGuestUser();
+  router.push({ name: 'home' });
 };
 </script>
 
 <template>
   <div class="login-view__container">
-
     <!-- Card que sai por baixo do projetor -->
     <div class="login-view__content">
       <h2 class="login-view__title">Login</h2>
       <form @submit.prevent="handleLogin" class="login-view__form">
         <div class="login-view__form-group">
           <label for="name" class="login-view__label">Nome</label>
-          <input id="name" v-model="name" type="text" class="login-view__input" placeholder="seu nome" required />
+          <input
+            id="name"
+            v-model="name"
+            type="text"
+            class="login-view__input"
+            placeholder="seu nome"
+            required
+          />
         </div>
         <div class="login-view__form-group">
           <label for="email" class="login-view__label">Email</label>
-          <input id="email" v-model="email" type="email" class="login-view__input" placeholder="seu@email.com"
-            required />
+          <input
+            id="email"
+            v-model="email"
+            type="email"
+            class="login-view__input"
+            placeholder="seu@email.com"
+            required
+          />
         </div>
-        <Button type="submit" class="login-view__button">
-          Entrar
-        </Button>
+        <Button type="submit" class="login-view__button"> Entrar </Button>
       </form>
       <div class="login-view__guest-container">
         <Button type="button" class="login-view__guest-btn" @click="handleGuestLogin">
@@ -80,9 +90,8 @@ const handleGuestLogin = () => {
     </div>
 
     <div class="login-view__typewriter">
-      <img src="../assets/images/login/login_typewriter.png" alt="typewriter" key=""  />
+      <img src="../assets/images/login/login_typewriter.png" alt="typewriter" key="" />
     </div>
-
   </div>
 </template>
 
@@ -103,7 +112,6 @@ const handleGuestLogin = () => {
   justify-content: center;
 }
 
-
 .login-view__content {
   position: relative;
   z-index: 2;
@@ -120,7 +128,7 @@ const handleGuestLogin = () => {
 
 .login-view__typewriter {
   position: absolute;
-  bottom: 5%;
+  bottom: -10px;
   left: 48%;
   transform: translateX(-50%);
   z-index: 4;
@@ -137,7 +145,6 @@ const handleGuestLogin = () => {
     bottom: -5%;
     left: 46%;
   }
-
 }
 
 @media (max-width: 360px) {
@@ -161,7 +168,7 @@ const handleGuestLogin = () => {
   flex-direction: column;
   gap: 1rem;
   margin-bottom: 1rem;
-} 
+}
 
 .login-view__input:focus {
   outline: none;
@@ -183,7 +190,7 @@ const handleGuestLogin = () => {
   }
 
   70% {
-    transform: translateY(-40px);
+    transform: translateY(-30px);
     opacity: 1;
   }
 

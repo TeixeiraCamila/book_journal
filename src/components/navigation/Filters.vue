@@ -100,10 +100,13 @@ const clearFilters = () => {
   height: 80vh;
   justify-content: space-between;
   background-color: #e6dedc;
-  background-image: linear-gradient(-90deg, #5a7da480 50%, transparent 50%),
+  background-image:
+    linear-gradient(-90deg, #5a7da480 50%, transparent 50%),
     linear-gradient(#5a7da480 50%, transparent 50%);
   background-size: 20px 20px;
-  background-position: 0 0, 10px 10px;
+  background-position:
+    0 0,
+    10px 10px;
 }
 .filters::after {
   content: '';

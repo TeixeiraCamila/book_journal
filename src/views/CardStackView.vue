@@ -1,61 +1,61 @@
 // View principal — stack de cards vertical com Swiper (intro, book list, reading, TBR)
 <script setup>
-import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue'
-import { useRoute } from 'vue-router'
-import { useBookStore } from '@/stores/bookStore'
-import { BOOK_STATUS_MAP } from '@/constants/book'
-import CardIntro from '@/components/features/Stack/CardIntro.vue'
+import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { useBookStore } from '@/stores/bookStore';
+import { BOOK_STATUS_MAP } from '@/constants/book';
+import CardIntro from '@/components/features/Stack/CardIntro.vue';
 
-const bookStore = useBookStore()
+const bookStore = useBookStore();
 
 // Componentes carregados sob demanda para otimizar performance inicial
-const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'))
-const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'))
+const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'));
+const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'));
 const ReadingList = defineAsyncComponent(
   () => import('@/components/features/ReadingList/ReadingList.vue'),
-)
+);
 const ThisYearList = defineAsyncComponent(
   () => import('@/components/features/ThisYearList/ThisYearList.vue'),
-)
+);
 
 // Swiper.js — biblioteca de slides com efeito de cards empilhados (vertical)
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { EffectCards } from 'swiper/modules'
-import 'swiper/css'
-import 'swiper/css/effect-cards'
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import { EffectCards } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/effect-cards';
 
-const route = useRoute()
-const swiperInstance = ref(null)
-const modules = [EffectCards]
+const route = useRoute();
+const swiperInstance = ref(null);
+const modules = [EffectCards];
 
 function onSwiperInit(swiper) {
-  swiperInstance.value = swiper
+  swiperInstance.value = swiper;
 }
 
 // Ao mudar de slide, pré-carrega dados dos próximos cards (leitura adiada)
 const onSlideChange = (swiper) => {
-  const activeIndex = swiper.activeIndex
+  const activeIndex = swiper.activeIndex;
 
   if (activeIndex === 1) {
-    bookStore.fetchBooksByStatus()
-    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
-    prefetchNextSlides([2, 3, 4])
+    bookStore.fetchBooksByStatus();
+    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
+    prefetchNextSlides([2, 3, 4]);
   }
   if (activeIndex === 2) {
-    bookStore.fetchBooksReadThisYear()
-    prefetchNextSlides([3])
+    bookStore.fetchBooksReadThisYear();
+    prefetchNextSlides([3]);
   }
   if (activeIndex === 3) {
-    prefetchNextSlides([4])
+    prefetchNextSlides([4]);
   }
-}
+};
 
 // Pré-carrega chunks de componentes em produção para navegação instantânea
 function prefetchNextSlides(slideIndices) {
   if (import.meta.env.PROD) {
     slideIndices.forEach((index) => {
-      triggerChunkPrefetch(index)
-    })
+      triggerChunkPrefetch(index);
+    });
   }
 }
 
@@ -65,35 +65,35 @@ function triggerChunkPrefetch(slideIndex) {
     2: () => import('@/components/features/ReadingList/ReadingList.vue'),
     3: () => import('@/components/features/TBRList/TBRList.vue'),
     4: () => import('@/components/features/ThisYearList/ThisYearList.vue'),
-  }
+  };
 
-  const loader = chunks[slideIndex]
+  const loader = chunks[slideIndex];
   if (loader) {
-    loader().catch(() => {})
+    loader().catch(() => {});
   }
 }
 
 // Na montagem, pré-carrega slides e verifica se há slide alvo via query string
 onMounted(() => {
   setTimeout(() => {
-    prefetchNextSlides([1, 2, 3])
-  }, 1500)
+    prefetchNextSlides([1, 2, 3]);
+  }, 1500);
 
-  const slideTarget = route.query.slide
+  const slideTarget = route.query.slide;
   if (slideTarget) {
-    const target = Number(slideTarget)
+    const target = Number(slideTarget);
     if (target >= 2) {
-      bookStore.fetchBooksByStatus()
-      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)
+      bookStore.fetchBooksByStatus();
+      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
     }
     if (target >= 3) {
-      bookStore.fetchBooksReadThisYear()
+      bookStore.fetchBooksReadThisYear();
     }
     nextTick(() => {
-      swiperInstance.value?.slideTo(target, 300)
-    })
+      swiperInstance.value?.slideTo(target, 300);
+    });
   }
-})
+});
 </script>
 
 <template>
