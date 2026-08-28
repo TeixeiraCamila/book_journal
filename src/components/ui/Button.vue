@@ -47,13 +47,9 @@ defineEmits(['click']);
   --button_outline_color: #b91c1c;
 }
 
-.btn--danger .btn__inner {
-  color: white;
-}
-
-.btn--danger:hover .btn__inner {
+.btn--danger:hover  {
   background: #b91c1c;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  /* box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); */
 }
 
 /* ---- DISABLED ---- */

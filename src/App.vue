@@ -1,7 +1,8 @@
 <script setup>
 // Componente raiz — renderiza a rota ativa com transição de chave por path
 import { RouterView, useRoute } from 'vue-router';
-import { computed } from 'vue';
+
+
 
 const route = useRoute();
 </script>

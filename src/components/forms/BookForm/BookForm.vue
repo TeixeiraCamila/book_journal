@@ -14,7 +14,6 @@ import { useNotifications } from '@/composables/useNotifications';
 import FormSection from '@/components/forms/FormSection.vue';
 import FormField from '@/components/forms/FormField.vue';
 import FormActions from '@/components/forms/FormActions.vue';
-import Button from '@/components/ui/Button.vue';
 
 // Recebe o livro para edição ou null para criação
 const props = defineProps({
@@ -345,13 +344,6 @@ const handleCancel = () => {
 
 <template>
   <div class="book-form">
-    <div class="book-form__header">
-      <h2 class="book-form__title">
-        {{ isEdit ? 'Editar Livro' : 'Adicionar Novo Livro' }}
-      </h2>
-      <Button @click="handleCancel" class="book-form__close-btn" variant="secondary">×</Button>
-    </div>
-
     <form @submit.prevent="handleSubmit" class="book-form__content">
       <!-- Layout: 30% Cover | 70% Campos -->
       <div class="book-form__layout">
@@ -585,37 +577,6 @@ const handleCancel = () => {
   overflow: hidden;
 }
 
-.book-form__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.book-form__title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0;
-}
-
-.book-form__close-btn {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  cursor: pointer;
-  color: #6b7280;
-  padding: 0.25rem;
-  border-radius: 4px;
-  transition: all 0.2s;
-}
-
-.book-form__close-btn:hover {
-  background: #f3f4f6;
-  color: #374151;
-}
-
 .book-form__content {
   flex: 1;
   padding: 1.5rem;
@@ -648,6 +609,7 @@ const handleCancel = () => {
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 2px 2px rgba(218, 147, 143, 0.05);
 }
 
 .book-form__cover-image {
