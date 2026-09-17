@@ -5,6 +5,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import Button from '@/components/ui/Button.vue';
+import tape from '@/assets/images/tape_2.webp';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -51,6 +52,10 @@ const handleLogin = async () => {
   <div class="login-view__container">
     <!-- Etapa 1: chegada -->
     <div v-if="step === 'entry'" class="login-view__content login-view__content--entry">
+      <div class="login-view__tape">
+        <img :src="tape" alt="" class="login-view__tape-img" />
+      </div>
+
       <h2 class="login-view__title">Diário de Leitura</h2>
       <p class="login-view__subtitle">Sua estante espera por você.</p>
 
@@ -69,6 +74,10 @@ const handleLogin = async () => {
       class="login-view__content login-view__content--form"
       @submit.prevent="handleLogin"
     >
+      <div class="login-view__tape">
+        <img :src="tape" alt="" class="login-view__tape-img" />
+      </div>
+
       <h2 class="login-view__title">Quem está entrando?</h2>
 
       <div class="login-view__form-group">
@@ -114,13 +123,6 @@ const handleLogin = async () => {
   </div>
 </template>
 
-<style>
-.app__view.app__main-content--login {
-  background: var(--accent5_muted);
-  width: 100%;
-}
-</style>
-
 <style scoped>
 .login-view__container {
   position: relative;
@@ -140,14 +142,27 @@ const handleLogin = async () => {
   padding: 1.5rem 1.5rem 1.25rem;
   max-width: 250px;
   min-height: 357px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 20px 60px rgba(0, 0, 0, 0.18),
-    0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: ejectCard-45f5edd7 2s ease forwards;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+  animation: ejectCard 2s ease forwards;
+}
+
+.login-view__tape {
+  position: absolute;
+  top: -24px;
+  left: 50%;
+  width: 140px;
+  transform: translateX(-50%) rotate(-5deg);
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
+}
+
+.login-view__tape-img {
+  width: 100%;
+  display: block;
 }
 
 .login-view__title {
@@ -195,6 +210,8 @@ const handleLogin = async () => {
 
 .login-view__button {
   width: 100%;
+  background: var(--accent);
+  color: var(--black);
 }
 
 /* Ações secundárias: visitante e voltar como texto, não botão */
@@ -223,7 +240,7 @@ const handleLogin = async () => {
 
 .login-view__error-message {
   margin-top: 0.5rem;
-  color: #a63a35;
+  color: #991b1b;
   font-family: 'Raleway', sans-serif;
   font-size: 0.75rem;
 }

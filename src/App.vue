@@ -14,7 +14,7 @@ const handleLogout = () => {
 </script>
 
 <template>
-  <div class="app__view" :class="{ 'app__main-content--login': route.name === 'login' }">
+  <div class="app__view">
     <button
       v-if="route.name !== 'login' && userStore.userActive"
       type="button"
