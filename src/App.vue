@@ -1,14 +1,28 @@
 <script setup>
-// Componente raiz — renderiza a rota ativa com transição de chave por path
-import { RouterView, useRoute } from 'vue-router';
-
-
+// Componente raiz — renderiza a rota ativa com botão de saída quando autenticado
+import { RouterView, useRoute, useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/userStore';
 
 const route = useRoute();
+const router = useRouter();
+const userStore = useUserStore();
+
+const handleLogout = () => {
+  userStore.logout();
+  router.push({ name: 'login' });
+};
 </script>
 
 <template>
   <div class="app__view" :class="{ 'app__main-content--login': route.name === 'login' }">
+    <button
+      v-if="route.name !== 'login' && userStore.userActive"
+      type="button"
+      class="app__logout"
+      @click="handleLogout"
+    >
+      Sair
+    </button>
     <main class="app__main-content">
       <router-view v-slot="{ Component, route }">
         <component :is="Component" :key="route.path" />
@@ -26,5 +40,31 @@ const route = useRoute();
 }
 .app__main-content {
   width: 100%;
+}
+</style>
+
+<style scoped>
+.app__logout {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  width: auto;
+  height: auto;
+  padding: 0.4rem 1rem;
+  background: var(--white);
+  color: var(--black);
+  font-family: 'Raleway', sans-serif;
+  font-size: 0.8rem;
+  border: 1px solid var(--accent4);
+  border-radius: 999px;
+  box-shadow: none;
+}
+
+.app__logout:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--accent4);
+  background: var(--accent_muted);
 }
 </style>

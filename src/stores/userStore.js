@@ -1,9 +1,7 @@
-// Pinia store de usuários — gerencia autenticação, sessão visitante e lista de usuários
+// Pinia store de usuários — gerencia sessão (login/saída/visitante) e lista de usuários
 import { defineStore } from 'pinia';
-import { userAPI } from '../services/api';
-import { extractErrorMessage } from '@/utils/errorHandler';
-
-const { _handleError } = extractErrorMessage();
+import { userAPI, authAPI } from '../services/api';
+import { extractErrorMessage, logError } from '@/utils/errorHandler';
 
 const GUEST_USER = {
   id: 'guest',
@@ -12,8 +10,9 @@ const GUEST_USER = {
 };
 
 const STORAGE_KEYS = {
-  USER: 'USER_LOGADO',
-  IS_GUEST: 'IS_GUEST',
+  TOKEN: 'SESSION_TOKEN',
+  USER: 'SESSION_USER',
+  GUEST: 'IS_GUEST',
 };
 
 export const useUserStore = defineStore('user', {
@@ -23,10 +22,13 @@ export const useUserStore = defineStore('user', {
     loading: false,
     error: null,
     isGuest: false,
+    token: null,
   }),
 
   getters: {
     allUsers: (state) => state.users,
+
+    isAuthenticated: (state) => state.token !== null,
 
     getUserById: (state) => (userId) => {
       return state.users.find((user) => user.id === userId);
@@ -48,7 +50,7 @@ export const useUserStore = defineStore('user', {
 
         return response.data;
       } catch (error) {
-        _handleError('fetchUsers', error);
+        logError('fetchUsers', error);
         throw error;
       } finally {
         this.loading = false;
@@ -65,7 +67,7 @@ export const useUserStore = defineStore('user', {
 
         return this.users;
       } catch (error) {
-        _handleError('fetchAllUsers', error);
+        logError('fetchAllUsers', error);
         throw error;
       } finally {
         this.loading = false;
@@ -91,78 +93,82 @@ export const useUserStore = defineStore('user', {
           this.users.push(data);
         }
 
-        this.userActive = data;
         return data;
       } catch (error) {
-        _handleError('fetchUser', error);
+        logError('fetchUser', error);
         throw error;
       } finally {
         this.loading = false;
       }
     },
 
-    _saveActiveUser(userId) {
-      localStorage.setItem(STORAGE_KEYS.USER, userId);
+    // Autentica no backend: email/nome + código de acesso → token de sessão
+    async login({ email, codigo }) {
+      this.error = null;
+
+      try {
+        const { data } = await authAPI.login({ email, codigo });
+
+        this.token = data.token;
+        this.userActive = data.user;
+        this.isGuest = false;
+
+        localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
+        localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
+        localStorage.removeItem(STORAGE_KEYS.GUEST);
+
+        return data.user;
+      } catch (error) {
+        // Mensagem específica do backend (ex: "O código não confere.")
+        this.error = error.response?.data?.message || extractErrorMessage(error);
+        throw error;
+      }
     },
 
-    async loadActiveUser() {
-      const userId = localStorage.getItem(STORAGE_KEYS.USER);
+    // Restaura a sessão persistida (token ou modo visitante)
+    loadSession() {
+      const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
+      const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 
-      if (!userId) {
-        return false;
+      if (token && storedUser) {
+        try {
+          this.token = token;
+          this.userActive = JSON.parse(storedUser);
+          this.isGuest = false;
+          return true;
+        } catch {
+          this.logout();
+        }
       }
 
-      if (userId === GUEST_USER.id) {
+      if (localStorage.getItem(STORAGE_KEYS.GUEST) === 'true') {
         this.setGuestUser();
         return true;
       }
 
-      const user = this.users.find((u) => u.id === userId);
-      if (user) {
-        this.userActive = user;
-        this.isGuest = false;
-        return true;
-      }
-
-      try {
-        await this.fetchUser(userId);
-        this.isGuest = false;
-        return true;
-      } catch {
-        return false;
-      }
+      return false;
     },
 
-    setActiveUser(userId) {
-      const user = this.users.find((u) => u.id === userId);
-      if (user) {
-        this.userActive = user;
-        this.isGuest = false;
-        this._saveActiveUser(userId);
-      }
-    },
-
+    // Modo visitante: acesso de leitura sem conta
     setGuestUser() {
       this.userActive = { ...GUEST_USER };
       this.isGuest = true;
-      this._saveActiveUser(GUEST_USER.id);
-      localStorage.setItem(STORAGE_KEYS.IS_GUEST, 'true');
+      this.token = null;
+
+      localStorage.setItem(STORAGE_KEYS.GUEST, 'true');
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
+      localStorage.removeItem(STORAGE_KEYS.USER);
     },
 
-    initGuestSession() {
-      const stored = localStorage.getItem(STORAGE_KEYS.IS_GUEST) === 'true';
-      const userId = localStorage.getItem(STORAGE_KEYS.USER);
-      if (stored && userId === GUEST_USER.id) {
-        this.isGuest = true;
-        this.userActive = { ...GUEST_USER };
-      }
-    },
-
-    clearActiveUser() {
+    // Encerra a sessão (login ou visitante) e limpa o armazenamento
+    logout() {
+      this.token = null;
       this.userActive = null;
       this.isGuest = false;
+
+      localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);
-      localStorage.removeItem(STORAGE_KEYS.IS_GUEST);
+      localStorage.removeItem(STORAGE_KEYS.GUEST);
     },
   },
 });

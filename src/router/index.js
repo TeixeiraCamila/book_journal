@@ -32,33 +32,23 @@ const router = createRouter({
   ],
 });
 
-// Guard de navegação — verifica autenticação e redireciona conforme necessário
-router.beforeEach((to, from, next) => {
+// Guard de navegação — verifica sessão (token JWT ou modo visitante) e redireciona
+router.beforeEach((to, _from, next) => {
   const userStore = useUserStore();
-  const saved = localStorage.getItem('USER_LOGADO');
-  const isGuest = localStorage.getItem('IS_GUEST') === 'true';
 
-  // Verifica se é usuário visitante
-  if (isGuest && saved === 'guest') {
-    userStore.initGuestSession();
-  } else if (saved) {
-    userStore.userActive = saved;
-  }
+  // Tenta restaurar a sessão do localStorage na primeira passagem
+  const hasSession = userStore.userActive !== null || userStore.loadSession();
+  const isAuthenticated = hasSession;
 
-  const requiresAuth = to.meta.requiresAuth;
-  const isAuthenticated = userStore.userActive !== null || userStore.isGuest;
-
-  // precisa de autenticação e o usuário não está logado
-  if (requiresAuth && !isAuthenticated) {
+  if (to.meta.requiresAuth && !isAuthenticated) {
     return next({ name: 'login' });
   }
 
-  // se o usuário está logado e tenta acessar o login
-  else if (to.name === 'login' && isAuthenticated) {
+  if (to.name === 'login' && isAuthenticated) {
     return next({ name: 'home' });
-  } else {
-    next();
   }
+
+  next();
 });
 
 export default router;

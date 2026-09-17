@@ -14,6 +14,34 @@ const api = axios.create({
   },
 });
 
+// Anexa o token de sessão em toda requisição que possuir um
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('SESSION_TOKEN');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Sessão expirada/inválida (401 fora do login): limpa e retorna ao login
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url || '';
+    const isAuthCall = url.startsWith('/api/auth/');
+    const isOnLoginPage =
+      typeof window !== 'undefined' && window.location.pathname === '/login';
+
+    if (status === 401 && !isAuthCall && !isOnLoginPage) {
+      localStorage.removeItem('SESSION_TOKEN');
+      localStorage.removeItem('SESSION_USER');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  },
+);
+
 export { api };
 
 // ==== Books API ==== //
@@ -88,5 +116,17 @@ export const userAPI = {
 
   getById(userId) {
     return api.get(`/api/users/${userId}`);
+  },
+};
+
+// ==== Auth API ==== //
+// Endpoints de autenticação — login com código de acesso e revalidação de sessão
+export const authAPI = {
+  login(data) {
+    return api.post('/api/auth/login', data);
+  },
+
+  me() {
+    return api.get('/api/auth/me');
   },
 };
