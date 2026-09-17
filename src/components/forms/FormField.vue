@@ -366,7 +366,7 @@ const onMultiBlur = () => {
 
 /* Asterisco para campos obrigatórios */
 .form-field__asterisk {
-  color: #dc2626;
+  color: var(--danger);
   font-weight: 700;
 }
 
@@ -397,17 +397,17 @@ const onMultiBlur = () => {
 
 /* Estado: input com erro */
 .form-field__input--error {
-  border-color: #dc2626;
-  border-right: 2px solid #dc2626;
-  border-top: 2px solid #dc2626;
+  border-color: var(--danger);
+  border-right: 2px solid var(--danger);
+  border-top: 2px solid var(--danger);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
 }
 
 /* Estado: input com erro em foco */
 .form-field__input--error:focus {
-  border-color: #dc2626;
-  border-right: 2px solid #dc2626;
-  border-top: 2px solid #dc2626;
+  border-color: var(--danger);
+  border-right: 2px solid var(--danger);
+  border-top: 2px solid var(--danger);
   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
 }
 
@@ -426,7 +426,7 @@ const onMultiBlur = () => {
 
 /* Mensagem de erro */
 .form-field__error {
-  color: #dc2626;
+  color: var(--danger);
   font-size: 0.875rem;
   font-weight: 500;
   display: flex;
@@ -527,7 +527,7 @@ const onMultiBlur = () => {
   transform: none;
 }
 .form-field__multiselect-remove:hover {
-  color: #dc2626;
+  color: var(--danger);
 }
 /* Opção "+ Adicionar" no dropdown */
 .form-field__suggestion--new {

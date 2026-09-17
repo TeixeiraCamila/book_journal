@@ -160,12 +160,12 @@ const handleCancel = () => {
 }
 
 .create-book-view__error h3 {
-  color: #dc2626;
+  color: var(--danger);
   margin-bottom: 1rem;
 }
 
 .create-book-view__error p {
-  color: #7f1d1d;
+  color: var(--danger);
   margin-bottom: 1.5rem;
 }
 

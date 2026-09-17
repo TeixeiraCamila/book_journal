@@ -144,7 +144,7 @@ const navigateToEdit = (bookId) => {
 .tbr-list__error-message {
   font-size: 1.125rem;
   margin-bottom: 1.5rem;
-  color: #991b1b;
+  color: var(--danger);
 }
 
 .tbr-list__retry-btn {

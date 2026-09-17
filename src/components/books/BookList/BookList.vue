@@ -168,7 +168,7 @@ const handleEditBook = (book) => {
 
 .book-list__error-message {
   font-size: 1.125rem;
-  color: #991b1b;
+  color: var(--danger);
   margin-bottom: 1.5rem;
 }
 

@@ -22,6 +22,11 @@ defineEmits(['click']);
 </template>
 
 <style scoped>
+.btn {
+  background: var(--button_color, #f0f0f0);
+  color: var(--button_text, var(--black));
+}
+
 .btn__inner {
   display: flex;
   gap: 1em;
@@ -32,24 +37,24 @@ defineEmits(['click']);
 /* ---- PRIMARY ---- */
 .btn--primary {
   --button_color: var(--accent);
-  --button_outline_color: var(--accent);
+  --button_text: var(--black);
 }
 
 /* ---- SECONDARY ---- */
-.btn--secondary .btn__inner {
-  color: var(--black);
-  border-color: var(--black);
+.btn--secondary {
+  --button_color: transparent;
+  --button_text: var(--black);
+  border: 1px solid var(--black);
 }
 
 /* ---- DANGER ---- */
 .btn--danger {
-  --button_color: #dc2626;
-  --button_outline_color: #b91c1c;
+  --button_color: var(--danger);
+  --button_text: var(--white);
 }
 
-.btn--danger:hover  {
-  background: #b91c1c;
-  /* box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3); */
+.btn--danger:hover {
+  background: #7f1d1d;
 }
 
 /* ---- DISABLED ---- */

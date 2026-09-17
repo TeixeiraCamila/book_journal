@@ -50,25 +50,19 @@ const handleLogin = async () => {
 <template>
   <div class="login-view__container">
     <!-- Etapa 1: chegada -->
-    <div v-if="step === 'entry'" class="login-view__content login-view__content--entry">
+    <div v-if="step === 'entry'" class="login-view__content">
       <h2 class="login-view__title">Diário de Leitura</h2>
       <p class="login-view__subtitle">Sua estante espera por você.</p>
 
       <form class="login-view__form" @submit.prevent="goToForm">
-        <Button type="submit" class="login-view__button" :disabled="submitting">
-          Entrar no diário
-        </Button>
+        <Button type="submit" class="login-view__button"> Entrar no diário </Button>
       </form>
 
       <button type="button" class="login-view__guest" @click="handleGuestLogin">Só observar</button>
     </div>
 
     <!-- Etapa 2: entrada -->
-    <form
-      v-else
-      class="login-view__content login-view__content--form"
-      @submit.prevent="handleLogin"
-    >
+    <form v-else class="login-view__content" @submit.prevent="handleLogin">
       <h2 class="login-view__title">Quem está entrando?</h2>
 
       <div class="login-view__form-group">
@@ -102,14 +96,14 @@ const handleLogin = async () => {
       </p>
 
       <Button type="submit" class="login-view__button" :disabled="submitting">
-        {{ submitting ? 'Registrando…' : 'Registrar' }}
+        {{ submitting ? 'Entrando…' : 'Entrar' }}
       </Button>
 
       <button type="button" class="login-view__back" @click="backToEntry">Voltar</button>
     </form>
 
     <div class="login-view__typewriter">
-      <img src="../assets/images/login/login_typewriter.png" alt="Máquina de escrever" />
+      <img src="../assets/images/login/login_typewriter.png" alt="" />
     </div>
   </div>
 </template>
@@ -128,6 +122,7 @@ const handleLogin = async () => {
   position: relative;
   z-index: 2;
   width: min(250px, 82vw);
+  /* proporção real de login_bg.png: se o asset mudar, revisar aqui */
   aspect-ratio: 434 / 626;
   background: url('../assets/images/login/login_bg.png') no-repeat center center;
   background-size: cover;
@@ -137,7 +132,9 @@ const handleLogin = async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 8px 20px rgba(0, 0, 0, 0.15),
+    0 2px 6px rgba(0, 0, 0, 0.08);
   animation: ejectCard 2s ease forwards;
 }
 
@@ -186,8 +183,6 @@ const handleLogin = async () => {
 
 .login-view__button {
   width: 100%;
-  background: var(--accent);
-  color: var(--black);
 }
 
 /* Ações secundárias: visitante e voltar como texto, não botão */
@@ -216,7 +211,7 @@ const handleLogin = async () => {
 
 .login-view__error-message {
   margin-top: 0.5rem;
-  color: #991b1b;
+  color: var(--danger);
   font-family: 'Raleway', sans-serif;
   font-size: 0.75rem;
 }
