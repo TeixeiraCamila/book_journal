@@ -1,75 +1,75 @@
 # Book Journal
 
-Aplicação web para gerenciamento de biblioteca pessoal. Permite cadastrar livros, controlar progresso de leitura, avaliar obras e organizar por status, gêneros e séries. Os dados são persistidos no Notion via API própria.
+Web app for personal library management. You can add books, track reading progress, rate works, and organize them by status, genre, and series. Data is persisted in Notion through a custom API.
 
-## Descrição
+## Description
 
-Book Journal é uma SPA focada na experiência de catalogação e acompanhamento de leituras. O usuário pode adicionar livros manualmente, marcar progresso, avaliar com estrelas e favoritar. A interface utiliza cards com animações suaves e design limpo.
+Book Journal is a SPA for cataloging and tracking your reading. You add books manually, mark progress, rate with stars, and favorite them.
 
-Consome a API do backend em `backend__final`, domínio **Books**.
+It consumes the API backend in `backend__final`, **Books** domain.
 
-## Tecnologias
+## Tech Stack
 
 - **Vue.js 3** (Composition API + `<script setup>`)
-- **Pinia** — Gerenciamento de estado
-- **Vue Router 4** — Roteamento SPA
+- **Pinia** — State management
+- **Vue Router 4** — SPA routing
 - **Vite 7** — Build tool
 - **Axios** — HTTP client
-- **GSAP** — Animações avançadas
-- **VueUse Motion** — Animações declarativas
-- **Swiper** — Sliders e carrosséis
-- **Lucide Vue** — Ícones
-- **vue-toastification** — Notificações toast
-- **ESLint + Prettier** — Qualidade de código
+- **GSAP** — Advanced animations
+- **VueUse Motion** — Declarative animations
+- **Swiper** — Sliders and carousels
+- **Lucide Vue** — Icons
+- **vue-toastification** — Toast notifications
+- **ESLint + Prettier** — Code quality
 
-## Funcionalidades
+## Features
 
-- Cadastro completo de livros (título, autor, gêneros, série, tipo)
-- Controle de progresso (páginas lidas, status: lendo/completo/abandono)
-- Avaliação com estrelas e favoritos
-- Filtragem por status e busca por nome
-- Paginação cursor-based
-- Visualização em cards com flip animation
-- Modo visitante (guest) sem login
-- Interface responsiva
+- Complete book registration (title, author, genres, series, type)
+- Progress tracking (pages read, status: reading/completed/abandoned)
+- Star ratings and favorites
+- Status filtering and search by name
+- Cursor-based pagination
+- Card view with flip animation
+- Guest mode without login
+- Responsive interface
 
 ## Layout
 
-A interface utiliza cards como elemento central, com animação de flip para exibir detalhes. O layout é limpo com foco no conteúdo, fundo claro e cores suaves.
+Cards are the core of the interface. The flip animates details on hover.
 
-## Estrutura de Pastas
+## Folder Structure
 
 ```
 src/
-├── App.vue                  # Componente raiz
+├── App.vue                  # Root component
 ├── main.js                  # Entry point (Pinia, Router, Toast)
 ├── assets/
-│   └── main.css             # Estilos globais
+│   └── main.css             # Global styles
 ├── components/
 │   ├── index.js             # Barrel exports
 │   ├── books/
-│   │   ├── BookCard/        # Card com flip animation
+│   │   ├── BookCard/        # Card with flip animation
 │   │   │   ├── BookCard.vue
 │   │   │   ├── CardBack.vue
 │   │   │   ├── CardFront.vue
 │   │   │   └── CardStatus.vue
-│   │   └── BookList/        # Lista de livros
+│   │   └── BookList/        # Book list
 │   ├── features/
-│   │   ├── Stack/           # Stack de cards
-│   │   ├── ReadingList/     # Lista de leitura atual
-│   │   └── TBRList/         # Lista "para ler"
+│   │   ├── Stack/           # Card stack
+│   │   ├── ReadingList/     # Current reading list
+│   │   └── TBRList/         # "To read" list
 │   ├── forms/
-│   │   ├── BookForm/        # Formulário de livro
+│   │   ├── BookForm/        # Book form
 │   │   ├── FormField.vue
 │   │   ├── FormSection.vue
 │   │   └── FormActions.vue
-│   ├── ui/                  # Componentes base
+│   ├── ui/                  # Base components
 │   │   ├── Button.vue
 │   │   ├── LoadingSpinner.vue
 │   │   ├── Modal.vue
 │   │   ├── Badge.vue
 │   │   ├── Card.vue
-│   │   └── Skeleton/        # Estados de loading
+│   │   └── Skeleton/        # Loading states
 │   ├── layout/
 │   │   ├── Header.vue
 │   │   ├── Layout.vue
@@ -86,16 +86,16 @@ src/
 │   ├── useAnimatedModal.js
 │   └── useNotifications.js
 ├── constants/
-│   └── book.js              # Constantes de status, tipos, labels
+│   └── book.js              # Status, type, label constants
 ├── router/
-│   └── index.js             # Rotas + guard de autenticação
+│   └── index.js             # Routes + auth guard
 ├── services/
 │   └── api.js               # Axios client + endpoints
 ├── stores/
-│   ├── bookStore.js         # Estado de livros (Pinia)
-│   └── userStore.js         # Estado de usuário (Pinia)
+│   ├── bookStore.js         # Book state (Pinia)
+│   └── userStore.js         # User state (Pinia)
 ├── utils/
-│   └── validation.js        # Funções de validação
+│   └── validation.js        # Validation helpers
 └── views/
     ├── HomeView.vue
     ├── CardStackView.vue
@@ -103,95 +103,84 @@ src/
     └── LoginView.vue
 ```
 
-## Instalação
+## Installation
 
 ```bash
 npm install
 npm run dev
 ```
 
-Acesse `http://localhost:5173`
+Open `http://localhost:5173`
 
 ## Scripts
 
-| Comando | Descrição |
-|---------|-----------|
-| `npm run dev` | Inicia servidor de desenvolvimento |
-| `npm run build` | Build de produção |
-| `npm run preview` | Preview do build |
-| `npm run lint` | Verifica código com ESLint |
-| `npm run format` | Formata código com Prettier |
-| `npm run vercel-build` | Build para Vercel |
+| Command | Description |
+|---|---|
+| `npm run dev` | Starts development server |
+| `npm run build` | Production build |
+| `npm run preview` | Preview the build |
+| `npm run lint` | Lint with ESLint |
+| `npm run format` | Format with Prettier |
+| `npm run vercel-build` | Production build for Vercel |
 
-**Produção** — adicione no Vercel:
+**Production** (Vercel):
 ```
-VITE_API_URL= 
+VITE_API_URL=
 ```
 
-Em produção, configure a URL da API como variável de ambiente no Vercel.
+## Architecture
 
-## Arquitetura
+The app follows a **Vue 3 SPA** architecture:
 
-A aplicação segue a arquitetura **Vue 3 SPA** com:
+- **Composition API** with `<script setup>` in every component
+- **Pinia** as the global store, split per domain (`bookStore`, `userStore`)
+- **Vue Router** with lazy-loaded views and an auth navigation guard
+- **Service layer** centralized in `services/api.js` with Axios
+- **Constants** in `constants/` as fallback for backend options
+- **Composables** for reusable logic (animated modals, notifications)
+- **Barrel exports** in `components/index.js` for easier imports
 
-- **Composition API** com `<script setup>` para todos os componentes
-- **Pinia** como store global, com stores separadas por domínio (`bookStore`, `userStore`)
-- **Vue Router** com lazy loading de views e guard de navegação para autenticação
-- **Camada de serviços** centralizada em `services/api.js` com Axios
-- **Constantes** em `constants/` como fallback para opções do backend
-- **Composables** para lógica reutilizável (modais animados, notificações)
-- **Barrel exports** em `components/index.js` para importação simplificada
-
-### Fluxo de dados
+### Data flow
 
 ```
 Views → Pinia Stores → services/api.js (Axios) → Backend API → Notion CMS
 ```
 
-## Consumo de API
+## API Consumption
 
-A aplicação consome os seguintes endpoints do backend `backend__final`:
+The app consumes these endpoints from the `backend__final` backend:
 
-| Endpoint | Uso |
-|----------|-----|
-| `GET /api/books` | Listar livros (paginado) |
-| `GET /api/books/all` | Todos os livros |
-| `GET /api/books/:id` | Detalhe do livro |
-| `GET /api/books/options` | Opções de filtro |
-| `POST /api/books` | Criar livro |
-| `PATCH /api/books/:id` | Atualizar livro |
-| `DELETE /api/books/:id` | Arquivar livro |
-| `GET /api/users` | Listar usuários |
-| `GET /api/users/:id` | Detalhe do usuário |
+| Endpoint | Usage |
+|---|---|
+| `GET /api/books` | List books (paginated) |
+| `GET /api/books/all` | All books |
+| `GET /api/books/:id` | Book details |
+| `GET /api/books/options` | Filter options |
+| `POST /api/books` | Create book |
+| `PATCH /api/books/:id` | Update book |
+| `DELETE /api/books/:id` | Archive book |
+| `GET /api/users` | List users |
+| `GET /api/users/:id` | User details |
+| `POST /api/auth/login` | Sign in (email + access code) |
 
-## Responsividade
+## Responsiveness
 
-A interface é totalmente responsiva, adaptando-se de mobile a desktop. O layout usa CSS Grid e Flexbox com media queries para reorganizar cards e navegação conforme o viewport.
+The interface is responsive from mobile to desktop. The layout uses CSS Grid and Flexbox with media queries to rearrange cards and navigation per viewport.
 
-## Acessibilidade
+## Accessibility
 
-- Contraste adequado entre texto e fundo
-- Foco visível em elementos interativos
-- Textos alternativos em imagens
-- Navegação por teclado
-- Animações respeitam `prefers-reduced-motion`
+- Adequate contrast between text and background
+- Visible focus on interactive elements
+- Alt text on images
+- Keyboard navigation
+- Animations respect `prefers-reduced-motion`
 
 ## Deploy
 
-Deploy na **Vercel** como SPA:
+Deployed on **Vercel** as an SPA:
 
 ```bash
-# 1. Conecte o repositório na Vercel
-# 2. Configure VITE_API_URL como variável de ambiente
-# 3. O arquivo vercel.json redireciona todas as rotas para index.html
+# 1. Connect the repository on Vercel
+# 2. Set VITE_API_URL as an environment variable
+# 3. vercel.json redirects every route to index.html
 ```
-
-## Melhorias Futuras
-
-- [ ] Testes automatizados (Vitest + Vue Test Utils)
-- [ ] Dark mode
-- [ ] Upload de capas via upload direto
-- [ ] Sincronização com Goodreads/Skoob
-- [ ] Modo offline com Service Worker
-- [ ] Compartilhamento de estante em rede social
-- [ ] Importação em lote via CSV
