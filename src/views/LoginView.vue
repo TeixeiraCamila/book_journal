@@ -224,7 +224,7 @@ const handleLogin = async () => {
 .login-view__typewriter {
   position: absolute;
   bottom: 0;
-  left: 50%;
+  left: 48%;
   transform: translateX(-50%);
   z-index: 4;
 }

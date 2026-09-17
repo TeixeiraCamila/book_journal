@@ -37,6 +37,7 @@ const handleLogout = () => {
   align-items: center;
   justify-content: center;
   height: 100vh;
+  width: 100%;
 }
 .app__main-content {
   width: 100%;
