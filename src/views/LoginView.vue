@@ -5,7 +5,6 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/stores/userStore';
 import Button from '@/components/ui/Button.vue';
-import tape from '@/assets/images/tape_2.webp';
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -52,10 +51,6 @@ const handleLogin = async () => {
   <div class="login-view__container">
     <!-- Etapa 1: chegada -->
     <div v-if="step === 'entry'" class="login-view__content login-view__content--entry">
-      <div class="login-view__tape">
-        <img :src="tape" alt="" class="login-view__tape-img" />
-      </div>
-
       <h2 class="login-view__title">Diário de Leitura</h2>
       <p class="login-view__subtitle">Sua estante espera por você.</p>
 
@@ -74,10 +69,6 @@ const handleLogin = async () => {
       class="login-view__content login-view__content--form"
       @submit.prevent="handleLogin"
     >
-      <div class="login-view__tape">
-        <img :src="tape" alt="" class="login-view__tape-img" />
-      </div>
-
       <h2 class="login-view__title">Quem está entrando?</h2>
 
       <div class="login-view__form-group">
@@ -136,33 +127,18 @@ const handleLogin = async () => {
 .login-view__content {
   position: relative;
   z-index: 2;
+  width: min(250px, 82vw);
+  aspect-ratio: 434 / 626;
   background: url('../assets/images/login/login_bg.png') no-repeat center center;
   background-size: cover;
   color: var(--black);
   padding: 1.5rem 1.5rem 1.25rem;
-  max-width: 250px;
-  min-height: 357px;
-  border-radius: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(0, 0, 0, 0.08);
   animation: ejectCard 2s ease forwards;
-}
-
-.login-view__tape {
-  position: absolute;
-  top: -24px;
-  left: 50%;
-  width: 140px;
-  transform: translateX(-50%) rotate(-5deg);
-  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.18));
-}
-
-.login-view__tape-img {
-  width: 100%;
-  display: block;
 }
 
 .login-view__title {
@@ -247,31 +223,21 @@ const handleLogin = async () => {
 
 .login-view__typewriter {
   position: absolute;
-  bottom: -10px;
-  left: 48%;
+  bottom: 0;
+  left: 50%;
   transform: translateX(-50%);
   z-index: 4;
 }
 
 .login-view__typewriter img {
-  max-width: 400px;
-}
-
-@media (max-width: 480px) {
-  .login-view__content {
-    padding: 1.5rem 1.5rem 1.25rem;
-  }
-  .login-view__typewriter {
-    bottom: -5%;
-    left: 46%;
-  }
+  width: min(400px, 88vw);
+  height: auto;
+  max-width: none;
 }
 
 @media (max-width: 360px) {
   .login-view__content {
-    margin-top: 220px;
     padding: 1rem 0.875rem 0.75rem;
-    width: 250px;
   }
 }
 
