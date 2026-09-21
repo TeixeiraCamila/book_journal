@@ -17,14 +17,13 @@
 .book-card-skeleton {
   padding: 1rem;
   background: var(--white);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  width: var(--card-w);
+  width: var(--card-front-w);
   margin: 0 auto;
   transform-origin: center center;
   position: relative;
-  border-radius: 8px;
   height: 288px;
 }
 

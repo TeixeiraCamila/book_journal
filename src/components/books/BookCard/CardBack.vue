@@ -1,13 +1,13 @@
 <script setup>
 // Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
 import { computed } from 'vue';
-import { useUserStore } from '@/stores/userStore';
+import { use_user_store } from '@/stores/userStore';
 import { BOOK_TYPE_LABELS } from '@/constants/book';
 import CardStatus from './CardStatus.vue';
 import Button from '@/components/ui/Button.vue';
 import { PencilLine, Trash } from 'lucide-vue-next';
 
-import { useBookFormatters } from '@/composables/useBookFormatters';
+import { use_book_formatters } from '@/composables/useBookFormatters';
 
 const props = defineProps({
   book: { type: Object, required: true },
@@ -16,27 +16,27 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete']);
 
-const userStore = useUserStore();
+const userStore = use_user_store();
 
-const { getPublicationString } = useBookFormatters();
+const { get_publication_string } = use_book_formatters();
 
-const string = computed(() => getPublicationString(props.book));
+const string = computed(() => get_publication_string(props.book));
 
-const wasReadString = computed(() => {
+const was_read_string = computed(() => {
   if (!props.book.wasReadIn?.length) return '';
   return props.book.wasReadIn.join(', ');
 });
 
-const typeString = computed(() => {
+const type_string = computed(() => {
   if (!props.book.type?.length) return '';
   return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ');
 });
 
-const handleEdit = () => {
+const handle_edit = () => {
   emit('edit', props.book);
 };
 
-const handleDelete = () => {
+const handle_delete = () => {
   emit('delete', props.book);
 };
 </script>
@@ -62,13 +62,13 @@ const handleDelete = () => {
           <p class="card_back__text">Progresso: {{ book.currentlyOn }} / {{ book.total }}</p>
         </div>
 
-        <p class="card_back__text" v-if="typeString">Tipo: {{ typeString }}</p>
+        <p class="card_back__text" v-if="type_string">Tipo: {{ type_string }}</p>
 
         <p class="card_back__text" v-if="string">
           {{ string }}
         </p>
 
-        <p class="card_back__text" v-if="wasReadString">Lido em: {{ wasReadString }}</p>
+        <p class="card_back__text" v-if="was_read_string">Lido em: {{ was_read_string }}</p>
 
         <ul class="card_back__genres">
           <li v-for="(genre, index) in book.genres" :key="index" class="card_back__genre">
@@ -77,11 +77,11 @@ const handleDelete = () => {
         </ul>
       </div>
 
-      <div class="card_back__actions" v-if="!userStore.isGuest">
-        <Button class="card_back__action-btn" @click="handleEdit" variant="secondary">
+      <div class="card_back__actions" v-if="!userStore.is_guest">
+        <Button class="card_back__action-btn" @click="handle_edit" variant="secondary">
           <PencilLine />
         </Button>
-        <Button class="card_back__action-btn" @click="handleDelete" variant="secondary">
+        <Button class="card_back__action-btn" @click="handle_delete" variant="secondary">
           <Trash />
         </Button>
       </div>
@@ -132,7 +132,7 @@ const handleDelete = () => {
 .card_back__genres .card_back__genre {
   padding: 3px 0.5rem;
   border: 1px solid var(--accent3);
-  border-radius: 0.75rem;
+  border-radius: var(--radius);
 }
 
 .card_back__actions {
@@ -141,16 +141,16 @@ const handleDelete = () => {
   justify-content: flex-end;
 }
 
-.card_back__actions .card_back__action-btn {
+.card_back__actions .card_back__action-btn.btn {
   background-color: transparent;
   border: none;
   padding: 4px;
-  border-radius: 0.75rem;
+  border-radius: var(--radius);
   cursor: pointer;
   color: var(--black);
 }
 
-.card_back__actions .card_back__action-btn:hover {
+.card_back__actions .card_back__action-btn.btn:hover {
   background-color: var(--accent_muted);
 }
 </style>

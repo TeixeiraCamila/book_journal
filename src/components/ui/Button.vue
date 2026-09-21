@@ -25,6 +25,7 @@ defineEmits(['click']);
 .btn {
   background: var(--button_color, #f0f0f0);
   color: var(--button_text, var(--black));
+  border-radius: var(--radius);
 }
 
 .btn__inner {
@@ -42,7 +43,7 @@ defineEmits(['click']);
 
 /* ---- SECONDARY ---- */
 .btn--secondary {
-  --button_color: transparent;
+  --button_color: var(--white);
   --button_text: var(--black);
   border: 1px solid var(--black);
 }
@@ -54,7 +55,7 @@ defineEmits(['click']);
 }
 
 .btn--danger:hover {
-  background: #7f1d1d;
+  background: var(--danger-dark);
 }
 
 /* ---- DISABLED ---- */

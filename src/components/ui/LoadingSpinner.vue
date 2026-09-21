@@ -18,7 +18,9 @@ const props = defineProps({
       <div class="loading__pg loading__pg--4"></div>
       <div class="loading__pg loading__pg--5"></div>
     </div>
-    <p class="loading__message">{{ props.message }}</p>
+    <p class="loading__message">
+      <slot>{{ props.message }}</slot>
+    </p>
   </div>
 </template>
 
@@ -94,14 +96,6 @@ const props = defineProps({
 }
 .loading__pg--5 {
   animation-name: pg5;
-}
-
-/* Dark theme */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: hsl(223, 10%, 30%);
-    --fg: hsl(223, 10%, 90%);
-  }
 }
 
 /* Animations */

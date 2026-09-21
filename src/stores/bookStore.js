@@ -1,62 +1,66 @@
 // Pinia store de livros — gerencia listas, paginação, filtros e operações CRUD
 import { defineStore } from 'pinia';
-import { booksAPI } from '../services/api';
+import { books_api } from '../services/api';
 import { BOOK_STATUS_FALLBACK, BOOK_STATUS_MAP, DEFAULT_PAGE_SIZE } from '../constants/book';
-import { extractErrorMessage } from '@/utils/errorHandler';
+import { extract_error_message, log_error } from '@/utils/errorHandler';
 
-const { _handleError } = extractErrorMessage();
-
-export const useBookStore = defineStore('books', {
+export const use_book_store = defineStore('books', {
   state: () => ({
-    bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
-    loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
+    book_lists: { main: [], tbr: [], reading: [], thisYear: [] },
+    loading_states: { main: false, tbr: false, reading: false, thisYear: false },
     stats: null, // Estatísticas agregadas dos livros
-    statsLoading: false,
+    stats_loading: false,
     error: null,
     // ===== PAGINAÇÃO (CURSOR-BASED) =====
     pagination: {
-      pageSize: DEFAULT_PAGE_SIZE,
-      currentCursor: null,
-      nextCursor: null,
-      previousCursors: [],
+      page_size: DEFAULT_PAGE_SIZE,
+      current_cursor: null,
+      next_cursor: null,
+      previous_cursors: [],
     },
 
-    searchTerm: '',
-    filterStatus: 'all',
-    bookOptions: null,
+    search_term: '',
+    filter_status: 'all',
+    book_options: null,
   }),
 
   getters: {
-    allBooks: (state) => state.bookLists.main,
+    all_books: (state) => state.book_lists.main,
 
-    statusOptions: (state) => state.bookOptions?.Status || BOOK_STATUS_FALLBACK,
+    status_options: (state) => state.book_options?.Status || BOOK_STATUS_FALLBACK,
 
-    bookCount: (state) => state.bookLists.main.length,
+    book_count: (state) => state.book_lists.main.length,
 
-    tbrCount: (state) => state.bookLists.tbr.length,
+    tbr_count: (state) => state.book_lists.tbr.length,
 
-    hasNextPage: (state) => state.pagination.nextCursor !== null,
+    has_next_page: (state) => state.pagination.next_cursor !== null,
 
-    hasPreviusPage: (state) => state.pagination.previousCursors.length > 0,
+    has_previous_page: (state) => state.pagination.previous_cursors.length > 0,
 
     // Busca livro por ID em todas as listas
-    getBookById: (state) => (id) => {
+    get_book_by_id: (state) => (book_id) => {
       return (
-        state.bookLists.main.find((book) => book.id === id) ||
-        state.bookLists.reading.find((book) => book.id === id) ||
-        state.bookLists.tbr.find((book) => book.id === id)
+        state.book_lists.main.find((book) => book.id === book_id) ||
+        state.book_lists.reading.find((book) => book.id === book_id) ||
+        state.book_lists.tbr.find((book) => book.id === book_id)
       );
     },
 
-    hasError: (state) => state.error !== null,
+    has_error: (state) => state.error !== null,
 
-    thisYearCount: (state) => state.bookLists.thisYear.length,
+    this_year_count: (state) => state.book_lists.thisYear.length,
   },
 
   actions: {
-    async fetchBookById(bookId) {
+    // Registra o erro no console e expõe a mensagem para as views via `has_error`
+    _handle_error(action, error) {
+      log_error(action, error);
+      this.error = extract_error_message(error);
+    },
+
+    async fetch_book_by_id(book_id) {
       try {
-        const response = await booksAPI.get(bookId);
+        const response = await books_api.get(book_id);
 
         if (response?.data) {
           return response.data;
@@ -64,239 +68,239 @@ export const useBookStore = defineStore('books', {
 
         throw new Error('Livro não encontrado');
       } catch (error) {
-        _handleError('fetchBookById', error);
+        this._handle_error('fetch_book_by_id', error);
         throw error;
       }
     },
 
     // BUSCAR LIVROS (COM CURSOR PAGINATION)
-    async fetchBooks(startCursor = undefined) {
-      this.loadingStates.main = true;
+    async fetch_books(start_cursor = undefined) {
+      this.loading_states.main = true;
       this.error = null;
 
       try {
-        const response = await booksAPI.list({
-          pageSize: this.pagination.pageSize,
-          startCursor: startCursor,
-          search: this.searchTerm,
-          status: this.filterStatus,
+        const response = await books_api.list({
+          pageSize: this.pagination.page_size,
+          startCursor: start_cursor,
+          search: this.search_term,
+          status: this.filter_status,
         });
 
         if (response?.data) {
-          this.bookLists.main = response.data.data || [];
+          this.book_lists.main = response.data.data || [];
 
           // Atualiza informações de paginação
-          this.pagination.currentCursor = startCursor || null;
+          this.pagination.current_cursor = start_cursor || null;
           if (response.data.pagination) {
-            this.pagination.nextCursor = response.data.pagination.hasMore
+            this.pagination.next_cursor = response.data.pagination.hasMore
               ? response.data.pagination.nextCursor
               : null;
           }
         }
       } catch (error) {
-        _handleError('fetchBooks', error);
-        this.bookLists.main = [];
+        this._handle_error('fetch_books', error);
+        this.book_lists.main = [];
       } finally {
-        this.loadingStates.main = false;
+        this.loading_states.main = false;
       }
     },
 
-    async createBook(bookData) {
+    async create_book(book_data) {
       try {
-        const result = await booksAPI.create(bookData);
+        const result = await books_api.create(book_data);
 
         // Volta para primeira página após criar
-        this.pagination.previousCursors = [];
-        await this.fetchBooks();
+        this.pagination.previous_cursors = [];
+        await this.fetch_books();
 
         // Atualiza lista TBR se necessário
-        if (bookData.status === BOOK_STATUS_MAP.TO_BE_READ) {
-          await this.fetchBooksByStatus();
+        if (book_data.status === BOOK_STATUS_MAP.TO_BE_READ) {
+          await this.fetch_books_by_status();
         }
 
         return result;
       } catch (error) {
-        _handleError('createBook', error);
+        this._handle_error('create_book', error);
         throw error;
       }
     },
 
-    async reloadCurrentPage() {
+    async reload_current_page() {
       await Promise.allSettled([
-        this.fetchBooks(this.pagination.currentCursor),
-        this.fetchBooksByStatus(),
+        this.fetch_books(this.pagination.current_cursor),
+        this.fetch_books_by_status(),
       ]);
     },
 
-    async updateBook(bookId, bookData) {
-      if (!bookId || !bookData) throw new Error('bookId e bookData são obrigatórios');
+    async update_book(book_id, book_data) {
+      if (!book_id || !book_data) throw new Error('bookId e bookData são obrigatórios');
 
       this.error = null;
 
       try {
-        await booksAPI.update(bookId, bookData);
-        await this.reloadCurrentPage();
+        await books_api.update(book_id, book_data);
+        await this.reload_current_page();
         return { success: true };
       } catch (error) {
-        _handleError('updateBook', error);
+        this._handle_error('update_book', error);
         throw error;
       }
     },
 
-    async deleteBook(bookId) {
-      if (!bookId) throw new Error('bookId é obrigatório');
+    async delete_book(book_id) {
+      if (!book_id) throw new Error('bookId é obrigatório');
 
       this.error = null;
 
       try {
-        await booksAPI.delete(bookId);
-        await this.reloadCurrentPage();
+        await books_api.delete(book_id);
+        await this.reload_current_page();
         return { success: true };
       } catch (error) {
-        _handleError('deleteBook', error);
+        this._handle_error('delete_book', error);
         throw error;
       }
     },
 
-    async fetchBooksByStatus(startCursor = undefined, status = BOOK_STATUS_MAP.TO_BE_READ) {
-      this.loadingStates.tbr = status === BOOK_STATUS_MAP.TO_BE_READ;
-      this.loadingStates.reading = status === BOOK_STATUS_MAP.READING;
+    async fetch_books_by_status(start_cursor = undefined, status = BOOK_STATUS_MAP.TO_BE_READ) {
+      // Cada status tem sua própria flag: TBR e leitura carregam em paralelo sem se sobrescrever
+      const loading_key = status === BOOK_STATUS_MAP.READING ? 'reading' : 'tbr';
+      this.loading_states[loading_key] = true;
       this.error = null;
 
       try {
-        const response = await booksAPI.list({
+        const response = await books_api.list({
           pageSize: 40,
-          startCursor: startCursor,
-          search: this.searchTerm,
+          startCursor: start_cursor,
+          search: this.search_term,
           status: status,
         });
 
         switch (status) {
           case BOOK_STATUS_MAP.TO_BE_READ:
-            this.bookLists.tbr = response.data.data || [];
+            this.book_lists.tbr = response.data.data || [];
             break;
           case BOOK_STATUS_MAP.READING:
-            this.bookLists.reading = response.data.data || [];
+            this.book_lists.reading = response.data.data || [];
             break;
           default:
             break;
         }
       } catch (error) {
-        _handleError('fetchBooksByStatus', error);
+        this._handle_error('fetch_books_by_status', error);
         if (status === BOOK_STATUS_MAP.TO_BE_READ) {
-          this.bookLists.tbr = [];
+          this.book_lists.tbr = [];
         } else if (status === BOOK_STATUS_MAP.READING) {
-          this.bookLists.reading = [];
+          this.book_lists.reading = [];
         }
       } finally {
-        this.loadingStates.tbr = false;
-        this.loadingStates.reading = false;
+        this.loading_states[loading_key] = false;
       }
     },
 
     /**
      * Busca livros com status "Read" e wasReadIn igual ao ano atual
      */
-    async fetchBooksReadThisYear() {
-      this.loadingStates.thisYear = true;
+    async fetch_books_read_this_year() {
+      this.loading_states.thisYear = true;
       this.error = null;
       try {
         const year = String(new Date().getFullYear());
-        const response = await booksAPI.list({
+        const response = await books_api.list({
           pageSize: 100,
-          search: this.searchTerm,
+          search: this.search_term,
           status: BOOK_STATUS_MAP.READ,
           wasReadIn: year,
         });
-        this.bookLists.thisYear = response.data.data || [];
+        this.book_lists.thisYear = response.data.data || [];
       } catch (error) {
-        _handleError('fetchBooksReadThisYear', error);
-        this.bookLists.thisYear = [];
+        this._handle_error('fetch_books_read_this_year', error);
+        this.book_lists.thisYear = [];
       } finally {
-        this.loadingStates.thisYear = false;
+        this.loading_states.thisYear = false;
       }
     },
 
-    async fetchBookOptions() {
+    async fetch_book_options() {
       try {
-        const response = await booksAPI.options();
+        const response = await books_api.options();
         if (response?.data) {
-          this.bookOptions = response.data;
+          this.book_options = response.data;
         }
       } catch (error) {
-        _handleError('fetchBookOptions', error);
+        this._handle_error('fetch_book_options', error);
       }
     },
 
-    async nextPage() {
-      if (!this.pagination.nextCursor) {
+    async next_page() {
+      if (!this.pagination.next_cursor) {
         return;
       }
 
-      this.pagination.previousCursors.push(this.pagination.nextCursor);
+      this.pagination.previous_cursors.push(this.pagination.next_cursor);
 
-      await this.fetchBooks(this.pagination.nextCursor);
+      await this.fetch_books(this.pagination.next_cursor);
     },
 
-    async previousPage() {
-      if (this.pagination.previousCursors.length === 0) {
+    async previous_page() {
+      if (this.pagination.previous_cursors.length === 0) {
         return;
       }
 
-      this.pagination.previousCursors.pop();
+      this.pagination.previous_cursors.pop();
 
       // Usa o cursor anterior (ou undefined se for a primeira página)
-      const previousCursor =
-        this.pagination.previousCursors[this.pagination.previousCursors.length - 1];
+      const previous_cursor =
+        this.pagination.previous_cursors[this.pagination.previous_cursors.length - 1];
 
-      await this.fetchBooks(previousCursor);
+      await this.fetch_books(previous_cursor);
     },
 
-    async changePageSize(size) {
-      this.pagination.pageSize = size;
-      this.pagination.previousCursors = [];
+    async change_page_size(size) {
+      this.pagination.page_size = size;
+      this.pagination.previous_cursors = [];
 
-      await this.fetchBooks();
+      await this.fetch_books();
     },
 
     async search(term) {
-      this.searchTerm = term;
-      this.pagination.previousCursors = [];
+      this.search_term = term;
+      this.pagination.previous_cursors = [];
 
-      await this.fetchBooks();
+      await this.fetch_books();
     },
 
-    async filterByStatus(status) {
-      this.filterStatus = status;
-      this.pagination.previousCursors = [];
+    async filter_by_status(status) {
+      this.filter_status = status;
+      this.pagination.previous_cursors = [];
 
-      await this.fetchBooks();
+      await this.fetch_books();
     },
 
     $reset() {
-      this.bookLists.main = [];
-      this.bookLists.tbr = [];
-      this.bookLists.reading = [];
-      this.bookLists.thisYear = [];
-      this.loadingStates.main = false;
-      this.loadingStates.tbr = false;
-      this.loadingStates.reading = false;
-      this.loadingStates.thisYear = false;
+      this.book_lists.main = [];
+      this.book_lists.tbr = [];
+      this.book_lists.reading = [];
+      this.book_lists.thisYear = [];
+      this.loading_states.main = false;
+      this.loading_states.tbr = false;
+      this.loading_states.reading = false;
+      this.loading_states.thisYear = false;
       this.stats = null;
-      this.statsLoading = false;
+      this.stats_loading = false;
       this.error = null;
       this.pagination = {
-        pageSize: DEFAULT_PAGE_SIZE,
-        currentCursor: null,
-        nextCursor: null,
-        previousCursors: [],
+        page_size: DEFAULT_PAGE_SIZE,
+        current_cursor: null,
+        next_cursor: null,
+        previous_cursors: [],
       };
-      this.searchTerm = '';
-      this.filterStatus = 'all';
-      this.bookOptions = null;
+      this.search_term = '';
+      this.filter_status = 'all';
+      this.book_options = null;
     },
 
-    clearError() {
+    clear_error() {
       this.error = null;
     },
   },

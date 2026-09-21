@@ -1,106 +1,106 @@
 // Composable que gerencia modal animado com flip 3D (frente/verso) para visualização de cards
 import { ref, computed } from 'vue';
 
-export function useAnimatedModal(cardEl, randomTilt) {
+export function use_animated_modal(card_el) {
   // Estados
-  const isModalOpen = ref(false);
-  const isModalVisible = ref(false);
-  const isAnimating = ref(false);
+  const is_modal_open = ref(false);
+  const is_modal_visible = ref(false);
+  const is_animating = ref(false);
 
   // Estado da face atual: 'front' ou 'back'
-  const currentFace = ref('front');
+  const current_face = ref('front');
 
   // Computed para saber se está virado para trás
-  const isFlipped = computed(() => currentFace.value === 'back');
+  const is_flipped = computed(() => current_face.value === 'back');
 
   // Abre modal com animação suave
-  const openAnimatedModal = () => {
-    if (!cardEl.value) return;
+  const open_animated_modal = () => {
+    if (!card_el.value) return;
 
     // Marca card original como "animando" (fica transparente)
-    isAnimating.value = true;
+    is_animating.value = true;
 
     // Abre modal imediatamente
-    isModalOpen.value = true;
+    is_modal_open.value = true;
 
     // Trigger fade-in do overlay e card após um frame
     requestAnimationFrame(() => {
-      isModalVisible.value = true;
+      is_modal_visible.value = true;
     });
 
     // Abre no front e depois de alguns segundos muda para o back
-    currentFace.value = 'front';
+    current_face.value = 'front';
 
     // Depois de alguns segundos muda para o back
     setTimeout(() => {
-      flipToBack();
+      flip_to_back();
     }, 2000);
   };
 
   // Fecha modal
-  const closeModal = () => {
+  const close_modal = () => {
     // Inicia fade-out
-    isModalVisible.value = false;
+    is_modal_visible.value = false;
 
     // Garante que termina no front antes de fechar
-    currentFace.value = 'front';
+    current_face.value = 'front';
 
     // Aguarda animação terminar antes de destruir o modal
     setTimeout(() => {
-      isModalOpen.value = false;
+      is_modal_open.value = false;
       // Remove transparência do card original
-      isAnimating.value = false;
+      is_animating.value = false;
     }, 300);
   };
 
   // Fecha modal com animação reversa
-  const closeModalWithAnimation = () => {
+  const close_modal_with_animation = () => {
     // Inicia fade-out
-    isModalVisible.value = false;
+    is_modal_visible.value = false;
 
     // Garante que termina no front antes de fechar
-    currentFace.value = 'front';
+    current_face.value = 'front';
 
     // Aguarda animação terminar antes de destruir o modal
     setTimeout(() => {
-      isModalOpen.value = false;
+      is_modal_open.value = false;
       // Remove transparência do card original
-      isAnimating.value = false;
+      is_animating.value = false;
     }, 300);
   };
 
   // Vira para o verso
-  const flipToBack = () => {
-    currentFace.value = 'back';
+  const flip_to_back = () => {
+    current_face.value = 'back';
   };
 
   // Vira para o frente
-  const flipToFront = () => {
-    currentFace.value = 'front';
+  const flip_to_front = () => {
+    current_face.value = 'front';
   };
 
   // Alterna flip do card - sempre vai da face que está em display para a outra
-  const toggleFlip = () => {
-    currentFace.value = currentFace.value === 'front' ? 'back' : 'front';
+  const toggle_flip = () => {
+    current_face.value = current_face.value === 'front' ? 'back' : 'front';
   };
 
   // Vira para a face oposta
-  const flipToOpposite = () => {
-    toggleFlip();
+  const flip_to_opposite = () => {
+    toggle_flip();
   };
 
   return {
-    isModalOpen,
-    isModalVisible,
-    isAnimating,
-    currentFace,
-    isFlipped,
-    openAnimatedModal,
-    closeModal,
-    closeModalWithAnimation,
-    flipToBack,
-    flipToFront,
-    toggleFlip,
-    flipToOpposite,
+    is_modal_open,
+    is_modal_visible,
+    is_animating,
+    current_face,
+    is_flipped,
+    open_animated_modal,
+    close_modal,
+    close_modal_with_animation,
+    flip_to_back,
+    flip_to_front,
+    toggle_flip,
+    flip_to_opposite,
   };
 }

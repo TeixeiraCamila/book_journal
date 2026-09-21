@@ -1,15 +1,15 @@
 <script setup>
 // Card de livro com efeito flip 3D — face frontal (capa) e verso (detalhes/ações)
 import { ref, onMounted } from 'vue';
-import { useBookStore } from '@/stores/bookStore';
-import { useNotifications } from '@/composables/useNotifications';
+import { use_book_store } from '@/stores/bookStore';
+import { use_notifications } from '@/composables/useNotifications';
 import ConfirmDialog from '@/components/feedback/ConfirmDialog.vue';
 import CardFront from './CardFront.vue';
 import CardBack from './CardBack.vue';
 
-import { useAnimatedModal } from '@/composables/useAnimatedModal.js';
+import { use_animated_modal } from '@/composables/useAnimatedModal.js';
 
-const { addNotification } = useNotifications();
+const { add_notification } = use_notifications();
 
 const props = defineProps({
   book: {
@@ -20,53 +20,53 @@ const props = defineProps({
 
 const emit = defineEmits(['edit']);
 
-const bookStore = useBookStore();
-const deleteDialog = ref(null);
-const cardEl = ref(null);
-const randomTilt = ref(0);
-const isEditing = ref(false);
+const bookStore = use_book_store();
+const delete_dialog = ref(null);
+const card_el = ref(null);
+const random_tilt = ref(0);
+const is_editing = ref(false);
 
 const {
-  isModalOpen,
-  isModalVisible,
-  isFlipped,
-  isAnimating,
-  openAnimatedModal,
-  closeModal,
-  closeModalWithAnimation,
-  toggleFlip,
-} = useAnimatedModal(cardEl, randomTilt);
+  is_modal_open,
+  is_modal_visible,
+  is_flipped,
+  is_animating,
+  open_animated_modal,
+  close_modal,
+  close_modal_with_animation,
+  toggle_flip,
+} = use_animated_modal(card_el);
 
 onMounted(() => {
-  randomTilt.value = Math.random() * 6 - 3; // -3deg a +3deg
+  random_tilt.value = Math.random() * 6 - 3; // -3deg a +3deg
 });
 
 // Abre diálogo de confirmação antes de deletar o livro
-const openDeleteDialog = () => {
-  deleteDialog.value?.open();
+const open_delete_dialog = () => {
+  delete_dialog.value?.open();
 };
 
 // Deleta o livro via store e fecha modal após sucesso
-const handleDelete = async () => {
+const handle_delete = async () => {
   try {
-    await bookStore.deleteBook(props.book.id);
-    closeModal(); // Fecha o modal após deletar
+    await bookStore.delete_book(props.book.id);
+    close_modal(); // Fecha o modal após deletar
     // Notificação já é exibida no ConfirmDialog após sucesso da operação
     // Não é necessário duplicar aqui
   } catch (error) {
-    addNotification('Erro ao deletar livro. Tente novamente.', error);
+    add_notification('Erro ao deletar livro. Tente novamente.', error);
   }
 };
 
 // Fecha modal e emite evento de edição para o componente pai
-const handleEdit = (book) => {
-  isEditing.value = true;
-  closeModal(); // Fecha o modal antes de editar
+const handle_edit = (book) => {
+  is_editing.value = true;
+  close_modal(); // Fecha o modal antes de editar
 
   // Pequeno delay para garantir o fechamento do modal antes de emitir o evento
   setTimeout(() => {
     emit('edit', book);
-    isEditing.value = false;
+    is_editing.value = false;
   }, 200);
 };
 </script>
@@ -74,37 +74,41 @@ const handleEdit = (book) => {
 <template>
   <div>
     <div
-      ref="cardEl"
+      ref="card_el"
       class="book-card book-card--list"
       :class="{
-        'book-card--animating': isAnimating,
-        'book-card--editing': isEditing,
+        'book-card--animating': is_animating,
+        'book-card--editing': is_editing,
       }"
-      :style="{ transform: `rotate(${randomTilt}deg)` }"
-      @click="openAnimatedModal"
+      :style="{ transform: `rotate(${random_tilt}deg)` }"
+      @click="open_animated_modal"
     >
-      <CardFront :book="book" :rotate="`rotate(${randomTilt}deg)`" />
+      <CardFront :book="book" :rotate="`rotate(${random_tilt}deg)`" />
     </div>
 
     <Teleport to="body">
       <div
-        v-if="isModalOpen"
+        v-if="is_modal_open"
         class="book-modal__overlay"
-        :class="{ visible: isModalVisible }"
-        @click.self="closeModal"
+        :class="{ visible: is_modal_visible }"
+        @click.self="close_modal"
       >
-        <div class="book-modal__container" :class="{ visible: isModalVisible }" @click="toggleFlip">
+        <div
+          class="book-modal__container"
+          :class="{ visible: is_modal_visible }"
+          @click="toggle_flip"
+        >
           <div
             class="book-card__flip"
-            :class="{ 'book-card__flip--flipped': isFlipped }"
-            :style="{ '--random-tilt': `${randomTilt}deg` }"
+            :class="{ 'book-card__flip--flipped': is_flipped }"
+            :style="{ '--random-tilt': `${random_tilt}deg` }"
           >
             <div class="book-card__face book-card__face--front">
               <CardFront
                 :book="book"
                 :is-modal="true"
                 :key="book.id"
-                :rotate="`rotate(${randomTilt}deg)`"
+                :rotate="`rotate(${random_tilt}deg)`"
               />
             </div>
 
@@ -112,10 +116,10 @@ const handleEdit = (book) => {
               <CardBack
                 :book="book"
                 :key="book.id"
-                :rotate="`rotate(${randomTilt}deg)`"
-                @edit="handleEdit"
-                @delete="openDeleteDialog"
-                @close="closeModalWithAnimation"
+                :rotate="`rotate(${random_tilt}deg)`"
+                @edit="handle_edit"
+                @delete="open_delete_dialog"
+                @close="close_modal_with_animation"
               />
             </div>
           </div>
@@ -124,22 +128,22 @@ const handleEdit = (book) => {
     </Teleport>
 
     <ConfirmDialog
-      ref="deleteDialog"
+      ref="delete_dialog"
       title="Deletar Livro"
       :message="`Tem certeza que deseja deletar '${book.name}'? Esta ação não pode ser desfeita.`"
       confirm-text="Deletar"
-      :on-confirm="() => bookStore.deleteBook(book.id)"
-      @confirm="handleDelete"
-      @cancel="closeModalWithAnimation"
+      :on-confirm="() => bookStore.delete_book(book.id)"
+      @confirm="handle_delete"
+      @cancel="close_modal_with_animation"
     />
   </div>
 </template>
 
 <style scoped>
 .book-card {
-  padding: 1rem;
+  padding: 0.5rem;
   background: var(--white);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: var(--card-front-w);
@@ -223,8 +227,6 @@ const handleEdit = (book) => {
   padding: 1rem;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  /* background: var(--white); */
-  /* box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18); */
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   transform: translateZ(0);
 }
@@ -248,8 +250,7 @@ const handleEdit = (book) => {
 }
 .book-card__face--front,
 .book-card__face--back {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.18);
-  min-height: 220px;
+  box-shadow: var(--shadow);
   background: var(--white);
   min-height: 300px;
 }

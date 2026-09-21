@@ -1,13 +1,13 @@
 <script setup>
 // Componente raiz — renderiza a rota ativa com botão de saída quando autenticado
 import { RouterView, useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
+import { use_user_store } from '@/stores/userStore';
 
 const route = useRoute();
 const router = useRouter();
-const userStore = useUserStore();
+const userStore = use_user_store();
 
-const handleLogout = () => {
+const handle_logout = () => {
   userStore.logout();
   router.push({ name: 'login' });
 };
@@ -16,10 +16,10 @@ const handleLogout = () => {
 <template>
   <div class="app__view">
     <button
-      v-if="route.name !== 'login' && userStore.userActive"
+      v-if="route.name !== 'login' && userStore.user_active"
       type="button"
       class="app__logout"
-      @click="handleLogout"
+      @click="handle_logout"
     >
       Sair
     </button>

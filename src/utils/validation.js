@@ -3,31 +3,31 @@
  */
 
 // Valida se o título é obrigatório
-export function validateRequired(value, fieldName) {
+export function validate_required(value, field_name) {
   if (!value || !value.trim()) {
-    return `${fieldName} é obrigatório`;
+    return `${field_name} é obrigatório`;
   }
   return null;
 }
 
 // Valida se é um número positivo
-export function validatePositiveNumber(value, fieldName) {
+export function validate_positive_number(value, field_name) {
   if (value && (isNaN(value) || value < 0)) {
-    return `${fieldName} deve ser um número positivo`;
+    return `${field_name} deve ser um número positivo`;
   }
   return null;
 }
 
 // Valida ano (4 dígitos)
-export function validateYear(value, fieldName) {
+export function validate_year(value, field_name) {
   if (value && !/^\d{4}$/.test(value)) {
-    return `${fieldName} deve ter 4 dígitos`;
+    return `${field_name} deve ter 4 dígitos`;
   }
   return null;
 }
 
 // Valida múltiplos valores separados por vírgula
-export function parseCommaSeparated(value) {
+export function parse_comma_separated(value) {
   if (!value) return [];
   return value
     .split(',')

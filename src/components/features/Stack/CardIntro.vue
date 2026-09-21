@@ -5,26 +5,26 @@ import { gsap } from 'gsap';
 
 // Import assets
 
-import paperCenter from '@/assets/images/cards/card_intro/paper-center.webp';
-import paperLeft from '@/assets/images/cards/card_intro/paper-left.webp';
-import paperLeftBottom from '@/assets/images/cards/card_intro/paper-left-bottom.webp';
-import paperLeftTop from '@/assets/images/cards/card_intro/paper-left-top.webp';
-import paperRightTop from '@/assets/images/cards/card_intro/paper-right-top.webp';
-import paperRightBottom from '@/assets/images/cards/card_intro/paper-right-bottom.webp';
+import paper_center from '@/assets/images/cards/card_intro/paper-center.webp';
+import paper_left from '@/assets/images/cards/card_intro/paper-left.webp';
+import paper_left_bottom from '@/assets/images/cards/card_intro/paper-left-bottom.webp';
+import paper_left_top from '@/assets/images/cards/card_intro/paper-left-top.webp';
+import paper_right_top from '@/assets/images/cards/card_intro/paper-right-top.webp';
+import paper_right_bottom from '@/assets/images/cards/card_intro/paper-right-bottom.webp';
 
 import cloud from '@/assets/images/cards/card_intro/cloude.webp';
 import start from '@/assets/images/cards/card_intro/start.webp';
 import coffee from '@/assets/images/cards/card_intro/coffee.webp';
 import luck from '@/assets/images/cards/card_intro/luck.webp';
 
-const animatedElements = ref();
+const animated_elements = ref();
 
 function anime() {
   const tl = gsap.timeline({
     defaults: { ease: 'power3.out' },
   });
 
-  const elements = animatedElements.value.querySelectorAll('p');
+  const elements = animated_elements.value.querySelectorAll('p');
 
   tl.from(
     elements,
@@ -84,21 +84,21 @@ onMounted(() => {
 <template>
   <div class="card-intro">
     <div class="card-intro__detail">
-      <img :src="paperLeftBottom" id="card-intro__detail-02" />
-      <img :src="paperLeft" id="card-intro__detail-01" />
-      <img :src="paperLeftTop" id="card-intro__detail-03" />
-      <img :src="paperRightTop" id="card-intro__detail-04" />
-      <img :src="paperRightBottom" id="card-intro__detail-05" />
+      <img :src="paper_left_bottom" id="card-intro__detail-02" />
+      <img :src="paper_left" id="card-intro__detail-01" />
+      <img :src="paper_left_top" id="card-intro__detail-03" />
+      <img :src="paper_right_top" id="card-intro__detail-04" />
+      <img :src="paper_right_bottom" id="card-intro__detail-05" />
 
       <img id="card-intro__cloud" :src="cloud" alt="" />
       <img id="card-intro__start" :src="start" alt="" />
       <img id="card-intro__coffee" :src="coffee" alt="" />
     </div>
     <div class="card-intro__content">
-      <img :src="paperCenter" id="card-intro__content-image" alt="" />
+      <img :src="paper_center" id="card-intro__content-image" alt="" />
       <img :src="luck" id="card-intro__content-detail" alt="" />
 
-      <h1 ref="animatedElements" class="card-intro__title">
+      <h1 ref="animated_elements" class="card-intro__title">
         <p>
           My Book <br />
           Journal
@@ -112,7 +112,7 @@ onMounted(() => {
 .card-intro {
   background-color: #075832;
   background-size: contain;
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 

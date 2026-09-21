@@ -66,28 +66,28 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue']);
 
 // Estados reativos
-const showSuggestions = ref(false);
-const inputRef = ref(null);
-const multiSearchText = ref('');
-const showMultiSuggestions = ref(false);
-const multiInputRef = ref(null);
+const show_suggestions = ref(false);
+const input_ref = ref(null);
+const multi_search_text = ref('');
+const show_multi_suggestions = ref(false);
+const multi_input_ref = ref(null);
 
 // Ponte entre v-model do pai e o input (text, number, select, checkbox)
-const localValue = computed({
+const local_value = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
 });
 // Ponte entre v-model do pai e as tags (multi-select usa array)
-const localMultiValue = computed({
+const local_multi_value = computed({
   get: () => (Array.isArray(props.modelValue) ? props.modelValue : []),
   set: (value) => emit('update:modelValue', value),
 });
 
 // ID único para associar o <label> ao <input>
-const fieldId = computed(() => `field-${Math.random().toString(36).substr(2, 9)}`);
+const field_id = computed(() => `field-${Math.random().toString(36).substr(2, 9)}`);
 
 // Converte o type do Vue para o atributo type do HTML (ex: "number" → number)
-const inputType = computed(() => {
+const input_type = computed(() => {
   switch (props.type) {
     case 'number':
       return 'number';
@@ -105,96 +105,96 @@ const inputType = computed(() => {
 });
 
 // Filtra as opções conforme o texto digitado (máx 10 resultados)
-const filteredOptions = computed(() => {
-  if (!props.options?.length || !localValue.value) return [];
+const filtered_options = computed(() => {
+  if (!props.options?.length || !local_value.value) return [];
 
-  const search = String(localValue.value).toLowerCase();
+  const search = String(local_value.value).toLowerCase();
   return props.options.filter((opt) => String(opt).toLowerCase().includes(search)).slice(0, 10);
 });
 
 // Filtra as opções do multi-select, excluindo as já selecionadas
-const multiFilteredOptions = computed(() => {
-  if (!props.options?.length || !multiSearchText.value) return [];
-  const search = multiSearchText.value.toLowerCase();
-  const selectedLower = localMultiValue.value.map((v) => String(v).toLowerCase());
+const multi_filtered_options = computed(() => {
+  if (!props.options?.length || !multi_search_text.value) return [];
+  const search = multi_search_text.value.toLowerCase();
+  const selected_lower = local_multi_value.value.map((v) => String(v).toLowerCase());
   return props.options
     .filter((opt) => {
-      const optStr = String(opt).toLowerCase();
-      return optStr.includes(search) && !selectedLower.includes(optStr);
+      const opt_str = String(opt).toLowerCase();
+      return opt_str.includes(search) && !selected_lower.includes(opt_str);
     })
     .slice(0, 10);
 });
 
 // Mostra "+ Adicionar" apenas se o texto não existe nas opções e não foi selecionado
-const multiCanAddNew = computed(() => {
-  if (!multiSearchText.value) return false;
-  const trimmed = multiSearchText.value.trim();
+const multi_can_add_new = computed(() => {
+  if (!multi_search_text.value) return false;
+  const trimmed = multi_search_text.value.trim();
   if (!trimmed) return false;
-  if (multiFilteredOptions.value.length > 0) return false;
-  const alreadySelected = localMultiValue.value.some(
+  if (multi_filtered_options.value.length > 0) return false;
+  const already_selected = local_multi_value.value.some(
     (val) => String(val).toLowerCase() === trimmed.toLowerCase(),
   );
-  return !alreadySelected;
+  return !already_selected;
 });
 
 // Métodos
 
 // Seleciona uma sugestão e preenche o input
-const selectSuggestion = (option) => {
-  localValue.value = option;
-  showSuggestions.value = false;
+const select_suggestion = (option) => {
+  local_value.value = option;
+  show_suggestions.value = false;
 };
 
 // Mostra o dropdown ao focar o input com opções disponíveis
-const onInputFocus = () => {
-  if (props.options?.length) showSuggestions.value = true;
+const on_input_focus = () => {
+  if (props.options?.length) show_suggestions.value = true;
 };
 
 // Mostra o dropdown quando o usuário digita no multi-select
-const onMultiInput = () => {
-  showMultiSuggestions.value = multiSearchText.value.length > 0;
+const on_multi_input = () => {
+  show_multi_suggestions.value = multi_search_text.value.length > 0;
 };
 
 // Adiciona um valor à lista, ignorando duplicatas (case-insensitive)
-const addMultiValue = (val) => {
+const add_multi_value = (val) => {
   const trimmed = val.trim();
   if (!trimmed) return;
 
-  const searchLower = trimmed.toLowerCase();
-  const alreadySelected = localMultiValue.value.some(
-    (v) => String(v).toLowerCase() === searchLower,
+  const search_lower = trimmed.toLowerCase();
+  const already_selected = local_multi_value.value.some(
+    (v) => String(v).toLowerCase() === search_lower,
   );
-  if (alreadySelected) {
-    multiSearchText.value = '';
-    showMultiSuggestions.value = false;
+  if (already_selected) {
+    multi_search_text.value = '';
+    show_multi_suggestions.value = false;
     return;
   }
-  localMultiValue.value = [...localMultiValue.value, trimmed];
-  multiSearchText.value = '';
-  showMultiSuggestions.value = false;
-  multiInputRef.value?.focus();
+  local_multi_value.value = [...local_multi_value.value, trimmed];
+  multi_search_text.value = '';
+  show_multi_suggestions.value = false;
+  multi_input_ref.value?.focus();
 };
 
 // Remove um valor da lista pelo índice
-const removeMultiValue = (index) => {
-  localMultiValue.value = localMultiValue.value.filter((_, i) => i !== index);
+const remove_multi_value = (index) => {
+  local_multi_value.value = local_multi_value.value.filter((_, i) => i !== index);
 };
 
 // Mostra o dropdown ao focar no input do multi-select
-const onMultiFocus = () => {
-  if (props.options?.length) showMultiSuggestions.value = true;
+const on_multi_focus = () => {
+  if (props.options?.length) show_multi_suggestions.value = true;
 };
 
 // Esconde o dropdown com delay para permitir clique na opção
-const onMultiBlur = () => {
-  setTimeout(() => (showMultiSuggestions.value = false), 200);
+const on_multi_blur = () => {
+  setTimeout(() => (show_multi_suggestions.value = false), 200);
 };
 </script>
 
 <template>
   <div class="form-field" :class="{ 'form-field--required': required }">
     <!-- Label do campo -->
-    <label :for="fieldId" class="form-field__label">
+    <label :for="field_id" class="form-field__label">
       {{ label }}
       <!-- Asterisco para campos obrigatórios -->
       <span v-if="required" class="form-field__asterisk">*</span>
@@ -204,8 +204,8 @@ const onMultiBlur = () => {
       <!-- SELECT: Dropdown com opções pré-definidas -->
       <div v-if="type === 'select'" class="select_wrapper">
         <select
-          :id="fieldId"
-          v-model="localValue"
+          :id="field_id"
+          v-model="local_value"
           class="form-field__input form-field__select"
           :class="{ 'form-field__input--error': error }"
           @change="$emit('update:modelValue', $event.target.value)"
@@ -221,9 +221,9 @@ const onMultiBlur = () => {
       <!-- CHECKBOX: Caixa de seleção -->
       <input
         v-else-if="type === 'checkbox'"
-        :id="fieldId"
+        :id="field_id"
         type="checkbox"
-        v-model="localValue"
+        v-model="local_value"
         class="form-field__checkbox"
         @change="$emit('update:modelValue', $event.target.checked)"
       />
@@ -231,10 +231,10 @@ const onMultiBlur = () => {
       <!-- AUTOCOMPLETE: Input com sugestões enquanto digita -->
       <div v-else-if="type === 'autocomplete'" class="form-field__autocomplete">
         <input
-          ref="inputRef"
-          :id="fieldId"
-          :type="inputType"
-          v-model="localValue"
+          ref="input_ref"
+          :id="field_id"
+          :type="input_type"
+          v-model="local_value"
           :placeholder="placeholder"
           :min="min"
           :max="max"
@@ -242,16 +242,16 @@ const onMultiBlur = () => {
           class="form-field__input"
           :class="{ 'form-field__input--error': error }"
           @input="$emit('update:modelValue', $event.target.value)"
-          @focus="onInputFocus"
+          @focus="on_input_focus"
           @blur="onInputBlur"
         />
 
         <!-- Lista de sugestões (aparece quando há opções filtradas) -->
-        <ul v-if="showSuggestions && filteredOptions.length" class="form-field__suggestions">
+        <ul v-if="show_suggestions && filtered_options.length" class="form-field__suggestions">
           <li
-            v-for="option in filteredOptions"
+            v-for="option in filtered_options"
             :key="option"
-            @mousedown.prevent="selectSuggestion(option)"
+            @mousedown.prevent="select_suggestion(option)"
           >
             {{ option }}
           </li>
@@ -262,46 +262,46 @@ const onMultiBlur = () => {
       <div v-else-if="type === 'multi-select'" class="form-field__multiselect">
         <div class="form-field__multiselect-input-wrapper">
           <input
-            ref="multiInputRef"
-            :id="fieldId"
+            ref="multi_input_ref"
+            :id="field_id"
             type="text"
-            v-model="multiSearchText"
+            v-model="multi_search_text"
             :placeholder="placeholder"
             class="form-field__input"
             :class="{ 'form-field__input--error': error }"
-            @input="onMultiInput"
-            @focus="onMultiFocus"
-            @blur="onMultiBlur"
+            @input="on_multi_input"
+            @focus="on_multi_focus"
+            @blur="on_multi_blur"
             @keydown.enter.prevent="
-              multiCanAddNew
-                ? addMultiValue(multiSearchText)
-                : multiFilteredOptions.length === 1
-                  ? addMultiValue(multiFilteredOptions[0])
+              multi_can_add_new
+                ? add_multi_value(multi_search_text)
+                : multi_filtered_options.length === 1
+                  ? add_multi_value(multi_filtered_options[0])
                   : null
             "
           />
           <!-- Sugestões filtradas ou "+ Adicionar" para novos valores -->
-          <ul v-if="showMultiSuggestions" class="form-field__suggestions">
+          <ul v-if="show_multi_suggestions" class="form-field__suggestions">
             <li
-              v-for="option in multiFilteredOptions"
+              v-for="option in multi_filtered_options"
               :key="option"
-              @mousedown.prevent="addMultiValue(option)"
+              @mousedown.prevent="add_multi_value(option)"
             >
               {{ option }}
             </li>
             <li
-              v-if="multiCanAddNew"
+              v-if="multi_can_add_new"
               class="form-field__suggestion--new"
-              @mousedown.prevent="addMultiValue(multiSearchText)"
+              @mousedown.prevent="add_multi_value(multi_search_text)"
             >
-              + Adicionar "{{ multiSearchText }}"
+              + Adicionar "{{ multi_search_text }}"
             </li>
           </ul>
         </div>
         <!-- Tags selecionadas com botão × para remover -->
-        <div v-if="localMultiValue.length" class="form-field__multiselect-tags">
+        <div v-if="local_multi_value.length" class="form-field__multiselect-tags">
           <span
-            v-for="(val, idx) in localMultiValue"
+            v-for="(val, idx) in local_multi_value"
             :key="idx"
             class="form-field__multiselect-tag"
           >
@@ -309,7 +309,7 @@ const onMultiBlur = () => {
             <button
               type="button"
               class="form-field__multiselect-remove"
-              @click="removeMultiValue(idx)"
+              @click="remove_multi_value(idx)"
             >
               ×
             </button>
@@ -320,9 +320,9 @@ const onMultiBlur = () => {
       <!-- INPUT PADRÃO: text, number, date, email, password, url -->
       <input
         v-else
-        :id="fieldId"
-        :type="inputType"
-        v-model="localValue"
+        :id="field_id"
+        :type="input_type"
+        v-model="local_value"
         :placeholder="placeholder"
         :min="min"
         :max="max"
@@ -451,8 +451,8 @@ const onMultiBlur = () => {
   top: 100%;
   left: 0;
   right: 0;
-  background: white;
-  border-radius: 0.375rem;
+  background: var(--white);
+  border-radius: var(--radius);
   list-style: none;
   margin: 0;
   padding: 0;

@@ -29,11 +29,10 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     const url = error.config?.url || '';
-    const isAuthCall = url.startsWith('/api/auth/');
-    const isOnLoginPage =
-      typeof window !== 'undefined' && window.location.pathname === '/login';
+    const is_auth_call = url.startsWith('/api/auth/');
+    const is_on_login_page = typeof window !== 'undefined' && window.location.pathname === '/login';
 
-    if (status === 401 && !isAuthCall && !isOnLoginPage) {
+    if (status === 401 && !is_auth_call && !is_on_login_page) {
       localStorage.removeItem('SESSION_TOKEN');
       localStorage.removeItem('SESSION_USER');
       window.location.href = '/login';
@@ -46,7 +45,7 @@ export { api };
 
 // ==== Books API ==== //
 // Endpoints CRUD para livros com paginação baseada em cursor
-export const booksAPI = {
+export const books_api = {
   list(options = {}) {
     const { pageSize = 20, startCursor, search = '', status = 'all', wasReadIn } = options;
 
@@ -66,7 +65,7 @@ export const booksAPI = {
     return api.get('/api/books', { params });
   },
 
-  listAll() {
+  list_all() {
     return api.get('/api/books/all', { timeout: 60000 });
   },
 
@@ -97,7 +96,7 @@ export const booksAPI = {
 
 // ==== Users API ==== //
 // Endpoints para listar e buscar usuários do Notion
-export const userAPI = {
+export const user_api = {
   list(options = {}) {
     const { startCursor, pageSize = 100 } = options;
 
@@ -110,18 +109,18 @@ export const userAPI = {
     return api.get('/api/users', { params });
   },
 
-  listAll() {
+  list_all() {
     return api.get('/api/users/all');
   },
 
-  getById(userId) {
-    return api.get(`/api/users/${userId}`);
+  get_by_id(user_id) {
+    return api.get(`/api/users/${user_id}`);
   },
 };
 
 // ==== Auth API ==== //
 // Endpoints de autenticação — login com código de acesso e revalidação de sessão
-export const authAPI = {
+export const auth_api = {
   login(data) {
     return api.post('/api/auth/login', data);
   },

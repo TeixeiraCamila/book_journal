@@ -2,19 +2,26 @@
 <script setup>
 import { defineAsyncComponent, nextTick, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
-import { useBookStore } from '@/stores/bookStore';
+import { use_book_store } from '@/stores/bookStore';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 import CardIntro from '@/components/features/Stack/CardIntro.vue';
+import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 
-const bookStore = useBookStore();
+const bookStore = use_book_store();
+
+// Fallback exibido enquanto o chunk de cada lista é baixado (evita slide em branco)
+const async_slide = (loader) =>
+  defineAsyncComponent({
+    loader,
+    loadingComponent: LoadingSpinner,
+    delay: 200,
+  });
 
 // Componentes carregados sob demanda para otimizar performance inicial
-const BookList = defineAsyncComponent(() => import('@/components/books/BookList/BookList.vue'));
-const TBRList = defineAsyncComponent(() => import('@/components/features/TBRList/TBRList.vue'));
-const ReadingList = defineAsyncComponent(
-  () => import('@/components/features/ReadingList/ReadingList.vue'),
-);
-const ThisYearList = defineAsyncComponent(
+const BookList = async_slide(() => import('@/components/books/BookList/BookList.vue'));
+const TBRList = async_slide(() => import('@/components/features/TBRList/TBRList.vue'));
+const ReadingList = async_slide(() => import('@/components/features/ReadingList/ReadingList.vue'));
+const ThisYearList = async_slide(
   () => import('@/components/features/ThisYearList/ThisYearList.vue'),
 );
 
@@ -25,49 +32,49 @@ import 'swiper/css';
 import 'swiper/css/effect-cards';
 
 const route = useRoute();
-const swiperInstance = ref(null);
+const swiper_instance = ref(null);
 const modules = [EffectCards];
 
-function onSwiperInit(swiper) {
-  swiperInstance.value = swiper;
+function on_swiper_init(swiper) {
+  swiper_instance.value = swiper;
 }
 
 // Ao mudar de slide, pré-carrega dados dos próximos cards (leitura adiada)
-const onSlideChange = (swiper) => {
-  const activeIndex = swiper.activeIndex;
+const on_slide_change = (swiper) => {
+  const active_index = swiper.activeIndex;
 
-  if (activeIndex === 1) {
-    bookStore.fetchBooksByStatus();
-    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
-    prefetchNextSlides([2, 3, 4]);
+  if (active_index === 1) {
+    bookStore.fetch_books_by_status();
+    bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);
+    prefetch_next_slides([2, 3, 4]);
   }
-  if (activeIndex === 2) {
-    bookStore.fetchBooksReadThisYear();
-    prefetchNextSlides([3]);
+  if (active_index === 2) {
+    bookStore.fetch_books_read_this_year();
+    prefetch_next_slides([3]);
   }
-  if (activeIndex === 3) {
-    prefetchNextSlides([4]);
+  if (active_index === 3) {
+    prefetch_next_slides([4]);
   }
 };
 
 // Pré-carrega chunks de componentes em produção para navegação instantânea
-function prefetchNextSlides(slideIndices) {
+function prefetch_next_slides(slide_indices) {
   if (import.meta.env.PROD) {
-    slideIndices.forEach((index) => {
-      triggerChunkPrefetch(index);
+    slide_indices.forEach((index) => {
+      trigger_chunk_prefetch(index);
     });
   }
 }
 
-function triggerChunkPrefetch(slideIndex) {
+function trigger_chunk_prefetch(slide_index) {
   const chunks = {
     1: () => import('@/components/books/BookList/BookList.vue'),
     2: () => import('@/components/features/ReadingList/ReadingList.vue'),
-    3: () => import('@/components/features/TBRList/TBRList.vue'),
-    4: () => import('@/components/features/ThisYearList/ThisYearList.vue'),
+    3: () => import('@/components/features/ThisYearList/ThisYearList.vue'),
+    4: () => import('@/components/features/TBRList/TBRList.vue'),
   };
 
-  const loader = chunks[slideIndex];
+  const loader = chunks[slide_index];
   if (loader) {
     loader().catch(() => {});
   }
@@ -76,21 +83,21 @@ function triggerChunkPrefetch(slideIndex) {
 // Na montagem, pré-carrega slides e verifica se há slide alvo via query string
 onMounted(() => {
   setTimeout(() => {
-    prefetchNextSlides([1, 2, 3]);
+    prefetch_next_slides([1, 2, 3, 4]);
   }, 1500);
 
-  const slideTarget = route.query.slide;
-  if (slideTarget) {
-    const target = Number(slideTarget);
+  const slide_target = route.query.slide;
+  if (slide_target) {
+    const target = Number(slide_target);
     if (target >= 2) {
-      bookStore.fetchBooksByStatus();
-      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
+      bookStore.fetch_books_by_status();
+      bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);
     }
     if (target >= 3) {
-      bookStore.fetchBooksReadThisYear();
+      bookStore.fetch_books_read_this_year();
     }
     nextTick(() => {
-      swiperInstance.value?.slideTo(target, 300);
+      swiper_instance.value?.slideTo(target, 300);
     });
   }
 });
@@ -103,8 +110,8 @@ onMounted(() => {
     :modules="modules"
     :direction="'vertical'"
     class="stack-view__swiper"
-    @swiper="onSwiperInit"
-    @slideChange="onSlideChange"
+    @swiper="on_swiper_init"
+    @slideChange="on_slide_change"
   >
     <SwiperSlide class="stack-view__slide">
       <CardIntro class="stack-view__card stack-view__intro" />
@@ -116,19 +123,19 @@ onMounted(() => {
       </div>
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide" v-if="bookStore.bookLists.reading.length">
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.book_lists.reading.length">
       <div class="stack-view__card stack-view__now">
         <ReadingList />
       </div>
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide" v-if="bookStore.thisYearCount > 0">
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.this_year_count > 0">
       <div class="stack-view__card stack-view__year">
         <ThisYearList />
       </div>
     </SwiperSlide>
 
-    <SwiperSlide class="stack-view__slide" v-if="bookStore.bookLists.tbr.length">
+    <SwiperSlide class="stack-view__slide" v-if="bookStore.book_lists.tbr.length">
       <div class="stack-view__card stack-view__tbr">
         <TBRList />
       </div>
@@ -149,7 +156,7 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 18px;
+  border-radius: var(--radius-lg);
 }
 
 /* Card base dentro do slide */
@@ -162,11 +169,12 @@ onMounted(() => {
   background-position: center;
   background-size: cover;
   position: relative;
+  background-image: url('https://i.pinimg.com/1200x/e7/78/c3/e778c3a0bb0eb3df9344f32391b9ffcd.jpg');
 }
 
 /* Card da lista de livros com background */
 .stack-view__book-list {
-  background-image: url('../assets/images/cards/card_list/bg__blue.webp');
+  /* background-image: url('../assets/images/cards/card_bg/bg__blue.webp'); */
   background-position: center;
   display: flex;
   flex-direction: column;
@@ -174,14 +182,14 @@ onMounted(() => {
 }
 
 .stack-view__tbr {
-  background: url('../assets/images/cards/card_list/bg__green__01.webp');
+  /* background-image: url('../assets/images/cards/card_bg/bg__pink.webp'); */
 }
 
 .stack-view__now {
-  background-image: url('../assets/images/cards/card_this_year/yellow__bg.webp');
+  /* background-image: url('../assets/images/cards/card_bg/bg__red.webp'); */
 }
 .stack-view__year {
-  background-image: url('../assets/images/cards/card_this_year/yellow__bg.webp');
+  /* background-image: url('../assets/images/cards/card_bg/bg__yellow.webp'); */
 }
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 768px) {

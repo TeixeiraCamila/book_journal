@@ -1,16 +1,16 @@
-export function useBookFormatters() {
-  const getAuthorString = (book) => {
-    const literaryAtlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
-    return `${literaryAtlas}${book.author.join(', ')}`;
+export function use_book_formatters() {
+  const get_author_string = (book) => {
+    const literary_atlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
+    return `${literary_atlas}${book.author.join(', ')}`;
   };
 
-  const getPagesString = (book) => {
+  const get_pages_string = (book) => {
     if (!book.totalPages || !book.currentlyOn) return '';
     const progress = Math.round((parseInt(book.currentlyOn) / parseInt(book.totalPages)) * 100);
     return `Páginas: ${book.currentlyOn} / ${book.totalPages} (${progress}%)`;
   };
 
-  const getPublicationString = (book) => {
+  const get_publication_string = (book) => {
     const publisher = book.publishedBy?.[0];
     const year = book.firstPublished;
 
@@ -29,5 +29,5 @@ export function useBookFormatters() {
     return 'Informação de publicação não disponível';
   };
 
-  return { getAuthorString, getPagesString, getPublicationString };
+  return { get_author_string, get_pages_string, get_publication_string };
 }

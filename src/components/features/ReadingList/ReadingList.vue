@@ -1,25 +1,25 @@
 <script setup>
 // Lista de livros em leitura — exibe cards detalhados com barra de progresso
 import { useRouter } from 'vue-router';
-import { useBookStore } from '@/stores/bookStore';
+import { use_book_store } from '@/stores/bookStore';
 import { PencilLine } from 'lucide-vue-next';
 import Button from '@/components/ui/Button.vue';
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 const router = useRouter();
-const bookStore = useBookStore();
-import { useBookFormatters } from '@/composables/useBookFormatters.js';
+const bookStore = use_book_store();
+import { use_book_formatters } from '@/composables/useBookFormatters.js';
 
-const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters();
+const { get_author_string, get_pages_string, get_publication_string } = use_book_formatters();
 
-const calculateProgress = (currentlyOn, total) => {
+const calculate_progress = (currentlyOn, total) => {
   if (!currentlyOn || !total || total === 0) return 0;
   return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100);
 };
 /**
  * Formata data para exibição em português
  */
-const formatDate = (dateString) => {
+const format_date = (dateString) => {
   if (!dateString) return '';
   return new Date(dateString).toLocaleDateString('pt-BR');
 };
@@ -27,13 +27,13 @@ const formatDate = (dateString) => {
 /**
  * Formata string de período de leitura
  */
-const getReadingPeriodString = (book) => {
+const get_reading_period_string = (book) => {
   const se = book.startEnd;
 
   if (!se?.start || !se?.end) return '';
 
-  const start = formatDate(se.start);
-  const end = formatDate(se.end);
+  const start = format_date(se.start);
+  const end = format_date(se.end);
 
   return `Lido de ${start} até ${end}`;
 };
@@ -41,7 +41,7 @@ const getReadingPeriodString = (book) => {
 /**
  * Formata string de tipo
  */
-const getTypeString = (book) => {
+const get_type_string = (book) => {
   if (!book.type?.length) return '';
   return ` ${book.type.join(', ')}`;
 };
@@ -49,7 +49,7 @@ const getTypeString = (book) => {
 /**
  * Retorna notas adicionais
  */
-const getAdditionalNotes = (book) => {
+const get_additional_notes = (book) => {
   const notes = [];
 
   if (book.notes) {
@@ -66,14 +66,14 @@ const getAdditionalNotes = (book) => {
 /**
  * Verifica se há informações de publicação
  */
-const hasPublicationInfo = (book) => {
+const has_publication_info = (book) => {
   return !!(book.publishedBy?.[0] || book.firstPublished);
 };
 
 /**
  * Navega para editar livro
  */
-const navigateToEdit = (bookId) => {
+const navigate_to_edit = (bookId) => {
   router.push(`/editar/${bookId}`);
 };
 </script>
@@ -83,28 +83,28 @@ const navigateToEdit = (bookId) => {
     <header class="reading-list__header">
       <h1 class="reading-list__title">Em Leitura</h1>
       <p class="reading-list__subtitle">
-        {{ bookStore.bookLists.reading.length }}
-        {{ bookStore.bookLists.reading.length === 1 ? 'livro' : 'livros' }} em leitura
+        {{ bookStore.book_lists.reading.length }}
+        {{ bookStore.book_lists.reading.length === 1 ? 'livro' : 'livros' }} em leitura
       </p>
     </header>
 
-    <div v-if="bookStore.hasError && !bookStore.loadingStates.reading" class="reading-list__error">
+    <div
+      v-if="bookStore.has_error && !bookStore.loading_states.reading"
+      class="reading-list__error"
+    >
       <div class="reading-list__error-icon">⚠️</div>
       <p class="reading-list__error-message">{{ bookStore.error }}</p>
-      <Button
-        class="reading-list__retry-btn"
-        @click="bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)"
-      >
+      <Button @click="bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING)">
         Tentar Novamente
       </Button>
     </div>
 
-    <LoadingSpinner v-else-if="bookStore.loadingStates.reading">
+    <LoadingSpinner v-else-if="bookStore.loading_states.reading">
       <p>Carregando livros em leitura...</p>
     </LoadingSpinner>
 
     <div
-      v-else-if="bookStore.bookLists.reading.length === 0 && !bookStore.loadingStates.reading"
+      v-else-if="bookStore.book_lists.reading.length === 0 && !bookStore.loading_states.reading"
       class="reading-list__empty"
     >
       <div class="reading-list__empty-icon">📚</div>
@@ -117,7 +117,7 @@ const navigateToEdit = (bookId) => {
     <div v-else class="reading-list__container">
       <div class="reading-list__grid">
         <article
-          v-for="(book, index) in bookStore.bookLists.reading"
+          v-for="(book, index) in bookStore.book_lists.reading"
           :key="book.id"
           class="reading-card"
           :class="`reading-card--blob-${(index % 6) + 1}`"
@@ -140,35 +140,37 @@ const navigateToEdit = (bookId) => {
                 <div>
                   <h2 class="reading-card__title">{{ book.name }}</h2>
 
-                  <div class="reading-card__type" v-if="getTypeString(book)">
-                    <span class="reading-card__value">{{ getTypeString(book) }}</span>
+                  <div class="reading-card__type" v-if="get_type_string(book)">
+                    <span class="reading-card__value">{{ get_type_string(book) }}</span>
                   </div>
                 </div>
-                <span class="reading-card__author">{{ getAuthorString(book) }}</span>
+                <span class="reading-card__author">{{ get_author_string(book) }}</span>
               </div>
             </header>
 
             <div class="reading-card__info">
-              <div class="reading-card__info-item" v-if="hasPublicationInfo(book)">
+              <div class="reading-card__info-item" v-if="has_publication_info(book)">
                 <span class="reading-card__label">Publicação:</span>
-                <span class="reading-card__value">{{ getPublicationString(book) }}</span>
+                <span class="reading-card__value">{{ get_publication_string(book) }}</span>
               </div>
 
-              <div class="reading-card__info-item" v-if="getReadingPeriodString(book)">
+              <div class="reading-card__info-item" v-if="get_reading_period_string(book)">
                 <span class="reading-card__label">Período:</span>
-                <span class="reading-card__value">{{ getReadingPeriodString(book) }}</span>
+                <span class="reading-card__value">{{ get_reading_period_string(book) }}</span>
               </div>
 
               <div class="reading-card__info-item" v-if="book.totalPages && book.currentlyOn">
                 <span class="reading-card__label">Progresso:</span>
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
-                    <span>{{ getPagesString(book) }}</span>
+                    <span>{{ get_pages_string(book) }}</span>
                   </div>
                   <div class="reading-card__progress-bar">
                     <div
                       class="reading-card__progress-fill"
-                      :style="{ width: `${calculateProgress(book.currentlyOn, book.totalPages)}%` }"
+                      :style="{
+                        width: `${calculate_progress(book.currentlyOn, book.totalPages)}%`,
+                      }"
                     ></div>
                   </div>
                 </div>
@@ -187,11 +189,11 @@ const navigateToEdit = (bookId) => {
                 </div>
               </div>
 
-              <div class="reading-card__info-item" v-if="getAdditionalNotes(book).length > 0">
+              <div class="reading-card__info-item" v-if="get_additional_notes(book).length > 0">
                 <span class="reading-card__label">Notas:</span>
                 <div class="reading-card__notes">
                   <p
-                    v-for="(note, index) in getAdditionalNotes(book)"
+                    v-for="(note, index) in get_additional_notes(book)"
                     :key="index"
                     class="reading-card__note"
                   >
@@ -202,7 +204,7 @@ const navigateToEdit = (bookId) => {
             </div>
 
             <div class="reading-card__actions">
-              <Button class="reading-card__edit-btn" @click="navigateToEdit(book.id)">
+              <Button @click="navigate_to_edit(book.id)">
                 <PencilLine :size="16" />
                 Editar
               </Button>
@@ -258,7 +260,7 @@ const navigateToEdit = (bookId) => {
 /* Estado de Erro */
 .reading-list__error {
   background: rgba(0, 0, 0, 0.1);
-  border-radius: 12px;
+  border-radius: var(--radius);
   margin: 2rem;
 }
 
@@ -271,23 +273,6 @@ const navigateToEdit = (bookId) => {
   font-size: 1.125rem;
   margin-bottom: 1.5rem;
   color: var(--black);
-}
-
-.reading-list__retry-btn {
-  padding: 0.75rem 2rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.reading-list__retry-btn:hover {
-  background: #c27a76;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(218, 147, 143, 0.3);
 }
 
 /* Estado Vazio */
@@ -322,9 +307,9 @@ const navigateToEdit = (bookId) => {
 
 /* ===== CARD DE LEITURA ===== */
 .reading-card {
-  background: white;
+  background: var(--white);
   padding: 1.5rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow);
   overflow: hidden;
   transition: all 0.3s ease;
   display: flex;
@@ -334,7 +319,7 @@ const navigateToEdit = (bookId) => {
 
 .reading-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .reading-card__cover {
@@ -358,7 +343,7 @@ const navigateToEdit = (bookId) => {
 
 .reading-card__placeholder {
   font-size: 4rem;
-  color: #94a3b8;
+  color: var(--muted);
   filter: grayscale(1);
 }
 
@@ -497,25 +482,6 @@ const navigateToEdit = (bookId) => {
   gap: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--accent_muted);
-}
-
-.reading-card__edit-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: var(--accent);
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.reading-card__edit-btn:hover {
-  background: #c27a76;
-  transform: translateY(-2px);
 }
 
 /* ===== RESPONSIVIDADE ===== */

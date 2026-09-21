@@ -1,6 +1,6 @@
 <script setup>
 // Fita de status sobreposta ao card — exibe o status do livro (ex: "To be read", "Reading")
-import tape from '@/assets/images/tape_2.webp';
+import tape from '@/assets/images/blue_tape.webp';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 
 import Star from '@/assets/images/star.png';
@@ -22,8 +22,8 @@ defineProps({
         <img
           v-for="(rate, i) in book.rate"
           :key="i"
-          height="20"
-          width="20"
+          height="15"
+          width="15"
           :src="Star"
           alt="star"
           class="card_back__rate-star"

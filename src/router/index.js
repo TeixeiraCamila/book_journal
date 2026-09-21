@@ -1,6 +1,6 @@
 // Configuração do Vue Router — rotas com lazy loading e guard de navegação
 import { createRouter, createWebHistory } from 'vue-router';
-import { useUserStore } from '@/stores/userStore';
+import { use_user_store } from '@/stores/userStore';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,17 +34,17 @@ const router = createRouter({
 
 // Guard de navegação — verifica sessão (token JWT ou modo visitante) e redireciona
 router.beforeEach((to, _from, next) => {
-  const userStore = useUserStore();
+  const userStore = use_user_store();
 
   // Tenta restaurar a sessão do localStorage na primeira passagem
-  const hasSession = userStore.userActive !== null || userStore.loadSession();
-  const isAuthenticated = hasSession;
+  const has_session = userStore.user_active !== null || userStore.load_session();
+  const is_authenticated = has_session;
 
-  if (to.meta.requiresAuth && !isAuthenticated) {
+  if (to.meta.requiresAuth && !is_authenticated) {
     return next({ name: 'login' });
   }
 
-  if (to.name === 'login' && isAuthenticated) {
+  if (to.name === 'login' && is_authenticated) {
     return next({ name: 'home' });
   }
 

@@ -111,8 +111,8 @@ import Button from '@/components/ui/Button.vue';
       </div>
 
       <div class="form-skeleton__actions">
-        <Button class="form-skeleton__button form-skeleton__button--primary">Salvar Livro</Button>
-        <Button class="form-skeleton__button form-skeleton__button--secondary">Cancelar</Button>
+        <Button variant="primary">Salvar Livro</Button>
+        <Button variant="secondary">Cancelar</Button>
       </div>
     </form>
   </div>
@@ -123,7 +123,7 @@ import Button from '@/components/ui/Button.vue';
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -281,56 +281,9 @@ import Button from '@/components/ui/Button.vue';
   align-items: center;
 }
 
-.form-skeleton__button {
-  padding: 0.75rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--white);
-  font-family: inherit;
-  font-size: var(--font);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: var(--shadow);
-  height: 48px;
-}
-
-.form-skeleton__button:hover {
-  background: var(--accent_muted);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-}
-
-.form-skeleton__button:active {
-  transform: translateY(0);
-  box-shadow: var(--shadow);
-}
-
-.form-skeleton__button--primary {
-  background: var(--accent);
-  color: var(--white);
-  width: 140px;
-}
-
-.form-skeleton__button--secondary {
-  background: #e5e7eb;
-  color: #374151;
-  width: 120px;
-}
-
-.form-skeleton__button--secondary:hover {
-  background: #d1d5db;
-  transform: translateY(-1px);
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
+.form-skeleton__actions :deep(.btn) {
+  width: auto;
+  min-width: 120px;
 }
 
 @media (max-width: 768px) {

@@ -1,7 +1,7 @@
 // Pinia store de usuários — gerencia sessão (login/saída/visitante) e lista de usuários
 import { defineStore } from 'pinia';
-import { userAPI, authAPI } from '../services/api';
-import { extractErrorMessage, logError } from '@/utils/errorHandler';
+import { user_api, auth_api } from '../services/api';
+import { extract_error_message, log_error } from '@/utils/errorHandler';
 
 const GUEST_USER = {
   id: 'guest',
@@ -15,67 +15,70 @@ const STORAGE_KEYS = {
   GUEST: 'IS_GUEST',
 };
 
-export const useUserStore = defineStore('user', {
+export const use_user_store = defineStore('user', {
   state: () => ({
     users: [],
-    userActive: null,
+    user_active: null,
     loading: false,
     error: null,
-    isGuest: false,
+    is_guest: false,
     token: null,
   }),
 
   getters: {
-    allUsers: (state) => state.users,
+    all_users: (state) => state.users,
 
-    isAuthenticated: (state) => state.token !== null,
+    is_authenticated: (state) => state.token !== null,
 
-    getUserById: (state) => (userId) => {
-      return state.users.find((user) => user.id === userId);
+    get_user_by_id: (state) => (user_id) => {
+      return state.users.find((user) => user.id === user_id);
     },
 
-    getUsersByType: (state) => (type) => {
+    get_users_by_type: (state) => (type) => {
       return state.users.filter((user) => user.type === type);
     },
   },
 
   actions: {
-    async fetchUsers(startCursor = undefined, pageSize = 100) {
+    async fetch_users(start_cursor = undefined, page_size = 100) {
       this.loading = true;
       this.error = null;
 
       try {
-        const response = await userAPI.list({ startCursor, pageSize });
+        const response = await user_api.list({
+          startCursor: start_cursor,
+          pageSize: page_size,
+        });
         this.users = response.data.results;
 
         return response.data;
       } catch (error) {
-        logError('fetchUsers', error);
+        log_error('fetch_users', error);
         throw error;
       } finally {
         this.loading = false;
       }
     },
 
-    async fetchAllUsers() {
+    async fetch_all_users() {
       this.loading = true;
       this.error = null;
 
       try {
-        const response = await userAPI.listAll();
+        const response = await user_api.list_all();
         this.users = response.data.results || response.data || [];
 
         return this.users;
       } catch (error) {
-        logError('fetchAllUsers', error);
+        log_error('fetch_all_users', error);
         throw error;
       } finally {
         this.loading = false;
       }
     },
 
-    async fetchUser(userId) {
-      if (!userId) {
+    async fetch_user(user_id) {
+      if (!user_id) {
         throw new Error('User ID is required');
       }
 
@@ -83,10 +86,10 @@ export const useUserStore = defineStore('user', {
       this.error = null;
 
       try {
-        const response = await userAPI.getById(userId);
+        const response = await user_api.get_by_id(user_id);
         const data = response.data;
 
-        const index = this.users.findIndex((u) => u.id === userId);
+        const index = this.users.findIndex((u) => u.id === user_id);
         if (index !== -1) {
           this.users[index] = data;
         } else {
@@ -95,7 +98,7 @@ export const useUserStore = defineStore('user', {
 
         return data;
       } catch (error) {
-        logError('fetchUser', error);
+        log_error('fetch_user', error);
         throw error;
       } finally {
         this.loading = false;
@@ -107,11 +110,11 @@ export const useUserStore = defineStore('user', {
       this.error = null;
 
       try {
-        const { data } = await authAPI.login({ email, codigo });
+        const { data } = await auth_api.login({ email, codigo });
 
         this.token = data.token;
-        this.userActive = data.user;
-        this.isGuest = false;
+        this.user_active = data.user;
+        this.is_guest = false;
 
         localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
@@ -120,21 +123,21 @@ export const useUserStore = defineStore('user', {
         return data.user;
       } catch (error) {
         // Mensagem específica do backend (ex: "O código não confere.")
-        this.error = error.response?.data?.message || extractErrorMessage(error);
+        this.error = error.response?.data?.message || extract_error_message(error);
         throw error;
       }
     },
 
     // Restaura a sessão persistida (token ou modo visitante)
-    loadSession() {
+    load_session() {
       const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
+      const stored_user = localStorage.getItem(STORAGE_KEYS.USER);
 
-      if (token && storedUser) {
+      if (token && stored_user) {
         try {
           this.token = token;
-          this.userActive = JSON.parse(storedUser);
-          this.isGuest = false;
+          this.user_active = JSON.parse(stored_user);
+          this.is_guest = false;
           return true;
         } catch {
           this.logout();
@@ -142,7 +145,7 @@ export const useUserStore = defineStore('user', {
       }
 
       if (localStorage.getItem(STORAGE_KEYS.GUEST) === 'true') {
-        this.setGuestUser();
+        this.set_guest_user();
         return true;
       }
 
@@ -150,9 +153,9 @@ export const useUserStore = defineStore('user', {
     },
 
     // Modo visitante: acesso de leitura sem conta
-    setGuestUser() {
-      this.userActive = { ...GUEST_USER };
-      this.isGuest = true;
+    set_guest_user() {
+      this.user_active = { ...GUEST_USER };
+      this.is_guest = true;
       this.token = null;
 
       localStorage.setItem(STORAGE_KEYS.GUEST, 'true');
@@ -163,8 +166,8 @@ export const useUserStore = defineStore('user', {
     // Encerra a sessão (login ou visitante) e limpa o armazenamento
     logout() {
       this.token = null;
-      this.userActive = null;
-      this.isGuest = false;
+      this.user_active = null;
+      this.is_guest = false;
 
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);

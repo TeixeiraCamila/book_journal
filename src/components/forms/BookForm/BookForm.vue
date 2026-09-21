@@ -1,7 +1,7 @@
 <script setup>
 // Formulário de criação/edição de livros — validação, hidratação e envio para API
 import { reactive, ref, onMounted, watch, computed } from 'vue';
-import { useBookStore } from '@/stores/bookStore';
+import { use_book_store } from '@/stores/bookStore';
 import {
   BOOK_STATUS_FALLBACK,
   BOOK_RATE_LABELS,
@@ -9,8 +9,8 @@ import {
   BOOK_STATUS_MAP,
 } from '@/constants/book';
 
-import { parseCommaSeparated } from '@/utils/validation';
-import { useNotifications } from '@/composables/useNotifications';
+import { parse_comma_separated } from '@/utils/validation';
+import { use_notifications } from '@/composables/useNotifications';
 import FormSection from '@/components/forms/FormSection.vue';
 import FormField from '@/components/forms/FormField.vue';
 import FormActions from '@/components/forms/FormActions.vue';
@@ -28,10 +28,10 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['cancel', 'submit', 'edit-success']);
-const bookStore = useBookStore();
-const { addNotification } = useNotifications();
+const bookStore = use_book_store();
+const { add_notification } = use_notifications();
 
-const formData = reactive({
+const form_data = reactive({
   name: '',
   author: '',
   status: '',
@@ -56,121 +56,121 @@ const formData = reactive({
 });
 
 // Armazena erros de validação de cada campo
-const fieldErrors = ref({});
+const field_errors = ref({});
 // Impede múltiplos envios enquanto a requisição está em andamento
-const isSubmitting = ref(false);
+const is_submitting = ref(false);
 
 // Opções carregadas do Notion via API, com fallback para valores locais
-const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATUS_FALLBACK);
-const rateOptions = computed(() =>
-  bookStore.bookOptions?.Rate
-    ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
+const status_options = computed(() => bookStore.book_options?.Status || BOOK_STATUS_FALLBACK);
+const rate_options = computed(() =>
+  bookStore.book_options?.Rate
+    ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.book_options.Rate.includes(r))
     : Object.keys(BOOK_RATE_LABELS),
 );
-const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK);
-const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || []);
-const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || []);
-const publishedYearOptions = computed(() =>
-  (bookStore.bookOptions?.['First published in'] || []).filter((y) => y !== '0000'),
+const type_options = computed(() => bookStore.book_options?.Type || BOOK_TYPES_FALLBACK);
+const atlas_options = computed(() => bookStore.book_options?.Atlas || []);
+const series_options = computed(() => bookStore.book_options?.['Book Series Name'] || []);
+const published_year_options = computed(() =>
+  (bookStore.book_options?.['First published in'] || []).filter((y) => y !== '0000'),
 );
-const authorOptions = computed(() => bookStore.bookOptions?.Author || []);
-const wasReadInOptions = computed(() => bookStore.bookOptions?.['Was read in'] || []);
-const genresOptions = computed(() => bookStore.bookOptions?.Tags || []);
-const publishedByOptions = computed(() => bookStore.bookOptions?.['Published by'] || []);
-const questOptions = computed(() => bookStore.bookOptions?.Quest || []);
+const author_options = computed(() => bookStore.book_options?.Author || []);
+const was_read_in_options = computed(() => bookStore.book_options?.['Was read in'] || []);
+const genres_options = computed(() => bookStore.book_options?.Tags || []);
+const published_by_options = computed(() => bookStore.book_options?.['Published by'] || []);
+const quest_options = computed(() => bookStore.book_options?.Quest || []);
 
 // Retorna null se vazio para não quebrar a exibição da capa
-const coverUrl = computed(() => {
-  if (formData.coverUrl) {
-    return formData.coverUrl.trim() || null;
+const cover_url = computed(() => {
+  if (form_data.coverUrl) {
+    return form_data.coverUrl.trim() || null;
   }
   return null;
 });
 
-const isKindle = computed(() => formData.type?.includes('Kindle'));
+const is_kindle = computed(() => form_data.type?.includes('Kindle'));
 
-watch([() => formData.kindleProgress, () => formData.totalPages], ([progress, total]) => {
+watch([() => form_data.kindleProgress, () => form_data.totalPages], ([progress, total]) => {
   if (progress && total && Number(progress) > 0 && Number(total) > 0) {
-    formData.currentlyOn = Math.round((Number(total) * Number(progress)) / 100);
+    form_data.currentlyOn = Math.round((Number(total) * Number(progress)) / 100);
   }
 });
 
 // Carrega as opções do Notion na montagem,
 // depois preenche o formulário se for edição
 onMounted(async () => {
-  if (!bookStore.bookOptions) {
-    await bookStore.fetchBookOptions();
+  if (!bookStore.book_options) {
+    await bookStore.fetch_book_options();
   }
 
   if (props.book && props.isEdit) {
-    hydrateForm(props.book);
+    hydrate_form(props.book);
   }
 });
 
 // Função auxiliar para parsing robusto de startEnd
-const parseStartEndData = (startEndData) => {
-  if (!startEndData) {
-    formData.startDate = '';
-    formData.endDate = '';
+const parse_start_end_data = (start_end_data) => {
+  if (!start_end_data) {
+    form_data.startDate = '';
+    form_data.endDate = '';
     return;
   }
 
   try {
-    if (typeof startEndData === 'object' && startEndData !== null) {
-      formData.startDate = startEndData.start || '';
-      formData.endDate = startEndData.end || '';
-    } else if (typeof startEndData === 'string' && startEndData.includes('/')) {
-      const [start, end] = startEndData.split('/');
-      formData.startDate = start?.trim() || '';
-      formData.endDate = end?.trim() || '';
-    } else if (typeof startEndData === 'string') {
-      formData.startDate = startEndData || '';
-      formData.endDate = '';
-    } else if (Array.isArray(startEndData)) {
-      formData.startDate = startEndData[0] || '';
-      formData.endDate = startEndData[1] || '';
+    if (typeof start_end_data === 'object' && start_end_data !== null) {
+      form_data.startDate = start_end_data.start || '';
+      form_data.endDate = start_end_data.end || '';
+    } else if (typeof start_end_data === 'string' && start_end_data.includes('/')) {
+      const [start, end] = start_end_data.split('/');
+      form_data.startDate = start?.trim() || '';
+      form_data.endDate = end?.trim() || '';
+    } else if (typeof start_end_data === 'string') {
+      form_data.startDate = start_end_data || '';
+      form_data.endDate = '';
+    } else if (Array.isArray(start_end_data)) {
+      form_data.startDate = start_end_data[0] || '';
+      form_data.endDate = start_end_data[1] || '';
     } else {
-      formData.startDate = '';
-      formData.endDate = '';
+      form_data.startDate = '';
+      form_data.endDate = '';
     }
   } catch {
-    formData.startDate = '';
-    formData.endDate = '';
+    form_data.startDate = '';
+    form_data.endDate = '';
   }
 };
 
-// Função auxiliar para preencher formData a partir de um livro
-const hydrateForm = (book) => {
+// Função auxiliar para preencher form_data a partir de um livro
+const hydrate_form = (book) => {
   if (!book) return;
 
-  formData.name = book.name || '';
-  formData.author = book.author?.join(', ') || '';
-  formData.status = book.status || '';
-  formData.rate = book.rate || '';
-  formData.totalPages = book.totalPages || '';
-  formData.currentlyOn = book.currentlyOn || '';
-  formData.type = book.type?.join(', ') || '';
-  formData.firstPublished = book.firstPublished || '';
-  formData.iHaveCopy = book.iHaveCopy || false;
-  formData.wasReadIn = book.wasReadIn?.join(', ') || '';
-  formData.coverUrl = book.cover?.[0] || '';
-  formData.literaryAtlas = book.literaryAtlas || '';
-  formData.genres = book.genres || [];
-  formData.publishedBy = book.publishedBy?.join(', ') || '';
-  formData.bookSeries = book.bookSeries || '';
-  formData.quest = book.quest || [];
+  form_data.name = book.name || '';
+  form_data.author = book.author?.join(', ') || '';
+  form_data.status = book.status || '';
+  form_data.rate = book.rate || '';
+  form_data.totalPages = book.totalPages || '';
+  form_data.currentlyOn = book.currentlyOn || '';
+  form_data.type = book.type?.join(', ') || '';
+  form_data.firstPublished = book.firstPublished || '';
+  form_data.iHaveCopy = book.iHaveCopy || false;
+  form_data.wasReadIn = book.wasReadIn?.join(', ') || '';
+  form_data.coverUrl = book.cover?.[0] || '';
+  form_data.literaryAtlas = book.literaryAtlas || '';
+  form_data.genres = book.genres || [];
+  form_data.publishedBy = book.publishedBy?.join(', ') || '';
+  form_data.bookSeries = book.bookSeries || '';
+  form_data.quest = book.quest || [];
 
-  formData.kindleProgress = '';
+  form_data.kindleProgress = '';
 
-  parseStartEndData(book.startEnd);
+  parse_start_end_data(book.startEnd);
 };
 
 // Watch para atualizar o form quando o livro mudar (caso o book seja carregado assíncronamente)
 watch(
   () => props.book,
-  (newBook) => {
-    if (newBook && props.isEdit) {
-      hydrateForm(newBook);
+  (new_book) => {
+    if (new_book && props.isEdit) {
+      hydrate_form(new_book);
     }
   },
   { immediate: true },
@@ -178,164 +178,167 @@ watch(
 
 // Auto-setar status para Read e wasReadIn quando endDate for preenchido
 watch(
-  () => formData.endDate,
-  (newEndDate) => {
-    if (!newEndDate) return;
+  () => form_data.endDate,
+  (new_end_date) => {
+    if (!new_end_date) return;
 
-    if (formData.status !== BOOK_STATUS_MAP.READ) {
-      formData.status = BOOK_STATUS_MAP.READ;
+    if (form_data.status !== BOOK_STATUS_MAP.READ) {
+      form_data.status = BOOK_STATUS_MAP.READ;
     }
 
-    if (!formData.wasReadIn) {
-      const year = new Date(newEndDate).getFullYear();
+    if (!form_data.wasReadIn) {
+      const year = new Date(new_end_date).getFullYear();
       if (!isNaN(year)) {
-        formData.wasReadIn = String(year);
+        form_data.wasReadIn = String(year);
       }
     }
   },
 );
 
-const resetFormData = () => {
-  Object.keys(formData).forEach((key) => {
-    if (typeof formData[key] === 'boolean') formData[key] = false;
-    else if (Array.isArray(formData[key])) formData[key] = [];
-    else formData[key] = '';
+const reset_form_data = () => {
+  Object.keys(form_data).forEach((key) => {
+    if (typeof form_data[key] === 'boolean') form_data[key] = false;
+    else if (Array.isArray(form_data[key])) form_data[key] = [];
+    else form_data[key] = '';
   });
 };
 
 // Valida campos, monta o objeto e envia para a API via store
-const handleSubmit = async () => {
+const handle_submit = async () => {
   // Reinicia os erros e a lista para exibir apenas os novos
-  fieldErrors.value = {};
-  const errorMessages = [];
+  field_errors.value = {};
+  const error_messages = [];
 
-  if (!formData.name || !formData.name.trim()) {
-    fieldErrors.value.name = 'Título é obrigatório';
-    errorMessages.push('Título');
+  if (!form_data.name || !form_data.name.trim()) {
+    field_errors.value.name = 'Título é obrigatório';
+    error_messages.push('Título');
   }
 
-  if (!formData.author || !formData.author.trim()) {
-    fieldErrors.value.author = 'Autor é obrigatório';
-    errorMessages.push('Autor');
+  if (!form_data.author || !form_data.author.trim()) {
+    field_errors.value.author = 'Autor é obrigatório';
+    error_messages.push('Autor');
   }
 
-  if (formData.totalPages) {
-    if (isNaN(formData.totalPages) || formData.totalPages < 0) {
-      fieldErrors.value.totalPages = 'Total de páginas deve ser um número positivo';
-      errorMessages.push('Total de páginas');
+  if (form_data.totalPages) {
+    if (isNaN(form_data.totalPages) || form_data.totalPages < 0) {
+      field_errors.value.totalPages = 'Total de páginas deve ser um número positivo';
+      error_messages.push('Total de páginas');
     }
   }
 
-  if (formData.currentlyOn) {
-    if (isNaN(formData.currentlyOn) || formData.currentlyOn < 0) {
-      fieldErrors.value.currentlyOn = 'Página atual deve ser um número positivo';
-      errorMessages.push('Página atual');
-    } else if (formData.totalPages && Number(formData.currentlyOn) > Number(formData.totalPages)) {
-      fieldErrors.value.currentlyOn = 'Página atual não pode ser maior que o total';
-      errorMessages.push('Página atual');
+  if (form_data.currentlyOn) {
+    if (isNaN(form_data.currentlyOn) || form_data.currentlyOn < 0) {
+      field_errors.value.currentlyOn = 'Página atual deve ser um número positivo';
+      error_messages.push('Página atual');
+    } else if (
+      form_data.totalPages &&
+      Number(form_data.currentlyOn) > Number(form_data.totalPages)
+    ) {
+      field_errors.value.currentlyOn = 'Página atual não pode ser maior que o total';
+      error_messages.push('Página atual');
     }
   }
 
   // Validação de ano (opcional - só valida se preenchido)
-  if (formData.firstPublished) {
-    const currentYear = new Date().getFullYear();
-    if (!/^\d{4}$/.test(formData.firstPublished)) {
-      fieldErrors.value.firstPublished = 'Ano deve ter 4 dígitos';
-      errorMessages.push('Ano de publicação');
+  if (form_data.firstPublished) {
+    const current_year = new Date().getFullYear();
+    if (!/^\d{4}$/.test(form_data.firstPublished)) {
+      field_errors.value.firstPublished = 'Ano deve ter 4 dígitos';
+      error_messages.push('Ano de publicação');
     } else if (
-      Number(formData.firstPublished) < 1000 ||
-      Number(formData.firstPublished) > currentYear + 1
+      Number(form_data.firstPublished) < 1000 ||
+      Number(form_data.firstPublished) > current_year + 1
     ) {
-      fieldErrors.value.firstPublished = `Ano deve estar entre 1000 e ${currentYear + 1}`;
-      errorMessages.push('Ano de publicação');
+      field_errors.value.firstPublished = `Ano deve estar entre 1000 e ${current_year + 1}`;
+      error_messages.push('Ano de publicação');
     }
   }
 
   // Validação de datas (opcional - só valida se ambas preenchidas)
-  if (formData.startDate && formData.endDate) {
-    const start = new Date(formData.startDate);
-    const end = new Date(formData.endDate);
+  if (form_data.startDate && form_data.endDate) {
+    const start = new Date(form_data.startDate);
+    const end = new Date(form_data.endDate);
 
     if (start > end) {
-      fieldErrors.value.endDate = 'Data de término deve ser posterior à data de início';
-      errorMessages.push('Data de término');
+      field_errors.value.endDate = 'Data de término deve ser posterior à data de início';
+      error_messages.push('Data de término');
     }
   }
 
   // Só mostra notificação se houver erros
-  if (errorMessages.length > 0) {
-    addNotification(`Corrija: ${errorMessages.join(', ')}`, 'error');
+  if (error_messages.length > 0) {
+    add_notification(`Corrija: ${error_messages.join(', ')}`, 'error');
     return;
   }
 
-  isSubmitting.value = true;
+  is_submitting.value = true;
 
   try {
     // Montar startEnd corretamente (objeto com datas ISO 8601)
-    let startEndValue = undefined;
-    if (formData.startDate || formData.endDate) {
-      if (formData.startDate && formData.endDate) {
-        startEndValue = {
-          start: formData.startDate,
-          end: formData.endDate,
+    let start_end_value = undefined;
+    if (form_data.startDate || form_data.endDate) {
+      if (form_data.startDate && form_data.endDate) {
+        start_end_value = {
+          start: form_data.startDate,
+          end: form_data.endDate,
           time_zone: null,
         };
       } else {
-        startEndValue = {
-          start: formData.startDate || formData.endDate,
+        start_end_value = {
+          start: form_data.startDate || form_data.endDate,
           time_zone: null,
         };
       }
     }
 
-    const bookData = {
-      name: formData.name.trim(),
-      author: parseCommaSeparated(formData.author),
-      status: formData.status || undefined,
-      rate: formData.rate || undefined,
-      totalPages: formData.totalPages ? Number(formData.totalPages) : undefined,
-      currentlyOn: formData.currentlyOn ? Number(formData.currentlyOn) : undefined,
-      type: parseCommaSeparated(formData.type)[0] || undefined,
-      firstPublished: formData.firstPublished || undefined,
-      iHaveCopy: formData.iHaveCopy,
-      wasReadIn: parseCommaSeparated(formData.wasReadIn),
-      startEnd: startEndValue,
-      coverUrl: formData.coverUrl?.trim() || undefined,
-      literaryAtlas: formData.literaryAtlas || undefined,
-      genres: formData.genres,
-      publishedBy: parseCommaSeparated(formData.publishedBy),
-      bookSeries: formData.bookSeries || undefined,
-      quest: formData.quest,
+    const book_data = {
+      name: form_data.name.trim(),
+      author: parse_comma_separated(form_data.author),
+      status: form_data.status || undefined,
+      rate: form_data.rate || undefined,
+      totalPages: form_data.totalPages ? Number(form_data.totalPages) : undefined,
+      currentlyOn: form_data.currentlyOn ? Number(form_data.currentlyOn) : undefined,
+      type: parse_comma_separated(form_data.type)[0] || undefined,
+      firstPublished: form_data.firstPublished || undefined,
+      iHaveCopy: form_data.iHaveCopy,
+      wasReadIn: parse_comma_separated(form_data.wasReadIn),
+      startEnd: start_end_value,
+      coverUrl: form_data.coverUrl?.trim() || undefined,
+      literaryAtlas: form_data.literaryAtlas || undefined,
+      genres: form_data.genres,
+      publishedBy: parse_comma_separated(form_data.publishedBy),
+      bookSeries: form_data.bookSeries || undefined,
+      quest: form_data.quest,
     };
 
     // Se tem ID na rota: atualiza. Senão: cria um novo livro
     if (props.isEdit && props.book) {
-      await bookStore.updateBook(props.book.id, bookData);
-      addNotification('Livro atualizado com sucesso!', 'success');
+      await bookStore.update_book(props.book.id, book_data);
+      add_notification('Livro atualizado com sucesso!', 'success');
       emit('edit-success', props.book.id);
     } else {
-      await bookStore.createBook(bookData);
-      addNotification('Livro criado com sucesso!', 'success');
+      await bookStore.create_book(book_data);
+      add_notification('Livro criado com sucesso!', 'success');
     }
 
     // Após criar, limpa os campos. Na edição mantém os valores.
     if (!props.isEdit) {
-      resetFormData();
+      reset_form_data();
     }
 
     emit('submit');
   } catch {
-    addNotification(`Erro ao ${props.isEdit ? 'atualizar' : 'criar'} livro`, 'error');
+    add_notification(`Erro ao ${props.isEdit ? 'atualizar' : 'criar'} livro`, 'error');
   } finally {
-    isSubmitting.value = false;
+    is_submitting.value = false;
   }
 };
 
 // Volta para a página anterior sem salvar
-const handleCancel = () => {
+const handle_cancel = () => {
   // Na criação limpa os dados; na edição o livro permanece intacto
   if (!props.isEdit) {
-    resetFormData();
+    reset_form_data();
   }
 
   emit('cancel');
@@ -344,15 +347,15 @@ const handleCancel = () => {
 
 <template>
   <div class="book-form">
-    <form @submit.prevent="handleSubmit" class="book-form__content">
+    <form @submit.prevent="handle_submit" class="book-form__content">
       <!-- Layout: 30% Cover | 70% Campos -->
       <div class="book-form__layout">
         <!-- Coluna Cover (30%) -->
         <div class="book-form__cover-section">
           <div class="book-form__cover-container">
             <img
-              v-if="coverUrl"
-              :src="coverUrl"
+              v-if="cover_url"
+              :src="cover_url"
               alt="Capa do livro"
               class="book-form__cover-image"
             />
@@ -363,10 +366,10 @@ const handleCancel = () => {
           </div>
 
           <FormField
-            v-model="formData.coverUrl"
+            v-model="form_data.coverUrl"
             label="URL da Capa"
             placeholder="Cole a URL da imagem"
-            :error="fieldErrors.coverUrl"
+            :error="field_errors.coverUrl"
           />
         </div>
 
@@ -376,40 +379,40 @@ const handleCancel = () => {
           <FormSection title="Informações Básicas">
             <div class="book-form__grid">
               <FormField
-                v-model="formData.name"
+                v-model="form_data.name"
                 label="Título"
                 placeholder="Ex: 1984"
                 required
-                :error="fieldErrors.name"
+                :error="field_errors.name"
               />
 
               <FormField
-                v-model="formData.author"
+                v-model="form_data.author"
                 label="Autor"
                 type="autocomplete"
-                :options="authorOptions"
+                :options="author_options"
                 placeholder="Digite ou selecione"
                 required
-                :error="fieldErrors.author"
+                :error="field_errors.author"
               />
             </div>
 
             <div class="book-form__grid">
               <FormField
-                v-model="formData.bookSeries"
+                v-model="form_data.bookSeries"
                 label="Série do livro"
                 type="autocomplete"
-                :options="seriesOptions"
+                :options="series_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.bookSeries"
+                :error="field_errors.bookSeries"
               />
               <FormField
-                v-model="formData.quest"
+                v-model="form_data.quest"
                 label="Quest"
                 type="multi-select"
-                :options="questOptions"
+                :options="quest_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.quest"
+                :error="field_errors.quest"
               />
             </div>
           </FormSection>
@@ -418,37 +421,37 @@ const handleCancel = () => {
           <FormSection title="Status e Progresso">
             <div class="book-form__grid">
               <FormField
-                v-model="formData.status"
+                v-model="form_data.status"
                 label="Status"
                 type="select"
-                :options="statusOptions"
-                :error="fieldErrors.status"
+                :options="status_options"
+                :error="field_errors.status"
               />
 
               <FormField
-                v-model="formData.totalPages"
+                v-model="form_data.totalPages"
                 label="Total de páginas"
                 type="number"
                 placeholder="Ex: 350"
-                :error="fieldErrors.totalPages"
+                :error="field_errors.totalPages"
               />
 
               <FormField
-                v-if="isKindle && formData.status === BOOK_STATUS_MAP.READING"
-                v-model="formData.kindleProgress"
+                v-if="is_kindle && form_data.status === BOOK_STATUS_MAP.READING"
+                v-model="form_data.kindleProgress"
                 label="Progresso Kindle (%)"
                 type="number"
                 placeholder="Ex: 75"
-                :error="fieldErrors.kindleProgress"
+                :error="field_errors.kindleProgress"
               />
 
               <FormField
-                v-if="formData.status === BOOK_STATUS_MAP.READING"
-                v-model="formData.currentlyOn"
+                v-if="form_data.status === BOOK_STATUS_MAP.READING"
+                v-model="form_data.currentlyOn"
                 label="Página atual"
                 type="number"
                 placeholder="Ex: 125"
-                :error="fieldErrors.currentlyOn"
+                :error="field_errors.currentlyOn"
               />
             </div>
           </FormSection>
@@ -457,32 +460,32 @@ const handleCancel = () => {
           <FormSection title="Avaliação e Classificação">
             <div class="book-form__grid">
               <FormField
-                v-if="formData.status === BOOK_STATUS_MAP.READ"
-                v-model="formData.rate"
+                v-if="form_data.status === BOOK_STATUS_MAP.READ"
+                v-model="form_data.rate"
                 label="Avaliação"
                 type="select"
-                :options="rateOptions"
+                :options="rate_options"
                 :labels="BOOK_RATE_LABELS"
                 placeholder="Selecione uma avaliação"
-                :error="fieldErrors.rate"
+                :error="field_errors.rate"
               />
 
               <FormField
-                v-model="formData.type"
+                v-model="form_data.type"
                 label="Tipo"
                 type="select"
-                :options="typeOptions"
+                :options="type_options"
                 placeholder="Selecione o tipo"
-                :error="fieldErrors.type"
+                :error="field_errors.type"
               />
 
               <FormField
-                v-model="formData.genres"
+                v-model="form_data.genres"
                 label="Gêneros/Tags"
                 type="multi-select"
-                :options="genresOptions"
+                :options="genres_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.genres"
+                :error="field_errors.genres"
               />
             </div>
           </FormSection>
@@ -491,26 +494,26 @@ const handleCancel = () => {
           <FormSection title="Detalhes da Publicação">
             <div class="book-form__grid">
               <FormField
-                v-model="formData.firstPublished"
+                v-model="form_data.firstPublished"
                 label="Ano de publicação"
                 type="autocomplete"
-                :options="publishedYearOptions"
+                :options="published_year_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.firstPublished"
+                :error="field_errors.firstPublished"
               />
 
               <FormField
-                v-model="formData.publishedBy"
+                v-model="form_data.publishedBy"
                 label="Publicado por"
                 type="autocomplete"
-                :options="publishedByOptions"
+                :options="published_by_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.publishedBy"
+                :error="field_errors.publishedBy"
               />
 
-              <div class="book-form__checkbox-field" v-if="formData.type === '📘 Paper'">
+              <div class="book-form__checkbox-field" v-if="form_data.type === '📘 Paper'">
                 <FormField
-                  v-model="formData.iHaveCopy"
+                  v-model="form_data.iHaveCopy"
                   label="Possuo cópia física"
                   type="checkbox"
                 />
@@ -521,35 +524,35 @@ const handleCancel = () => {
           <FormSection title="Leitura e Metadados">
             <div class="book-form__grid">
               <FormField
-                v-model="formData.wasReadIn"
+                v-model="form_data.wasReadIn"
                 label="Lido em"
                 type="autocomplete"
-                :options="wasReadInOptions"
+                :options="was_read_in_options"
                 placeholder="Digite ou selecione"
-                :error="fieldErrors.wasReadIn"
+                :error="field_errors.wasReadIn"
               />
 
               <FormField
-                v-model="formData.startDate"
+                v-model="form_data.startDate"
                 label="Data de início"
                 type="date"
-                :error="fieldErrors.startDate"
+                :error="field_errors.startDate"
               />
 
               <FormField
-                v-model="formData.endDate"
+                v-model="form_data.endDate"
                 label="Data de término"
                 type="date"
-                :error="fieldErrors.endDate"
+                :error="field_errors.endDate"
               />
 
               <FormField
-                v-model="formData.literaryAtlas"
+                v-model="form_data.literaryAtlas"
                 label="Atlas literário"
                 type="autocomplete"
-                :options="atlasOptions"
+                :options="atlas_options"
                 placeholder="Selecione ou digite"
-                :error="fieldErrors.literaryAtlas"
+                :error="field_errors.literaryAtlas"
               />
             </div>
           </FormSection>
@@ -558,11 +561,10 @@ const handleCancel = () => {
 
       <!-- Ações -->
       <FormActions
-        :is-submitting="isSubmitting"
-        :is-loading="bookStore.loadingStates.main"
+        :is-submitting="is_submitting"
         submit-text="Salvar Livro"
         cancel-text="Cancelar"
-        @cancel="handleCancel"
+        @cancel="handle_cancel"
       />
     </form>
   </div>
@@ -573,7 +575,7 @@ const handleCancel = () => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -603,7 +605,7 @@ const handleCancel = () => {
 .book-form__cover-container {
   width: 100%;
   aspect-ratio: 2/3;
-  border-radius: 8px;
+  border-radius: var(--radius);
   overflow: hidden;
   background: #f3f4f6;
   display: flex;

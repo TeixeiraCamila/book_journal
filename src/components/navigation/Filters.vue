@@ -3,37 +3,37 @@
 // Barra de filtros — busca por título e filtro por status com botão limpar
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useBookStore } from '@/stores/bookStore';
-import { useUserStore } from '@/stores/userStore';
+import { use_book_store } from '@/stores/bookStore';
+import { use_user_store } from '@/stores/userStore';
 import { BOOK_STATUS_LABELS } from '@/constants/book';
 import Button from '@/components/ui/Button.vue';
 
-const bookStore = useBookStore();
-const userStore = useUserStore();
+const bookStore = use_book_store();
+const userStore = use_user_store();
 const router = useRouter();
-const localSearch = ref(bookStore.searchTerm);
-const localStatus = ref(bookStore.filterStatus);
+const local_search = ref(bookStore.search_term);
+const local_status = ref(bookStore.filter_status);
 
-const statusOptions = computed(() => bookStore.statusOptions);
+const status_options = computed(() => bookStore.status_options);
 
-const navigateToCreate = () => {
+const navigate_to_create = () => {
   router.push('/criar');
 };
 
-const handleSearch = () => {
-  if (localSearch.value.trim() === bookStore.searchTerm) return;
-  bookStore.search(localSearch.value);
+const handle_search = () => {
+  if (local_search.value.trim() === bookStore.search_term) return;
+  bookStore.search(local_search.value);
 };
 
-const handleFilterChange = () => {
-  bookStore.filterByStatus(localStatus.value);
+const handle_filter_change = () => {
+  bookStore.filter_by_status(local_status.value);
 };
 
-const clearFilters = () => {
-  localSearch.value = '';
-  localStatus.value = 'all';
+const clear_filters = () => {
+  local_search.value = '';
+  local_status.value = 'all';
   bookStore.search('');
-  bookStore.filterByStatus('all');
+  bookStore.filter_by_status('all');
 };
 </script>
 
@@ -43,22 +43,22 @@ const clearFilters = () => {
       <input
         type="text"
         placeholder="Buscar por título..."
-        v-model="localSearch"
-        @keyup.enter="handleSearch"
+        v-model="local_search"
+        @keyup.enter="handle_search"
         class="filters__input"
       />
-      <Button @click="handleSearch" variant="secondary"> Buscar </Button>
+      <Button @click="handle_search" variant="secondary"> Buscar </Button>
       <div class="select_wrapper">
-        <select v-model="localStatus" @change="handleFilterChange">
+        <select v-model="local_status" @change="handle_filter_change">
           <option value="all">Todos os status</option>
-          <option v-for="status in statusOptions" :key="status" :value="status">
+          <option v-for="status in status_options" :key="status" :value="status">
             {{ BOOK_STATUS_LABELS[status] || status }}
           </option>
         </select>
 
         <Button
-          v-if="bookStore.searchTerm || bookStore.filterStatus !== 'all'"
-          @click="clearFilters"
+          v-if="bookStore.search_term || bookStore.filter_status !== 'all'"
+          @click="clear_filters"
           variant="secondary"
         >
           Limpar filtros
@@ -67,7 +67,7 @@ const clearFilters = () => {
     </div>
 
     <div class="filters__row">
-      <Button v-if="!userStore.isGuest" @click="navigateToCreate">
+      <Button v-if="!userStore.is_guest" @click="navigate_to_create">
         <svg
           width="20"
           height="20"

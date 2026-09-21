@@ -2,7 +2,7 @@
 <script setup>
 // Diálogo de confirmação modal — usado para deletar livros com confirmação do usuário
 import { ref } from 'vue';
-import { useNotifications } from '@/composables/useNotifications';
+import { use_notifications } from '@/composables/useNotifications';
 import Button from '@/components/ui/Button.vue';
 
 const props = defineProps({
@@ -14,30 +14,30 @@ const props = defineProps({
 
 const emit = defineEmits(['confirm', 'cancel']);
 
-const { addNotification } = useNotifications();
-const isOpen = ref(false);
+const { add_notification } = use_notifications();
+const is_open = ref(false);
 
 const open = () => {
-  isOpen.value = true;
+  is_open.value = true;
 };
 
 const close = () => {
-  isOpen.value = false;
+  is_open.value = false;
 };
 
-const handleConfirm = async () => {
+const handle_confirm = async () => {
   try {
     if (props.onConfirm) {
       await props.onConfirm();
-      addNotification('Livro deletado com sucesso!');
+      add_notification('Livro deletado com sucesso!');
       close();
     }
   } catch (error) {
-    addNotification('Erro ado deletar o livro', error);
+    add_notification('Erro ado deletar o livro', error);
   }
 };
 
-const handleCancel = () => {
+const handle_cancel = () => {
   emit('cancel');
   close();
 };
@@ -52,7 +52,7 @@ defineExpose({
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="isOpen" class="confirm-dialog__overlay" @click="handleCancel">
+      <div v-if="is_open" class="confirm-dialog__overlay" @click="handle_cancel">
         <div class="confirm-dialog__content" @click.stop>
           <div class="confirm-dialog__header">
             <h3 class="confirm-dialog__title">{{ title }}</h3>
@@ -63,8 +63,8 @@ defineExpose({
           </div>
 
           <div class="confirm-dialog__footer">
-            <Button @click="handleCancel" variant="secondary">Cancelar</Button>
-            <Button @click="handleConfirm" variant="danger">
+            <Button @click="handle_cancel" variant="secondary">Cancelar</Button>
+            <Button @click="handle_confirm" variant="danger">
               {{ confirmText }}
             </Button>
           </div>
@@ -90,7 +90,7 @@ defineExpose({
 
 .confirm-dialog__content {
   background: var(--bg);
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   padding: 1.5rem;
   max-width: 28rem;
   width: 90%;
@@ -104,13 +104,13 @@ defineExpose({
 .confirm-dialog__title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--black);
   margin: 0;
 }
 
 .confirm-dialog__body {
   margin-bottom: 1.5rem;
-  color: var(--color-text-soft);
+  color: var(--muted);
   line-height: 1.6;
 }
 
