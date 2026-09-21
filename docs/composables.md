@@ -64,4 +64,4 @@ flipToBack() // vira para o verso
 flipToFront() // vira para a frente
 ```
 
-**Observação:** closeModal e closeModalWithAnimation são idênticas — duplicação a ser resolvida.
+**Observação:** closeModal e closeModalWithAnimation são idênticas: duplicação a ser resolvida.

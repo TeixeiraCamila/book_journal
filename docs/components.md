@@ -4,23 +4,23 @@
 
 ```
 src/components/
-├── books/BookCard/     — BookCard (container), CardFront, CardBack, CardStatus
-├── books/BookList/     — BookList (grid + filtros + paginação)
-├── features/ReadingList/ — Livros em leitura
-├── features/TBRList/     — Livros para ler
-├── features/ThisYearList/ — Lidos no ano (agrupado por mês)
-├── features/Stack/       — CardIntro (animação GSAP)
-├── feedback/ConfirmDialog — Modal de confirmação (deletar livro)
-├── forms/BookForm/        — Formulário principal (criar/editar)
-├── forms/FormField/       — Campo de formulário
-├── forms/FormSection/     — Seção do formulário
-├── forms/FormActions/     — Botões do formulário
-├── navigation/Pagination/ — Paginação
-├── navigation/Filters/    — Filtros
-├── ui/Button/             — Botão reutilizável
-├── ui/LoadingSpinner/     — Indicador de loading
-├── ui/StateHandler/       — Estados loading/error/empty
-└── ui/Skeleton/           — BookCardSkeleton, FormSkeleton
+├── books/BookCard/     : BookCard (container), CardFront, CardBack, CardStatus
+├── books/BookList/     : BookList (grid + filtros + paginação)
+├── features/ReadingList/ : Livros em leitura
+├── features/TBRList/     : Livros para ler
+├── features/ThisYearList/ : Lidos no ano (agrupado por mês)
+├── features/Stack/       : CardIntro (animação GSAP)
+├── feedback/ConfirmDialog : Modal de confirmação (deletar livro)
+├── forms/BookForm/        : Formulário principal (criar/editar)
+├── forms/FormField/       : Campo de formulário
+├── forms/FormSection/     : Seção do formulário
+├── forms/FormActions/     : Botões do formulário
+├── navigation/Pagination/ : Paginação
+├── navigation/Filters/    : Filtros
+├── ui/Button/             : Botão reutilizável
+├── ui/LoadingSpinner/     : Indicador de loading
+├── ui/StateHandler/       : Estados loading/error/empty
+└── ui/Skeleton/           : BookCardSkeleton, FormSkeleton
 ```
 
 ## Exemplo de estrutura (BookCard)

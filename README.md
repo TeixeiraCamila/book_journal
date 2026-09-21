@@ -11,16 +11,16 @@ It consumes the API backend in `backend__final`, **Books** domain.
 ## Tech Stack
 
 - **Vue.js 3** (Composition API + `<script setup>`)
-- **Pinia** — State management
-- **Vue Router 4** — SPA routing
-- **Vite 7** — Build tool
-- **Axios** — HTTP client
-- **GSAP** — Advanced animations
-- **VueUse Motion** — Declarative animations
-- **Swiper** — Sliders and carousels
-- **Lucide Vue** — Icons
-- **vue-toastification** — Toast notifications
-- **ESLint + Prettier** — Code quality
+- **Pinia**: State management
+- **Vue Router 4**: SPA routing
+- **Vite 7**: Build tool
+- **Axios**: HTTP client
+- **GSAP**: Advanced animations
+- **VueUse Motion**: Declarative animations
+- **Swiper**: Sliders and carousels
+- **Lucide Vue**: Icons
+- **vue-toastification**: Toast notifications
+- **ESLint + Prettier**: Code quality
 
 ## Features
 

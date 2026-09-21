@@ -4,7 +4,7 @@
 
 **Arquivo:** src/stores/bookStore.js
 
-**Motivo:** Gerenciar o estado global dos livros — listas, paginação, filtros e operações CRUD — de forma centralizada e reativa.
+**Motivo:** Gerenciar o estado global dos livros (listas, paginação, filtros e operações CRUD) de forma centralizada e reativa.
 
 **State:**
 ```js
@@ -51,7 +51,7 @@ bookStore.$reset()
 
 **Arquivo:** src/stores/userStore.js
 
-**Motivo:** Gerenciar autenticação — login de usuários e sessão visitante — persistindo no localStorage.
+**Motivo:** Gerenciar autenticação (login de usuários e sessão visitante), persistindo no localStorage.
 
 **State:**
 ```js

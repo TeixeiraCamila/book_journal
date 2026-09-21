@@ -1,15 +1,15 @@
-# Análise de Melhorias — book_journal
+# Análise de Melhorias: book_journal
 
 ## 🔴 Bugs Críticos
 
 | Arquivo | Linha | Problema | Status |
 |---------|-------|----------|--------|
-| `ConfirmDialog.vue` | 28 | `await emit('confirm')` não espera nada — notificação dispara antes do delete | ✅ |
+| `ConfirmDialog.vue` | 28 | `await emit('confirm')` não espera nada: notificação dispara antes do delete | ✅ |
 | `bookStore.js` | 275 | `$reset()` referencia `wasReadIn`/`wasRead` (inexistente), deveria ser `thisYear` | ✅ |
 | `BookList.vue` | 84 | Passa `hasPreviousPage` como prop, mas o getter não existe no store | ✅ |
-| `router/index.js` | 52-53 | Falta `return` no navigation guard — execução continua e chama `next()` múltiplas vezes | ✅ |
-| `Header.vue` | 51 | `:to="to="{ name: 'home' }""` — sintaxe Vue malformada (aspas aninhadas) | ✅ (arquivo deletado) |
-| `CardFront.vue` | 20 | `:alt="book.cover[0]"` — alt text é a URL da imagem | ✅ |
+| `router/index.js` | 52-53 | Falta `return` no navigation guard: execução continua e chama `next()` múltiplas vezes | ✅ |
+| `Header.vue` | 51 | `:to="to="{ name: 'home' }""`: sintaxe Vue malformada (aspas aninhadas) | ✅ (arquivo deletado) |
+| `CardFront.vue` | 20 | `:alt="book.cover[0]"`: alt text é a URL da imagem | ✅ |
 
 ---
 
@@ -22,17 +22,17 @@
 | Toast config (timeout, position, etc.) | `main.js` + `useNotifications.js` | ✅ |
 | `_handleError` (lógica similar) | `bookStore.js` + `userStore.js` | ✅ |
 | Form reset `Object.keys(formData).forEach(...)` | `BookForm.vue` linhas 316 e 339 | ✅ |
-| `closeModal` e `closeModalWithAnimation` | `useAnimatedModal.js` — funções idênticas | ❌ |
+| `closeModal` e `closeModalWithAnimation` | `useAnimatedModal.js`: funções idênticas | ❌ |
 
 ---
 
 ## 🟢 Oportunidades de Componentização
 
-1. **`StateHandler`** — componente genérico para loading/error/empty (criado, falta aplicar nos componentes)
-2. **`BookCover`** — exibição de capa com fallback placeholder (repetido em 5+ componentes)
-3. **`useBookFormatters`** — composable com `getAuthorString`, `getPagesString`, etc. (✅ criado e aplicado)
-4. **`EmptyState`** — estado vazio padronizado com ícone e texto
-5. **`usePagination`** — extrair cursor-based pagination do `bookStore.js`
+1. **`StateHandler`**: componente genérico para loading/error/empty (criado, falta aplicar nos componentes)
+2. **`BookCover`**: exibição de capa com fallback placeholder (repetido em 5+ componentes)
+3. **`useBookFormatters`**: composable com `getAuthorString`, `getPagesString`, etc. (✅ criado e aplicado)
+4. **`EmptyState`**: estado vazio padronizado com ícone e texto
+5. **`usePagination`**: extrair cursor-based pagination do `bookStore.js`
 
 ---
 
@@ -52,9 +52,9 @@
 
 ## 🟣 Código Morto
 
-- **Barrel exports fantasmas** em `components/index.js`: `Input`, `Modal`, `Card`, `Badge`, `BookDetails`, `ReadingProgress`, `Layout`, `Container`, `SearchBar`, `Notification`, `ToastContainer` — **nenhum desses arquivos existe**
-- `Notification.vue` e `ToastContainer.vue` — substituídos por `vue-toastification`
-- `HomeView.vue` — view legacy não usada
+- **Barrel exports fantasmas** em `components/index.js`: `Input`, `Modal`, `Card`, `Badge`, `BookDetails`, `ReadingProgress`, `Layout`, `Container`, `SearchBar`, `Notification`, `ToastContainer`: **nenhum desses arquivos existe**
+- `Notification.vue` e `ToastContainer.vue`: substituídos por `vue-toastification`
+- `HomeView.vue`: view legacy não usada
 - `Star` importado mas não usado em `CardStatus.vue`
 - Dependências não usadas: `chart.js`, `@vueuse/motion`, `@biomejs/biome`
 
@@ -75,7 +75,7 @@
 
 ## 📐 Desvios do AGENTS.md
 
-- `.prettierrc.json` define `"semi": false` — AGENTS.md exige ponto e vírgula ✅emi": false` — AGENTS.md exige ponto e vírgula
+- `.prettierrc.json` define `"semi": false`: AGENTS.md exige ponto e vírgula ✅
 - `ThisYearList.vue` usa seletores ID (`#right-image`) em vez de BEM ✅
-- `CardIntro.vue` encadeia elementos BEM (`card-intro__content__image`) — fora do padrão ✅
+- `CardIntro.vue` encadeia elementos BEM (`card-intro__content__image`): fora do padrão ✅
 - `FormSkeleton.vue` usa `<script>` sem `setup` ✅

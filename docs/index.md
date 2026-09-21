@@ -1,4 +1,4 @@
-# Documentação — book_journal
+# Documentação: book_journal
 
 book_journal é uma SPA Vue 3 + Pinia para gerenciamento de biblioteca pessoal, conectada ao Notion via API REST.
 
