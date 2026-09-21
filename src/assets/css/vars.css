@@ -3,7 +3,11 @@
 
 :root {
   --bg: linear-gradient(to bottom right, #fff9ee, white, #fff9ee);
-  --shadow: 0 1px 3px #0000001a;
+
+  /* Sombra: sm = controles, base = cards, lg = hover/painéis */
+  --shadow-sm: 0 1px 3px #0000001a;
+  --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.15);
 
   --white: #fff9ee;
 
@@ -26,8 +30,11 @@
   --black: #2b2b2b;
 
   --danger: #991b1b;
+  --danger-dark: #7f1d1d;
 
-  --radius: 0.75em;
+  /* Raio: base = controles/estados, lg = cards/slides/painéis. Papel reto = 0. */
+  --radius: 8px;
+  --radius-lg: 18px;
 
   --font: clamp(0.875rem, 1rem, 1rem);
 
