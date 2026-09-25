@@ -158,18 +158,35 @@ onMounted(() => {
   overflow: hidden;
   border-radius: var(--radius-lg);
 }
-
-/* Card base dentro do slide */
 .stack-view__card {
   width: 100%;
   height: 100%;
   padding: 2rem;
-  overflow-y: auto;
+  
+}
+.stack-view__card {
   background-repeat: no-repeat;
-  background-position: center;
   background-size: cover;
-  position: relative;
-  background-image: url('https://i.pinimg.com/1200x/e7/78/c3/e778c3a0bb0eb3df9344f32391b9ffcd.jpg');
+  background-position: center;
+}
+.stack-view__intro.stack-view__card {
+  background: url('../assets/images/cards/card_bg/bg__green.webp');
+}
+
+.stack-view__card.stack-view__book-list {
+  background: url('../assets/images/cards/card_bg/bg__blue.webp');
+}
+
+.stack-view__card.stack-view__now {
+  background: url('../assets/images/cards/card_bg/bg__red.webp');
+}
+
+.stack-view__card.stack-view__year {
+  background: url('../assets/images/cards/card_bg/bg__yellow.webp');
+}
+
+.stack-view__card.stack-view__tbr {
+  background: url('../assets/images/cards/card_bg/bg__pink.webp');
 }
 
 /* Card da lista de livros com background */
