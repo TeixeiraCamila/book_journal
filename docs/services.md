@@ -4,7 +4,7 @@
 
 **Motivo:** Centralizar toda comunicação HTTP com o backend em um só lugar, evitando repetir a configuração do Axios e URLs em cada store/componente.
 
-**O que faz:** Define uma instância Axios e dois objetos de API (booksAPI e userAPI) com métodos para cada endpoint.
+**O que faz:** Define uma instância Axios e os objetos de API (booksAPI e authAPI) com métodos para cada endpoint.
 
 ## Configuração
 
@@ -29,13 +29,15 @@ const api = axios.create({
 | options() | Opções dinâmicas | booksAPI.options() |
 | stats() | Estatísticas | booksAPI.stats() |
 
-## userAPI
+## authAPI
 
-| Método | Descrição |
-|--------|-----------|
-| list(options) | Lista usuários |
-| listAll() | Todos os usuários |
-| getById(id) | Busca por ID |
+| Método | Descrição | Payload |
+|--------|-----------|---------|
+| login(data) | Troca email + código por um token | `{ email, codigo }` |
+| me() | Revalida o token da sessão | — |
+
+O front não consome a lista de usuários do workspace: o backend valida o email
+dentro do servidor e devolve só o token.
 
 **Exemplo de uso na store:**
 ```js

@@ -159,8 +159,6 @@ The app consumes these endpoints from the `backend__final` backend:
 | `POST /api/books` | Create book |
 | `PATCH /api/books/:id` | Update book |
 | `DELETE /api/books/:id` | Archive book |
-| `GET /api/users` | List users |
-| `GET /api/users/:id` | User details |
 | `POST /api/auth/login` | Sign in (email + access code) |
 
 ## Responsiveness

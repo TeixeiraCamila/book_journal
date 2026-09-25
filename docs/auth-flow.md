@@ -94,26 +94,24 @@ Usado nas rotas de escrita do books e no `GET /api/auth/me`.
 
 Schema Zod do login:
 
-- `email` opcional (se fornecido, precisa ser email válido)
-- `name` opcional
+- `email` obrigatório (formato de email válido)
 - `codigo` obrigatório
-- `refine` exige que pelo menos `name` **ou** `email` esteja presente
 
-Aceitar nome ou email deixa o fluxo flexível; o email é o identificador robusto (único no workspace).
+Só o email entra: ele é o identificador único do workspace, enquanto o nome pode se repetir. A entrada por `name` que existia na primeira versão foi removida.
 
 ### 3.4 `lib/domains/auth/service.js`
 
 O fluxo da checagem:
 
-1. Pega o cliente Notion via `getUserClient()` (mesma lógica usada por `/api/users`).
-2. Lista os usuários do workspace (com rate limit `limitedClientCall`, no mesmo domínio da rota de users para não furar o token bucket do Notion).
-3. Procura um usuário do tipo **`person`** cujo `person.email` (ou `name`) bata com o enviado. **Bots são ignorados.**
+1. Pega o cliente Notion via `get_user_client()` (fallback books → entertainment).
+2. Lista os usuários do workspace (com rate limit `limited_client_call`, no mesmo domínio que alimenta o client para não furar o token bucket do Notion).
+3. Procura um usuário do tipo **`person`** cujo `person.email` bata com o enviado. **Bots são ignorados.**
 4. Se não existe → `AuthenticationError('Esse email não está no arquivo.')`.
 5. Compara o `codigo` com `AUTH_ACCESS_CODE` via `textMatches` (timing-safe).
 6. Errado/ausente → `AuthenticationError('O código não confere.')`.
 7. Acertou → monta o `user` (id, nome, email, avatar, `nivel: 'dona'`) e assina o token com `signToken`.
 
-Porquê: a identidade vem do **usuário real do workspace** (mesmo dado que o `/api/users` expõe), mas o **segredo vive no servidor**. O navegador nunca conhece a lista de usuários nem o código; ele só envia `{ email, codigo }` e recebe o token.
+Porquê: a identidade vem do **usuário real do workspace** (mesma fonte do `notion.users.list()`), mas o **segredo vive no servidor**. O navegador nunca conhece a lista de usuários nem o código; ele só envia `{ email, codigo }` e recebe o token.
 
 ### 3.5 `lib/domains/auth/controller.js`
 

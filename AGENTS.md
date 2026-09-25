@@ -113,7 +113,7 @@ src/
 
 ## Consumo de API (notion_api)
 
-`GET/POST/PATCH/DELETE /api/books`, `GET /api/books/all`, `GET /api/books/:id`, `GET /api/books/options`, `GET /api/users` (+ `/:id`), `POST /api/auth/login`. Fluxo:
+`GET/POST/PATCH/DELETE /api/books`, `GET /api/books/all`, `GET /api/books/:id`, `GET /api/books/options`, `POST /api/auth/login`, `GET /api/auth/me`. Fluxo:
 
 ```
 Views → Pinia Stores → services/api.js (Axios) → notion_api → Notion CMS
