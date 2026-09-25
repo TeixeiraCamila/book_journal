@@ -1,7 +1,8 @@
-// Pinia store de usuários — gerencia sessão (login/saída/visitante) e lista de usuários
+// Pinia store de sessão — login/saída/visitante. Não guarda lista de usuários:
+// o backend valida o email contra o workspace e o front não conhece essa lista.
 import { defineStore } from 'pinia';
-import { user_api, auth_api } from '../services/api';
-import { extract_error_message, log_error } from '@/utils/errorHandler';
+import { auth_api } from '../services/api';
+import { extract_error_message } from '@/utils/errorHandler';
 
 const GUEST_USER = {
   id: 'guest',
@@ -17,95 +18,18 @@ const STORAGE_KEYS = {
 
 export const use_user_store = defineStore('user', {
   state: () => ({
-    users: [],
     user_active: null,
-    loading: false,
     error: null,
     is_guest: false,
     token: null,
   }),
 
   getters: {
-    all_users: (state) => state.users,
-
     is_authenticated: (state) => state.token !== null,
-
-    get_user_by_id: (state) => (user_id) => {
-      return state.users.find((user) => user.id === user_id);
-    },
-
-    get_users_by_type: (state) => (type) => {
-      return state.users.filter((user) => user.type === type);
-    },
   },
 
   actions: {
-    async fetch_users(start_cursor = undefined, page_size = 100) {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = await user_api.list({
-          startCursor: start_cursor,
-          pageSize: page_size,
-        });
-        this.users = response.data.results;
-
-        return response.data;
-      } catch (error) {
-        log_error('fetch_users', error);
-        throw error;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async fetch_all_users() {
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = await user_api.list_all();
-        this.users = response.data.results || response.data || [];
-
-        return this.users;
-      } catch (error) {
-        log_error('fetch_all_users', error);
-        throw error;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async fetch_user(user_id) {
-      if (!user_id) {
-        throw new Error('User ID is required');
-      }
-
-      this.loading = true;
-      this.error = null;
-
-      try {
-        const response = await user_api.get_by_id(user_id);
-        const data = response.data;
-
-        const index = this.users.findIndex((u) => u.id === user_id);
-        if (index !== -1) {
-          this.users[index] = data;
-        } else {
-          this.users.push(data);
-        }
-
-        return data;
-      } catch (error) {
-        log_error('fetch_user', error);
-        throw error;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    // Autentica no backend: email/nome + código de acesso → token de sessão
+    // Autentica no backend: email + código de acesso → token de sessão
     async login({ email, codigo }) {
       this.error = null;
 

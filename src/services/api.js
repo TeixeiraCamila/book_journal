@@ -94,30 +94,6 @@ export const books_api = {
   },
 };
 
-// ==== Users API ==== //
-// Endpoints para listar e buscar usuários do Notion
-export const user_api = {
-  list(options = {}) {
-    const { startCursor, pageSize = 100 } = options;
-
-    const params = {};
-    if (startCursor) {
-      params.start_cursor = startCursor;
-    }
-    params.page_size = pageSize;
-
-    return api.get('/api/users', { params });
-  },
-
-  list_all() {
-    return api.get('/api/users/all');
-  },
-
-  get_by_id(user_id) {
-    return api.get(`/api/users/${user_id}`);
-  },
-};
-
 // ==== Auth API ==== //
 // Endpoints de autenticação — login com código de acesso e revalidação de sessão
 export const auth_api = {
