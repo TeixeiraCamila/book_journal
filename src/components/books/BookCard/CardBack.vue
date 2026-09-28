@@ -57,9 +57,9 @@ const handle_delete = () => {
           {{ book.author.join(', ') }}
         </p>
 
-        <div v-if="book.total && book.currentlyOn">
-          <p class="card_back__text">Páginas: {{ book.currentlyOn }} / {{ book.totalPages }}</p>
-          <p class="card_back__text">Progresso: {{ book.currentlyOn }} / {{ book.total }}</p>
+        <div v-if="book.total && book.currentPage">
+          <p class="card_back__text">Páginas: {{ book.currentPage }} / {{ book.totalPages }}</p>
+          <p class="card_back__text">Progresso: {{ book.currentPage }} / {{ book.total }}</p>
         </div>
 
         <p class="card_back__text" v-if="type_string">Tipo: {{ type_string }}</p>

@@ -37,7 +37,7 @@ const form_data = reactive({
   status: '',
   rate: '',
   totalPages: '',
-  currentlyOn: '',
+  currentPage: '',
   type: '',
   firstPublished: '',
   iHaveCopy: false,
@@ -91,7 +91,7 @@ const is_kindle = computed(() => form_data.type?.includes('Kindle'));
 
 watch([() => form_data.kindleProgress, () => form_data.totalPages], ([progress, total]) => {
   if (progress && total && Number(progress) > 0 && Number(total) > 0) {
-    form_data.currentlyOn = Math.round((Number(total) * Number(progress)) / 100);
+    form_data.currentPage = Math.round((Number(total) * Number(progress)) / 100);
   }
 });
 
@@ -148,7 +148,7 @@ const hydrate_form = (book) => {
   form_data.status = book.status || '';
   form_data.rate = book.rate || '';
   form_data.totalPages = book.totalPages || '';
-  form_data.currentlyOn = book.currentlyOn || '';
+  form_data.currentPage = book.currentPage || '';
   form_data.type = book.type?.join(', ') || '';
   form_data.firstPublished = book.firstPublished || '';
   form_data.iHaveCopy = book.iHaveCopy || false;
@@ -226,15 +226,15 @@ const handle_submit = async () => {
     }
   }
 
-  if (form_data.currentlyOn) {
-    if (isNaN(form_data.currentlyOn) || form_data.currentlyOn < 0) {
-      field_errors.value.currentlyOn = 'Página atual deve ser um número positivo';
+  if (form_data.currentPage) {
+    if (isNaN(form_data.currentPage) || form_data.currentPage < 0) {
+      field_errors.value.currentPage = 'Página atual deve ser um número positivo';
       error_messages.push('Página atual');
     } else if (
       form_data.totalPages &&
-      Number(form_data.currentlyOn) > Number(form_data.totalPages)
+      Number(form_data.currentPage) > Number(form_data.totalPages)
     ) {
-      field_errors.value.currentlyOn = 'Página atual não pode ser maior que o total';
+      field_errors.value.currentPage = 'Página atual não pode ser maior que o total';
       error_messages.push('Página atual');
     }
   }
@@ -297,7 +297,7 @@ const handle_submit = async () => {
       status: form_data.status || undefined,
       rate: form_data.rate || undefined,
       totalPages: form_data.totalPages ? Number(form_data.totalPages) : undefined,
-      currentlyOn: form_data.currentlyOn ? Number(form_data.currentlyOn) : undefined,
+      currentPage: form_data.currentPage ? Number(form_data.currentPage) : undefined,
       type: parse_comma_separated(form_data.type)[0] || undefined,
       firstPublished: form_data.firstPublished || undefined,
       iHaveCopy: form_data.iHaveCopy,
@@ -447,11 +447,11 @@ const handle_cancel = () => {
 
               <FormField
                 v-if="form_data.status === BOOK_STATUS_MAP.READING"
-                v-model="form_data.currentlyOn"
+                v-model="form_data.currentPage"
                 label="Página atual"
                 type="number"
                 placeholder="Ex: 125"
-                :error="field_errors.currentlyOn"
+                :error="field_errors.currentPage"
               />
             </div>
           </FormSection>

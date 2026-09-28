@@ -5,9 +5,9 @@ export function use_book_formatters() {
   };
 
   const get_pages_string = (book) => {
-    if (!book.totalPages || !book.currentlyOn) return '';
-    const progress = Math.round((parseInt(book.currentlyOn) / parseInt(book.totalPages)) * 100);
-    return `Páginas: ${book.currentlyOn} / ${book.totalPages} (${progress}%)`;
+    if (!book.totalPages || !book.currentPage) return '';
+    const progress = Math.round((parseInt(book.currentPage) / parseInt(book.totalPages)) * 100);
+    return `Páginas: ${book.currentPage} / ${book.totalPages} (${progress}%)`;
   };
 
   const get_publication_string = (book) => {

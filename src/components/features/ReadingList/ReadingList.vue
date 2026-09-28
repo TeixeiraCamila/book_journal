@@ -12,9 +12,9 @@ import { use_book_formatters } from '@/composables/useBookFormatters.js';
 
 const { get_author_string, get_pages_string, get_publication_string } = use_book_formatters();
 
-const calculate_progress = (currentlyOn, total) => {
-  if (!currentlyOn || !total || total === 0) return 0;
-  return Math.round((parseInt(currentlyOn) / parseInt(total)) * 100);
+const calculate_progress = (currentPage, total) => {
+  if (!currentPage || !total || total === 0) return 0;
+  return Math.round((parseInt(currentPage) / parseInt(total)) * 100);
 };
 /**
  * Formata data para exibição em português
@@ -159,7 +159,7 @@ const navigate_to_edit = (bookId) => {
                 <span class="reading-card__value">{{ get_reading_period_string(book) }}</span>
               </div>
 
-              <div class="reading-card__info-item" v-if="book.totalPages && book.currentlyOn">
+              <div class="reading-card__info-item" v-if="book.totalPages && book.currentPage">
                 <span class="reading-card__label">Progresso:</span>
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
@@ -169,7 +169,7 @@ const navigate_to_edit = (bookId) => {
                     <div
                       class="reading-card__progress-fill"
                       :style="{
-                        width: `${calculate_progress(book.currentlyOn, book.totalPages)}%`,
+                        width: `${calculate_progress(book.currentPage, book.totalPages)}%`,
                       }"
                     ></div>
                   </div>
