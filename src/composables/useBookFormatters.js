@@ -1,7 +1,8 @@
 export function use_book_formatters() {
   const get_author_string = (book) => {
     const literary_atlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
-    return `${literary_atlas}${book.author.join(', ')}`;
+    const authors = Array.isArray(book.author) ? book.author.join(', ') : book.author || '';
+    return `${literary_atlas}${authors}`.trim();
   };
 
   const get_pages_string = (book) => {
