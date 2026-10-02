@@ -120,10 +120,7 @@ const handle_edit_book = (book) => {
 
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
 .bool-list-content {
-  display: flex;
-  align-items: center;
-  margin: 0 auto;
-  flex-direction: column;
+  padding: 1rem 0;
 }
 .book-list__state {
   display: flex;
