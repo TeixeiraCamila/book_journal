@@ -199,20 +199,18 @@ export const use_book_store = defineStore('books', {
     },
 
     /**
-     * Busca livros com status "Read" e wasReadIn igual ao ano atual
+     * Busca livros com data de término no ano atual
      */
     async fetch_books_read_this_year() {
       this.loading_states.thisYear = true;
       this.error = null;
       try {
-        const year = String(new Date().getFullYear());
-        const response = await books_api.list({
+        const year = new Date().getFullYear();
+        const response = await books_api.finished_this_year({
+          year,
           pageSize: 100,
-          search: this.search_term,
-          status: BOOK_STATUS_MAP.READ,
-          wasReadIn: year,
         });
-        this.book_lists.thisYear = response.data.data || [];
+        this.book_lists.thisYear = response.data.results || response.data.data || [];
       } catch (error) {
         this._handle_error('fetch_books_read_this_year', error);
         this.book_lists.thisYear = [];

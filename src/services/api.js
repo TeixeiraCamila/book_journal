@@ -92,6 +92,23 @@ export const books_api = {
   stats() {
     return api.get('/api/books/stats');
   },
+
+  finished_this_year(options = {}) {
+    const { year, pageSize, startCursor } = options;
+    const params = {};
+
+    if (year !== undefined && year !== null) {
+      params.year = year;
+    }
+    if (pageSize !== undefined && pageSize !== null) {
+      params.pageSize = pageSize;
+    }
+    if (startCursor) {
+      params.startCursor = startCursor;
+    }
+
+    return api.get('/api/books/finished-this-year', { params });
+  },
 };
 
 // ==== Auth API ==== //
