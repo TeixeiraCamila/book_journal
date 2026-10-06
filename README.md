@@ -27,7 +27,7 @@ It consumes the API backend in `backend__final`, **Books** domain.
 - Complete book registration (title, author, genres, series, type)
 - Progress tracking (pages read, status: reading/completed/abandoned)
 - Star ratings and favorites
-- Status filtering and search by name
+- Status filtering with single-select radios and partial search by title, author or genre (debounced)
 - Cursor-based pagination
 - Card view with flip animation
 - Guest mode without login
@@ -77,7 +77,6 @@ src/
 │   ├── navigation/
 │   │   ├── Pagination.vue
 │   │   ├── Filters.vue
-│   │   └── SearchBar.vue
 │   └── feedback/
 │       ├── Notification.vue
 │       ├── ToastContainer.vue
@@ -152,10 +151,10 @@ The app consumes these endpoints from the `backend__final` backend:
 
 | Endpoint | Usage |
 |---|---|
-| `GET /api/books` | List books (paginated) |
+| `GET /api/books` | List books (paginated); accepts `search`, `searchBy` (`title`/`author`/`genre`) and `status` |
 | `GET /api/books/all` | All books |
 | `GET /api/books/:id` | Book details |
-| `GET /api/books/options` | Filter options |
+| `GET /api/books/options` | Filter options (status, authors, genres) |
 | `POST /api/books` | Create book |
 | `PATCH /api/books/:id` | Update book |
 | `DELETE /api/books/:id` | Archive book |

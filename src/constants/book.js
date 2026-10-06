@@ -25,6 +25,25 @@ export const BOOK_STATUS_LABELS = {
   DNF: 'Abandonado',
 };
 
+// Modos de busca — o value vai na query searchBy do backend
+export const BOOK_SEARCH_MODES = [
+  { value: 'title', label: 'Título' },
+  { value: 'author', label: 'Autor' },
+  { value: 'genre', label: 'Gênero' },
+];
+
+export const DEFAULT_SEARCH_MODE = 'title';
+
+// Placeholder do input conforme o modo escolhido
+export const BOOK_SEARCH_PLACEHOLDERS = {
+  title: 'Buscar por título...',
+  author: 'Buscar por autor...',
+  genre: 'Buscar por gênero...',
+};
+
+// Intervalo do debounce da busca em ms
+export const SEARCH_DEBOUNCE_MS = 400;
+
 // Labels de avaliação
 export const BOOK_RATE_LABELS = {
   '❤': '❤️',

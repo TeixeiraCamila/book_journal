@@ -1,7 +1,12 @@
 // Pinia store de livros — gerencia listas, paginação, filtros e operações CRUD
 import { defineStore } from 'pinia';
 import { books_api } from '../services/api';
-import { BOOK_STATUS_FALLBACK, BOOK_STATUS_MAP, DEFAULT_PAGE_SIZE } from '../constants/book';
+import {
+  BOOK_STATUS_FALLBACK,
+  BOOK_STATUS_MAP,
+  DEFAULT_PAGE_SIZE,
+  DEFAULT_SEARCH_MODE,
+} from '../constants/book';
 import { extract_error_message, log_error } from '@/utils/errorHandler';
 
 export const use_book_store = defineStore('books', {
@@ -20,7 +25,9 @@ export const use_book_store = defineStore('books', {
     },
 
     search_term: '',
+    search_by: DEFAULT_SEARCH_MODE,
     filter_status: 'all',
+    search_token: 0,
     book_options: null,
   }),
 
@@ -77,14 +84,18 @@ export const use_book_store = defineStore('books', {
     async fetch_books(start_cursor = undefined) {
       this.loading_states.main = true;
       this.error = null;
+      const token = this.search_token;
 
       try {
         const response = await books_api.list({
           pageSize: this.pagination.page_size,
           startCursor: start_cursor,
           search: this.search_term,
+          searchBy: this.search_by,
           status: this.filter_status,
         });
+
+        if (token !== this.search_token) return; // Ignora resposta se a busca mudou durante a requisição
 
         if (response?.data) {
           this.book_lists.main = response.data.data || [];
@@ -101,7 +112,9 @@ export const use_book_store = defineStore('books', {
         this._handle_error('fetch_books', error);
         this.book_lists.main = [];
       } finally {
-        this.loading_states.main = false;
+        // Só a requisição mais recente desliga o loading: uma resposta obsoleta
+        // que retornasse agora apagaria o indicador enquanto a nova segue em voo
+        if (token === this.search_token) this.loading_states.main = false;
       }
     },
 
@@ -167,14 +180,18 @@ export const use_book_store = defineStore('books', {
       const loading_key = status === BOOK_STATUS_MAP.READING ? 'reading' : 'tbr';
       this.loading_states[loading_key] = true;
       this.error = null;
+      const token = this.search_token;
 
       try {
         const response = await books_api.list({
           pageSize: 40,
           startCursor: start_cursor,
           search: this.search_term,
+          searchBy: this.search_by,
           status: status,
         });
+
+        if (token !== this.search_token) return; // Ignora resposta se a busca mudou durante a requisição
 
         switch (status) {
           case BOOK_STATUS_MAP.TO_BE_READ:
@@ -194,7 +211,7 @@ export const use_book_store = defineStore('books', {
           this.book_lists.reading = [];
         }
       } finally {
-        this.loading_states[loading_key] = false;
+        if (token === this.search_token) this.loading_states[loading_key] = false;
       }
     },
 
@@ -262,13 +279,23 @@ export const use_book_store = defineStore('books', {
     },
 
     async search(term) {
+      this.search_token += 1; // Invalida respostas antigas
       this.search_term = term;
       this.pagination.previous_cursors = [];
 
       await this.fetch_books();
     },
 
+    async set_search_by(mode) {
+      this.search_token += 1; // Invalida respostas antigas
+      this.search_by = mode;
+      this.pagination.previous_cursors = [];
+
+      await this.fetch_books();
+    },
+
     async filter_by_status(status) {
+      this.search_token += 1; // Invalida respostas antigas
       this.filter_status = status;
       this.pagination.previous_cursors = [];
 
@@ -294,6 +321,8 @@ export const use_book_store = defineStore('books', {
         previous_cursors: [],
       };
       this.search_term = '';
+      this.search_by = DEFAULT_SEARCH_MODE;
+      this.search_token = 0;
       this.filter_status = 'all';
       this.book_options = null;
     },

@@ -8,44 +8,52 @@
 
 **State:**
 ```js
-bookLists: { main: [], tbr: [], reading: [], thisYear: [] }
-loadingStates: { main: false, tbr: false, reading: false, thisYear: false }
-pagination: { pageSize: 20, currentCursor: null, nextCursor: null, previousCursors: [] }
-searchTerm: ""
-filterStatus: "all"
-bookOptions: null
+book_lists: { main: [], tbr: [], reading: [], this_year: [] }
+loading_states: { main: false, tbr: false, reading: false, this_year: false }
+pagination: { page_size: 20, current_cursor: null, next_cursor: null, previous_cursors: [] }
+search_term: ""
+search_by: "title" // title | author | genre
+filter_status: "all"
+search_token: 0 // invalida respostas de buscas antigas
+book_options: null
 ```
 
 **Uso:**
 ```js
-import { useBookStore } from "@/stores/bookStore"
+import { use_book_store } from "@/stores/bookStore"
 
-const bookStore = useBookStore()
+const bookStore = use_book_store()
 
 // Carregar livros
-await bookStore.fetchBooks()
+await bookStore.fetch_books()
 
 // Paginação
-await bookStore.nextPage()
-await bookStore.previousPage()
-bookStore.hasPreviusPage // true/false
+await bookStore.next_page()
+await bookStore.previous_page()
+bookStore.has_previus_page // true/false
 
 // Filtros
 bookStore.search("harry")
-bookStore.filterByStatus("Read")
+bookStore.set_search_by("author") // refaz a busca no novo campo
+bookStore.filter_by_status("Read")
 
 // CRUD
-await bookStore.createBook(formData)
-await bookStore.updateBook(id, data)
-await bookStore.deleteBook(id)
+await bookStore.create_book(formData)
+await bookStore.update_book(id, data)
+await bookStore.delete_book(id)
 
 // Listas específicas
-await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ)
-await bookStore.fetchBooksReadThisYear()
+await bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.TO_BE_READ)
+await bookStore.fetch_books_read_this_year()
 
 // Reset
 bookStore.$reset()
 ```
+
+**Filtros e respostas obsoletas:** `search()`, `set_search_by()` e `filter_by_status()` invalidam
+qualquer requisição em voo ao incrementar `search_token`; o fetch só aplica o resultado se o
+token capturado no início ainda for o atual. Isso impede que uma resposta lenta de um termo
+antigo sobrescreva a lista da busca atual.
 
 ## userStore
 

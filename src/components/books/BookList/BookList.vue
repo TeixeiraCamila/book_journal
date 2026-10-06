@@ -3,6 +3,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { use_book_store } from '@/stores/bookStore';
+import { DEFAULT_SEARCH_MODE } from '@/constants/book';
 import BookCard from '@/components/books/BookCard/BookCard.vue';
 import BookCardSkeleton from '@/components/ui/Skeleton/BookCardSkeleton.vue';
 import Pagination from '@/components/navigation/Pagination.vue';
@@ -18,6 +19,8 @@ onMounted(async () => {
   // Configura filtros iniciais
   bookStore.filter_status = 'all';
   bookStore.search_term = '';
+  bookStore.search_by = DEFAULT_SEARCH_MODE;
+  bookStore.search_token += 1; // Invalida qualquer busca em voo ao trocar de tela
 
   // Busca opções do backend e livros
   await Promise.all([bookStore.fetch_book_options(), bookStore.fetch_books()]);
@@ -121,6 +124,9 @@ const handle_edit_book = (book) => {
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
 .bool-list-content {
   padding: 1rem 0;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
 }
 .book-list__state {
   display: flex;
@@ -173,7 +179,7 @@ const handle_edit_book = (book) => {
 }
 
 .book-list__empty-text {
-  color: var(--muted);
+  color: var(--white);
   max-width: 400px;
   line-height: 1.6;
 }

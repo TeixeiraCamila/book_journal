@@ -47,13 +47,16 @@ export { api };
 // Endpoints CRUD para livros com paginação baseada em cursor
 export const books_api = {
   list(options = {}) {
-    const { pageSize = 20, startCursor, search = '', status = 'all', wasReadIn } = options;
+    const {
+      pageSize = 20,
+      startCursor,
+      search = '',
+      searchBy = 'title',
+      status = 'all',
+      wasReadIn,
+    } = options;
 
-    const params = {
-      pageSize: pageSize.toString(),
-      search: search,
-      status: status,
-    };
+    const params = { pageSize: pageSize.toString(), search, searchBy, status };
 
     if (startCursor) {
       params.startCursor = startCursor;
