@@ -18,7 +18,7 @@ const props = defineProps({
       width="100"
       height="150"
       :src="book.cover[0]"
-      :alt="book.name"
+      :alt="book.title"
       loading="lazy"
       decoding="async"
     />
@@ -26,7 +26,7 @@ const props = defineProps({
       v-else
       class="card-front__image"
       src="https://placehold.co/226x354"
-      :alt="book.name"
+      :alt="book.title"
       loading="lazy"
     />
   </picture>

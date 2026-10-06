@@ -56,10 +56,6 @@ const get_additional_notes = (book) => {
     notes.push(book.notes);
   }
 
-  if (book.tags?.length) {
-    notes.push(`Tags: ${book.tags.join(', ')}`);
-  }
-
   return notes;
 };
 
@@ -67,7 +63,8 @@ const get_additional_notes = (book) => {
  * Verifica se há informações de publicação
  */
 const has_publication_info = (book) => {
-  return !!(book.publishedBy?.[0] || book.firstPublished);
+  // publishedBy é select simples: string, não array — [0] devolveria só a 1ª letra
+  return !!(book.publishedBy || book.firstPublished);
 };
 
 /**
@@ -127,7 +124,7 @@ const navigate_to_edit = (bookId) => {
             <img
               v-if="book.cover?.[0]"
               :src="book.cover[0]"
-              :alt="`Capa do livro ${book.name}`"
+              :alt="`Capa do livro ${book.title}`"
               class="reading-card__image"
               loading="lazy"
             />
@@ -138,7 +135,7 @@ const navigate_to_edit = (bookId) => {
             <header class="reading-card__header">
               <div class="reading-card__title-group">
                 <div>
-                  <h2 class="reading-card__title">{{ book.name }}</h2>
+                  <h2 class="reading-card__title">{{ book.title }}</h2>
 
                   <div class="reading-card__type" v-if="get_type_string(book)">
                     <span class="reading-card__value">{{ get_type_string(book) }}</span>
@@ -159,7 +156,7 @@ const navigate_to_edit = (bookId) => {
                 <span class="reading-card__value">{{ get_reading_period_string(book) }}</span>
               </div>
 
-              <div class="reading-card__info-item" v-if="book.totalPages && book.currentPage">
+              <div class="reading-card__info-item" v-if="book.pages?.totalPages && book.pages?.currentlyPage">
                 <span class="reading-card__label">Progresso:</span>
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
@@ -169,7 +166,7 @@ const navigate_to_edit = (bookId) => {
                     <div
                       class="reading-card__progress-fill"
                       :style="{
-                        width: `${calculate_progress(book.currentPage, book.totalPages)}%`,
+                        width: `${calculate_progress(book.pages.currentlyPage, book.pages.totalPages)}%`,
                       }"
                     ></div>
                   </div>

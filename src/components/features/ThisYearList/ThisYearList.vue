@@ -103,7 +103,7 @@ const navigate_to_edit = (bookId) => {
                 <img
                   v-if="book.cover?.[0]"
                   :src="book.cover[0]"
-                  :alt="`Capa do livro ${book.name}`"
+                  :alt="`Capa do livro ${book.title}`"
                   class="this-year-card__image"
                   loading="lazy"
                   @click="navigate_to_edit(book.id)"

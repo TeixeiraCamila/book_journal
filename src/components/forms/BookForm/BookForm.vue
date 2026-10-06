@@ -34,7 +34,7 @@ const { add_notification } = use_notifications();
 const form_data = reactive({
   name: '',
   author: '',
-  status: '',
+  status: 'To be read',
   rate: '',
   totalPages: '',
   currentPage: '',
@@ -49,9 +49,9 @@ const form_data = reactive({
   // Inicia como array vazio — o multi-select lida com adição/remoção
   genres: [],
   publishedBy: '',
-  bookSeries: '',
+  // Espelha o contrato da API: série e volume aninhados em seriesInfo
+  seriesInfo: { bookSeries: '', volume: '' },
   // Inicia como array vazio — o multi-select lida com adição/remoção
-  quest: [],
   kindleProgress: '',
 });
 
@@ -77,7 +77,6 @@ const author_options = computed(() => bookStore.book_options?.Author || []);
 const was_read_in_options = computed(() => bookStore.book_options?.['Was read in'] || []);
 const genres_options = computed(() => bookStore.book_options?.Tags || []);
 const published_by_options = computed(() => bookStore.book_options?.['Published by'] || []);
-const quest_options = computed(() => bookStore.book_options?.Quest || []);
 
 // Retorna null se vazio para não quebrar a exibição da capa
 const cover_url = computed(() => {
@@ -143,12 +142,12 @@ const parse_start_end_data = (start_end_data) => {
 const hydrate_form = (book) => {
   if (!book) return;
 
-  form_data.name = book.name || '';
+  form_data.name = book.title || '';
   form_data.author = book.author?.join(', ') || '';
   form_data.status = book.status || '';
   form_data.rate = book.rate || '';
-  form_data.totalPages = book.totalPages || '';
-  form_data.currentPage = book.currentPage || '';
+  form_data.totalPages = book.pages?.totalPages || '';
+  form_data.currentPage = book.pages?.currentlyPage || '';
   form_data.type = book.type?.join(', ') || '';
   form_data.firstPublished = book.firstPublished || '';
   form_data.iHaveCopy = book.iHaveCopy || false;
@@ -156,9 +155,12 @@ const hydrate_form = (book) => {
   form_data.coverUrl = book.cover?.[0] || '';
   form_data.literaryAtlas = book.literaryAtlas || '';
   form_data.genres = book.genres || [];
-  form_data.publishedBy = book.publishedBy?.join(', ') || '';
-  form_data.bookSeries = book.bookSeries || '';
-  form_data.quest = book.quest || [];
+  // publishedBy é select simples no Notion: string, não array
+  form_data.publishedBy = book.publishedBy || '';
+  form_data.seriesInfo = {
+    bookSeries: book.seriesInfo?.bookSeries || '',
+    volume: book.seriesInfo?.volume ?? '',
+  };
 
   form_data.kindleProgress = '';
 
@@ -197,8 +199,12 @@ watch(
 
 const reset_form_data = () => {
   Object.keys(form_data).forEach((key) => {
-    if (typeof form_data[key] === 'boolean') form_data[key] = false;
-    else if (Array.isArray(form_data[key])) form_data[key] = [];
+    const valor = form_data[key];
+
+    if (typeof valor === 'boolean') form_data[key] = false;
+    else if (Array.isArray(valor)) form_data[key] = [];
+    // seriesInfo é objeto e precisa ser repovoado por chave, senão o v-model aninhado quebra
+    else if (valor !== null && typeof valor === 'object') form_data[key] = Object.fromEntries(Object.keys(valor).map((k) => [k, '']));
     else form_data[key] = '';
   });
 };
@@ -254,6 +260,16 @@ const handle_submit = async () => {
     }
   }
 
+  // O schema exige inteiro positivo; string vazia viraria 400 da API
+  if (form_data.seriesInfo.volume !== '') {
+    const volume = Number(form_data.seriesInfo.volume);
+
+    if (!Number.isInteger(volume) || volume < 1) {
+      field_errors.value.volume = 'Volume deve ser um número inteiro positivo';
+      error_messages.push('Volume');
+    }
+  }
+
   // Validação de datas (opcional - só valida se ambas preenchidas)
   if (form_data.startDate && form_data.endDate) {
     const start = new Date(form_data.startDate);
@@ -292,12 +308,15 @@ const handle_submit = async () => {
     }
 
     const book_data = {
-      name: form_data.name.trim(),
+      title: form_data.name.trim(),
       author: parse_comma_separated(form_data.author),
       status: form_data.status || undefined,
       rate: form_data.rate || undefined,
-      totalPages: form_data.totalPages ? Number(form_data.totalPages) : undefined,
-      currentPage: form_data.currentPage ? Number(form_data.currentPage) : undefined,
+      // pages e seriesInfo seguem o contrato agrupado do backend
+      pages: {
+        totalPages: form_data.totalPages ? Number(form_data.totalPages) : undefined,
+        currentlyPage: form_data.currentPage ? Number(form_data.currentPage) : undefined,
+      },
       type: parse_comma_separated(form_data.type)[0] || undefined,
       firstPublished: form_data.firstPublished || undefined,
       iHaveCopy: form_data.iHaveCopy,
@@ -306,9 +325,13 @@ const handle_submit = async () => {
       coverUrl: form_data.coverUrl?.trim() || undefined,
       literaryAtlas: form_data.literaryAtlas || undefined,
       genres: form_data.genres,
-      publishedBy: parse_comma_separated(form_data.publishedBy),
-      bookSeries: form_data.bookSeries || undefined,
-      quest: form_data.quest,
+      publishedBy: form_data.publishedBy.trim() || undefined,
+      // String vazia e null são aceitos: o backend traduz para { select: null },
+      // que é como o Notion limpa a propriedade
+      seriesInfo: {
+        bookSeries: form_data.seriesInfo.bookSeries.trim(),
+        volume: form_data.seriesInfo.volume === '' ? null : Number(form_data.seriesInfo.volume),
+      },
     };
 
     // Se tem ID na rota: atualiza. Senão: cria um novo livro
@@ -399,20 +422,20 @@ const handle_cancel = () => {
 
             <div class="book-form__grid">
               <FormField
-                v-model="form_data.bookSeries"
+                v-model="form_data.seriesInfo.bookSeries"
                 label="Série do livro"
                 type="autocomplete"
                 :options="series_options"
                 placeholder="Digite ou selecione"
                 :error="field_errors.bookSeries"
               />
+
               <FormField
-                v-model="form_data.quest"
-                label="Quest"
-                type="multi-select"
-                :options="quest_options"
-                placeholder="Digite ou selecione"
-                :error="field_errors.quest"
+                v-model="form_data.seriesInfo.volume"
+                label="Volume"
+                type="number"
+                placeholder="Ex: 2"
+                :error="field_errors.volume"
               />
             </div>
           </FormSection>
@@ -511,7 +534,7 @@ const handle_cancel = () => {
                 :error="field_errors.publishedBy"
               />
 
-              <div class="book-form__checkbox-field" v-if="form_data.type === '📘 Paper'">
+              <div class="book-form__checkbox-field" v-if="form_data.type === 'Paper'">
                 <FormField
                   v-model="form_data.iHaveCopy"
                   label="Possuo cópia física"

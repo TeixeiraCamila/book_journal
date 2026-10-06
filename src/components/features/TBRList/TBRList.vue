@@ -78,7 +78,7 @@ const navigate_to_edit = (bookId) => {
               <img
                 v-if="book.cover?.[0]"
                 :src="book.cover[0]"
-                :alt="`Capa do livro ${book.name}`"
+                :alt="`Capa do livro ${book.title}`"
                 class="stamp__image"
                 loading="lazy"
               />
@@ -87,7 +87,7 @@ const navigate_to_edit = (bookId) => {
             </div>
 
             <div class="stamp__details">
-              <h3 class="stamp__title">{{ book.name }}</h3>
+              <h3 class="stamp__title">{{ book.title }}</h3>
               <p v-if="book.author?.length" class="stamp__author">
                 {{ book.author.join(', ') }}
               </p>

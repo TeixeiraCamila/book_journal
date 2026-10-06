@@ -6,13 +6,16 @@ export function use_book_formatters() {
   };
 
   const get_pages_string = (book) => {
-    if (!book.totalPages || !book.currentPage) return '';
-    const progress = Math.round((parseInt(book.currentPage) / parseInt(book.totalPages)) * 100);
-    return `Páginas: ${book.currentPage} / ${book.totalPages} (${progress}%)`;
+    const current = book.pages?.currentlyPage;
+    const total = book.pages?.totalPages;
+    if (!current || !total) return '';
+    const progress = Math.round((parseInt(current) / parseInt(total)) * 100);
+    return `Páginas: ${current} / ${total} (${progress}%)`;
   };
 
   const get_publication_string = (book) => {
-    const publisher = book.publishedBy?.[0];
+    // publishedBy é select simples no Notion: string, não array
+    const publisher = book.publishedBy;
     const year = book.firstPublished;
 
     if (publisher && year) {

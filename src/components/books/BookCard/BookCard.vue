@@ -130,7 +130,7 @@ const handle_edit = (book) => {
     <ConfirmDialog
       ref="delete_dialog"
       title="Deletar Livro"
-      :message="`Tem certeza que deseja deletar '${book.name}'? Esta ação não pode ser desfeita.`"
+      :message="`Tem certeza que deseja deletar '${book.title}'? Esta ação não pode ser desfeita.`"
       confirm-text="Deletar"
       :on-confirm="() => bookStore.delete_book(book.id)"
       @confirm="handle_delete"

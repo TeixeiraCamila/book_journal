@@ -27,6 +27,13 @@ const was_read_string = computed(() => {
   return props.book.wasReadIn.join(', ');
 });
 
+const series_string = computed(() => {
+  const serie = props.book.seriesInfo?.bookSeries;
+  if (!serie) return '';
+  const volume = props.book.seriesInfo?.volume;
+  return volume ? `${serie} #${volume}` : serie;
+});
+
 const type_string = computed(() => {
   if (!props.book.type?.length) return '';
   return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ');
@@ -47,19 +54,20 @@ const handle_delete = () => {
     <div class="card_back__content">
       <div class="card_back__info">
         <div class="card_back__label">
-          <h4 class="card_back__title">{{ book.name }}</h4>
+          <h4 class="card_back__title">{{ book.title }}</h4>
         </div>
 
-        <p class="card_back__text" v-if="book.bookSeries">Série: {{ book.bookSeries }}</p>
+        <p class="card_back__text" v-if="series_string">Série: {{ series_string }}</p>
 
         <p class="card_back__text" v-if="book.author?.length">
           <span v-if="book.literaryAtlas" v-html="book.literaryAtlas" />
           {{ book.author.join(', ') }}
         </p>
 
-        <div v-if="book.total && book.currentPage">
-          <p class="card_back__text">Páginas: {{ book.currentPage }} / {{ book.totalPages }}</p>
-          <p class="card_back__text">Progresso: {{ book.currentPage }} / {{ book.total }}</p>
+        <div v-if="book.pages?.currentlyPage && book.pages?.totalPages">
+          <p class="card_back__text">
+            Páginas: {{ book.pages.currentlyPage }} / {{ book.pages.totalPages }}
+          </p>
         </div>
 
         <p class="card_back__text" v-if="type_string">Tipo: {{ type_string }}</p>
