@@ -47,10 +47,10 @@ export const BOOK_RATE_LABELS = {
   // ...
 } // labels de avaliação
 
-export const BOOK_TYPES_FALLBACK = ["🎧 Audiobook", "📱 Kindle", "📔 Mangá", "📘 Paper"]
+export const BOOK_TYPES_FALLBACK = ["Audiobook", "Kindle", "Mangá", "Paper"]
 
 export const BOOK_TYPE_LABELS = {
-  "🎧 Audiobook": "Audiobook 🎧",
+  Paper: "Papel", // só o que difere do valor cru
   // ...
 }
 ```

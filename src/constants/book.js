@@ -54,13 +54,10 @@ export const BOOK_RATE_LABELS = {
   '⭐': '*',
 };
 
-// Tipos de livro (fallback)
-export const BOOK_TYPES_FALLBACK = ['🎧 Audiobook', '📱 Kindle', '📔 Mangá', '📘 Paper'];
+// Tipos de livro (fallback) — espelha os valores do banco, sem ícones
+export const BOOK_TYPES_FALLBACK = ['Audiobook', 'Kindle', 'Mangá', 'Paper'];
 
-// Labels de tipo para exibição
+// Tradução pt-BR dos tipos; tipos sem entrada caem no valor cru via `|| t` no CardBack
 export const BOOK_TYPE_LABELS = {
-  '🎧 Audiobook': 'Audiobook 🎧',
-  '📱 Kindle': 'Kindle 📱',
-  '📔 Mangá': 'Mangá 📔',
-  '📘 Paper': 'Papel 📘',
+  Paper: 'Papel',
 };
