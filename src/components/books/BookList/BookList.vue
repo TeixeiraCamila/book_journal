@@ -41,7 +41,7 @@ const handle_edit_book = (book) => {
       <Filters class="book-list__filters" />
     </div>
 
-    <div class="bool-list-content">
+    <div class="book-list-content">
       <!-- Estado de Loading (só na primeira carga; paginação mantém a grade visível) -->
       <div
         v-if="bookStore.loading_states.main && bookStore.all_books.length === 0"
@@ -112,6 +112,7 @@ const handle_edit_book = (book) => {
   display: flex;
   gap: 2rem;
   position: relative;
+  height: 100%;
 }
 .book-list__details {
   position: absolute;
@@ -122,11 +123,9 @@ const handle_edit_book = (book) => {
 }
 
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
-.bool-list-content {
+.book-list-content {
   padding: 1rem 0;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
+  overflow: scroll;
 }
 .book-list__state {
   display: flex;
