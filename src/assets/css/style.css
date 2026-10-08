@@ -108,12 +108,5 @@ textarea {
 
 .select_wrapper select {
   padding-right: 2.5em;
+  color: var(--black);
 }
-
-/* .select_wrapper:hover select {
-  transform: translateY(-0.33em);
-}
-
-.select_wrapper:active select {
-  transform: translateY(0);
-} */

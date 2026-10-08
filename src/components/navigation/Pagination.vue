@@ -62,7 +62,7 @@ const selects = [20, 4, 8, 12, 18, 24, 30];
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: var(--white);
 }
 
 @media (max-width: 640px) {

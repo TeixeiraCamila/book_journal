@@ -108,6 +108,7 @@ const handle_cancel = () => {
   background: var(--bg);
   overflow: auto;
   border-radius: var(--radius-lg);
+  margin: 0 auto;
 }
 
 .create-book-view__header {
