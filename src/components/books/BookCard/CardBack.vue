@@ -112,7 +112,7 @@ const handle_delete = () => {
   justify-content: flex-end;
   overflow: hidden;
   position: absolute;
-  top: 13px;
+  top: 7px;
   left: 22%;
 }
 

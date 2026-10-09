@@ -516,6 +516,7 @@ const on_multi_blur = () => {
 .form-field__multiselect-remove {
   background: none;
   border: none;
+  box-shadow: none;
   cursor: pointer;
   color: var(--muted);
   font-size: 1.1rem;

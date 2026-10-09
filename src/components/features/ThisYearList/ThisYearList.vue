@@ -126,7 +126,8 @@ const navigate_to_edit = (bookId) => {
 
 <style scoped>
 .this-year {
-  min-height: 100%;
+  height: 100%;
+  overflow: scroll;
 }
 .this-year img {
   max-width: 300px;

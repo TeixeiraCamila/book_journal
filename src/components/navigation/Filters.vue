@@ -146,6 +146,7 @@ onUnmounted(() => clearTimeout(search_timer));
 .filters {
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   padding: 1rem;
   position: sticky;
   top: 0;
@@ -195,11 +196,12 @@ onUnmounted(() => clearTimeout(search_timer));
 }
 .filters__legend {
   font-size: 0.7rem;
-  color: var(--muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding: 0;
   margin-bottom: 0.2rem;
+  border-bottom: 3px solid;
+  width: 100%;
 }
 .filters__option {
   display: flex;
