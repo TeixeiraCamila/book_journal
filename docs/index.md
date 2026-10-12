@@ -23,3 +23,4 @@ book_journal é uma SPA Vue 3 + Pinia para gerenciamento de biblioteca pessoal, 
 | stores.md | bookStore, userStore |
 | router.md | Rotas e guard |
 | components.md | Estrutura de componentes |
+| mobile-capacitor.md | Plano de app mobile (Capacitor + TypeScript) |
