@@ -1,10 +1,11 @@
+/* Variáveis CSS e importação de fontes */
 @import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
   --bg: linear-gradient(to bottom right, #fff9ee, white, #fff9ee);
 
-  /* Sombra: sm = controles, base = cards, lg = hover/painéis */
+  /* Sombras */
   --shadow-sm: 0 1px 3px #0000001a;
   --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
   --shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.15);
@@ -32,7 +33,7 @@
   --danger: #991b1b;
   --danger-dark: #7f1d1d;
 
-  /* Raio: base = controles/estados, lg = cards/slides/painéis. Papel reto = 0. */
+  /* Raios de borda */
   --radius: 8px;
   --radius-lg: 18px;
 

@@ -1,7 +1,4 @@
-/**
- * Constantes relacionadas a livros — fallbacks para quando o backend não retorna opções
- * As opções principais são carregadas dinamicamente via /api/books/options
- */
+// Constantes relacionadas a livros: valores de fallback quando o backend não retorna opções
 
 // Configuração de paginação
 export const DEFAULT_PAGE_SIZE = 20;

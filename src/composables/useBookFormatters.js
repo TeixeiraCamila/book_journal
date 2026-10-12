@@ -1,3 +1,4 @@
+// Funções utilitárias para formatar dados de livros
 export function use_book_formatters() {
   const get_author_string = (book) => {
     const literary_atlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';

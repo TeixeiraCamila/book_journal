@@ -3,7 +3,7 @@
 import { ref, onMounted } from 'vue';
 import { gsap } from 'gsap';
 
-// Import assets
+// Importa os assets decorativos
 
 import paper_center from '@/assets/images/cards/card_intro/paper-center.webp';
 import paper_left from '@/assets/images/cards/card_intro/paper-left.webp';
@@ -39,7 +39,7 @@ function anime() {
     '-=1.2',
   );
 
-  // Animate cloud from right to left
+  // Anima a nuvem da direita para a esquerda
   tl.from(
     '#card-intro__cloud',
     {
@@ -51,7 +51,7 @@ function anime() {
     '-=2.5',
   );
 
-  // Animate start descending
+  // Anima a estrela descendo
   tl.from(
     '#card-intro__start',
     {
@@ -63,7 +63,7 @@ function anime() {
     '-=2',
   );
 
-  // Animate coffee appearing
+  // Anima o café aparecendo
   tl.from(
     '#card-intro__coffee',
     {

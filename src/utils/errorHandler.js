@@ -1,3 +1,4 @@
+// Funções utilitárias para tratamento de erros
 export function extract_error_message(error) {
   if (!error) return 'Erro desconhecido';
   if (error.response) {

@@ -1,3 +1,4 @@
+// Componente para exibição de estados (carregando, erro, vazio)
 <script setup>
 defineProps({
   loading: Boolean,

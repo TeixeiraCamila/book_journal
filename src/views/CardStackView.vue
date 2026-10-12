@@ -159,7 +159,7 @@ function prefetch_from_type(type) {
 
 // Na montagem, pré-carrega slides e verifica se há slide alvo via query string
 onMounted(() => {
-  // Pré-carregamento leve dos próximos chunks (após primeiro paint)
+  // Pré-carregamento dos próximos chunks após o primeiro carregamento
   setTimeout(() => {
     const first_visible = visible_slides.value[0]?.type ?? null;
     if (first_visible) {
@@ -173,7 +173,7 @@ onMounted(() => {
   if (slide_target !== undefined && slide_target !== null) {
     const target_index = Number(slide_target);
 
-    // Busca dados com base no índice alvo (lógico/original esperado)
+    // Busca dados com base no índice alvo
     if (target_index >= 2) {
       bookStore.fetch_books_by_status();
       bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);

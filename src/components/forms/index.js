@@ -1,8 +1,8 @@
-// Form Components Barrel Exports
+// Barrel de exportação de componentes de formulários
 export { default as FormField } from './FormField.vue';
 export { default as FormSection } from './FormSection.vue';
 export { default as FormActions } from './FormActions.vue';
 export { default as BookForm } from './BookForm/BookForm.vue';
 
-// Re-export all from BookForm subdirectory
+// Re-exporta todos os componentes do subdiretório BookForm
 export * from './BookForm';

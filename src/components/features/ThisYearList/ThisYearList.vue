@@ -1,4 +1,4 @@
-// Componente: lista livros lidos no ano atual agrupados por mês
+// Lista de livros lidos no ano atual agrupados por mês
 <script setup>
 import { useRouter } from 'vue-router';
 import { use_book_store } from '@/stores/bookStore';
