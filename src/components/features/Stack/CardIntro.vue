@@ -143,27 +143,7 @@ onMounted(() => {
   bottom: 0;
   right: -47px;
 }
-/* .card-intro__detail-01,
-.card-intro__detail-03,
-.card-intro__detail-05,
-.card-intro__content-detail {
-  left: 0;
-}
 
-.card-intro__detail-03 {
-  height: 100%;
-  z-index: 1;
-}
-
-.card-intro__detail-04 {
-  bottom: -10px;
-  left: -23px;
-  transform: rotate(180deg);
-}
-
-.card-intro__detail-05 {
-  max-width: 500px;
-} */
 
 #card-intro__cloud {
   top: 20%;

@@ -376,24 +376,7 @@ const on_multi_blur = () => {
 }
 
 /* Estilos base para inputs */
-/* .form-field__input {
-  border-right: none;
-  border-top: none;
-  background: transparent;
-  padding: 0.75rem;
-  font-size: 0.875rem;
-  color: #374151;
-  width: 100%;
-  box-sizing: border-box;
-  transition: all 0.2s;
-} */
 
-/* Estado: input em foco */
-/* .form-field__input:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(218, 147, 143, 0.1);
-} */
 
 /* Estado: input com erro */
 .form-field__input--error {
