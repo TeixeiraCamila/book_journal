@@ -76,6 +76,23 @@ export const use_user_store = defineStore('user', {
       return false;
     },
 
+    // Revalida o token guardado contra o /me no boot; só 401 derruba a sessão
+    // (rede/timeout/5xx não provam nada sobre o token, então mantêm o login)
+    async validate_session() {
+      if (!this.token) return true;
+
+      try {
+        await auth_api.me({ timeout: 5000 });
+        return true;
+      } catch (erro) {
+        if (erro.response?.status === 401) {
+          this.logout();
+          return false;
+        }
+        return true;
+      }
+    },
+
     // Modo visitante: acesso de leitura sem conta
     set_guest_user() {
       this.user_active = { ...GUEST_USER };

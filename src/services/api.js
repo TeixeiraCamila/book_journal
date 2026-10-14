@@ -121,7 +121,7 @@ export const auth_api = {
     return api.post('/api/auth/login', data);
   },
 
-  me() {
-    return api.get('/api/auth/me');
+  me(config = {}) {
+    return api.get('/api/auth/me', config);
   },
 };
