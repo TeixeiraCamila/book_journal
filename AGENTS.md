@@ -121,6 +121,6 @@ Views → Pinia Stores → services/api.js (Axios) → notion_api → Notion CMS
 
 ## Docs
 
-- `README.md`: visão geral, estrutura, endpoints consumidos.
-- `docs/`: auth-flow, components, composables, constants, router, services, stores, utils.
+- `README.md`: visão geral, estrutura, endpoints consumidos (inglês).
+- `docs/`: documentação completa em pt-BR no modelo "Vibe Coding Blueprint" — `PRD.md` (produto), `DESIGN_SYSTEM.md` (tokens visuais), `UX_FLOWS.md` (jornadas), `ARCHITECTURE.md` (camadas), `DATABASE.md` (modelo de dado books), `API.md` (contratos consumidos), `SECURITY.md` (auth/sessão), `CODE_STYLE.md` (convenções), `TESTING.md` (estado e estratégia de testes), `AGENTS.md` (ponte para o AGENTS.md da raiz), `ENVIRONMENT.md`, `ERROR_HANDLING.md`, `DEPLOYMENT.md`, `OBSERVABILITY.md`, `DECISIONS.md` (ADRs), `ROADMAP.md`, `CHANGELOG.md`.
 - `analise-melhorias.md`: bugs, duplicações e oportunidades registradas.
