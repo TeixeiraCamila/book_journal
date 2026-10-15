@@ -34,7 +34,7 @@ Não coletadas. Se necessário no futuro:
 
 - Tempo de carregamento das listas (o backend expõe paginação; medir client-side)
 - Taxa de falha por endpoint (contar erros por status no interceptor)
-- Número de livros por status (já disponível em `/api/books/stats`)
+- Número de livros por status (endpoint `/api/books/stats` existe no backend, mas é consumo do `dashboard__journal` — aqui viraria contagem client-side via listas)
 
 ---
 
@@ -79,6 +79,6 @@ Observado manualmente:
 
 - Chunk prefetch de listas (produção) reduz tempo entre slides
 - Debounce 400 ms e descarte de respostas obsoletas evitam picos de req
-- Backend cacheia options/stats (300 s)
+- Backend cacheia `options` (300 s)
 
 A monitorar se a biblioteca crescer: virtual scrolling na `BookList` (`ROADMAP.md`).

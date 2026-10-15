@@ -196,3 +196,30 @@ Consequências:
 - Positivo: fronteiras consistentes — o que vem da API/props já chega em camelCase e não precisa de mapeamento
 - Trade-off: diverge do bloco comum do `AGENTS.md` raiz (que segue snake_case para os outros 4 repos) — a divergência está marcada no `AGENTS.md` deste repo
 - Ação: comentários e docs do projeto atualizados junto com o código
+
+---
+
+## Decisão 009 — Estatísticas fora de escopo do book_journal
+
+Data: 2026-10-15
+
+Status: Aceita
+
+Contexto:
+
+O backend expõe `GET /api/books/stats` (métricas agregadas: contagem por status, páginas lidas, distribuição de notas, gêneros/autor mais lidos etc.). No front deste repo só restava código morto: `booksApi.stats()` sem chamador e o estado `stats`/`statsLoading` no `bookStore` sem nenhuma view que os consumisse. `chart.js` estava instalada sem um único import — o `ROADMAP.md` já listava a dúvida "duplicar o painel aqui ou deixar para o `dashboard__journal`?".
+
+Decisão:
+
+**Este app não terá estatísticas.** Remover `stats()` do `services/api.js`, o estado `stats`/`statsLoading` do `bookStore` e a dependência `chart.js`. O endpoint continua existindo no `notion_api`, com consumidor único o `dashboard__journal` (repo irmão).
+
+Alternativas:
+
+- Painel de gráficos aqui também com `chart.js` (duplicaria esforço e tela já existente no dashboard)
+- Consumir `/books/stats` só para números pontuais na home (sem UX definida; o dado já sai das listas)
+
+Consequências:
+
+- Positivo: −1 dependência, −1 endpoint no client, store enxuta; decisão encerra questão aberta do `PRD.md`
+- Trade-off: qualquer métrica agregada no futuro deste app terá que ser calculada client-side a partir das listas
+- Ação: docs (PRD, ROADMAP, API, ARCHITECTURE, OBSERVABILITY) e `AGENTS.md` ajustados

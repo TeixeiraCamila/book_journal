@@ -13,8 +13,6 @@ export const useBookStore = defineStore('books', {
   state: () => ({
     bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
     loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
-    stats: null, // Estatísticas agregadas dos livros
-    statsLoading: false,
     error: null,
     // ===== PAGINAÇÃO (CURSOR-BASED) =====
     pagination: {
@@ -311,8 +309,6 @@ export const useBookStore = defineStore('books', {
       this.loadingStates.tbr = false;
       this.loadingStates.reading = false;
       this.loadingStates.thisYear = false;
-      this.stats = null;
-      this.statsLoading = false;
       this.error = null;
       this.pagination = {
         pageSize: DEFAULT_PAGE_SIZE,

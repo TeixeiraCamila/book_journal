@@ -22,7 +22,7 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 - **`EmptyState` padronizado** — ícone + texto reutilizável
 - **Composable `usePagination`** — extrair cursor pagination do `bookStore`
 - **Deduplicar `closeModal`/`closeModalWithAnimation`** em `useAnimatedModal.js`
-- **Remover dependências não usadas** — `chart.js`, `@vueuse/motion`, `@biomejs/biome`
+- **Remover dependências não usadas** — `@vueuse/motion`, `@biomejs/biome` (`chart.js` removida com a Decisão 009)
 - **Remover `tsconfig.json` órfão** (ou migrar de vez — ver DEPOIS)
 
 ---
@@ -44,13 +44,13 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 
 ## ADIADO
 
-- **Painel de estatísticas com chart.js** — lib instalada sem uso; endpoint `/api/books/stats` pronto, mas o consumo é do `dashboard__journal` (repo irmão). Decidir se duplicamos aqui ou não
-- **Consumo de `/books/stats` no book_journal** — depende da decisão acima
+- Nada adiado no momento
 
 ---
 
 ## NÃO PLANEJADO
 
+- **Estatísticas / painel com gráficos** — fora de escopo definitivo deste app (Decisão 009, `DECISIONS.md`); o endpoint `/api/books/stats` e os gráficos são do `dashboard__journal`
 - Multiusuário / perfis / convites
 - Social (compartilhar, comentar, seguir)
 - Integração com APIs externas de livros (Google Books, ISBN)

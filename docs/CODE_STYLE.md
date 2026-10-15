@@ -154,7 +154,7 @@ Executar após edições:
 ## 12. Não Faça
 
 - Criar utilitários duplicados (ver `analise-melhorias.md` para duplicações conhecidas)
-- Introduzir dependências desnecessárias (já há `chart.js`, `@vueuse/motion`, `@biomejs/biome` sem uso — não adicionar mais)
+- Introduzir dependências desnecessárias (já há `@vueuse/motion`, `@biomejs/biome` sem uso — não adicionar mais)
 - Ignorar a arquitetura (ex.: chamada Axios direta numa view)
 - Mudar arquivos não relacionados
 - Escrever selectores por ID (`#right-image`) — só BEM

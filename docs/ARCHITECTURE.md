@@ -71,7 +71,7 @@ Responsabilidades:
 
 - Validar payloads (Zod) e autenticar (JWT HS256)
 - Mapear propriedades do Notion para o objeto `book` e vice-versa
-- Paginar com cursor do Notion, cachear options/stats (300s)
+- Paginar com cursor do Notion, cachear `options` (300 s) e `stats` (300 s — só consumido pelo `dashboard__journal`)
 
 ### Notion
 
@@ -174,7 +174,7 @@ Registradas em `DECISIONS.md` (001–007). Resumo:
 - Lazy loading de rotas e `defineAsyncComponent` nas listas (chunk por slide)
 - Prefetch dos próximos chunks após 1,5 s e ao trocar de slide (só `PROD`)
 - Debounce de 400 ms na busca + descarte de respostas obsoletas
-- `node-cache` no backend para options/stats (300 s)
+- `node-cache` no backend para `options`/`stats` (300 s; `stats` fora do escopo deste app — Decisão 009)
 - `/api/books/all` com timeout estendido (60 s)
 
 Risco conhecido:
@@ -196,6 +196,6 @@ App single-user; escalabilidade de dados é do Notion (limite de ~100 itens/pág
 | Backend indisponível | `extractErrorMessage` → "Erro de conexão. Verifique sua internet." + estado de erro com retry |
 | Timeout (10 s) | Tratado como erro de conexão |
 | Token expirado (401) | Interceptor limpa sessão e manda para `/login` |
-| Notion fora do ar (5xx) | Mensagem "Erro no servidor" + retry; options/stats caem em fallback local |
+| Notion fora do ar (5xx) | Mensagem "Erro no servidor" + retry; `options` caem em fallback local |
 | Busca durante requisição em voo | Resposta obsoleta descartada (`searchToken`) |
 | `/auth/me` falha por rede no boot | Sessão mantida (só 401 derruba) |

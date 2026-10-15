@@ -1,6 +1,6 @@
 # AGENTS.md: book_journal
 
-SPA Vue 3 para catalogar e acompanhar leituras (biblioteca pessoal). Consome o `notion_api` (domínio **books**) para CRUD de livros, listagem, estatísticas e autenticação.
+SPA Vue 3 para catalogar e acompanhar leituras (biblioteca pessoal). Consome o `notion_api` (domínio **books**) para CRUD de livros, listagem e autenticação.
 
 ## Convenções comuns a todos os projetos
 

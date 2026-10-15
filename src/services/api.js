@@ -92,10 +92,6 @@ export const booksApi = {
     return api.get('/api/books/options');
   },
 
-  stats() {
-    return api.get('/api/books/stats');
-  },
-
   finishedThisYear(options = {}) {
     const { year, pageSize, startCursor } = options;
     const params = {};

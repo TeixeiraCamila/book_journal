@@ -97,7 +97,7 @@ Cacheadas no backend (300 s). Fallback local em `constants/book.js` quando falha
 
 Response `200` (objeto direto): `totalBooks`, `currentlyReading` (array), `statusCounts`, `totalPagesRead`, `averagePagesRead`, `averageRating`, `ratingDistribution`, `authorsMostRead`, `genresDistribution`, `statsByYear`, `booksReadInYear`, `totalPagesReadInYear`.
 
-Consumidor atual: `dashboard__journal` (não usado pelo `book_journal`).
+**Fora de escopo do `book_journal`** (Decisão 009, `DECISIONS.md`): este app não terá estatísticas. Consumidor: `dashboard__journal`. Nenhum código deste repo chama o endpoint.
 
 ### `GET /api/books/finished-this-year`
 

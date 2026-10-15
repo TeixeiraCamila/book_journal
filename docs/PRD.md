@@ -28,7 +28,7 @@ Registrar leituras em planilhas ou no Notion manualmente é trabalhoso e não of
 
 Por que esse problema importa?
 
-A leitura é um hábito acompanhado ao longo do tempo; sem um registro estruturado, perde-se histórico de progresso, notas e estatísticas por ano.
+A leitura é um hábito acompanhado ao longo do tempo; sem um registro estruturado, perde-se histórico de progresso e notas.
 
 Como o usuário resolve isso hoje?
 
@@ -188,7 +188,7 @@ Intencionalmente NÃO faz parte desta versão:
 - Social (compartilhar, comentar, seguir)
 - Busca por ISBN ou integração com APIs de livros (ex.: Google Books)
 - App nativo / lojas (plano Capacitor em estudo — ver `ROADMAP.md`)
-- Painel de estatísticas com gráficos (ver `ROADMAP.md`)
+- Painel de estatísticas com gráficos — **fora de escopo definitivo**; o endpoint `/api/books/stats` é do `dashboard__journal` (Decisão 009, `DECISIONS.md`)
 
 ---
 
@@ -209,7 +209,6 @@ Desejável:
 Futuro:
 
 - App mobile (Capacitor)
-- Estatísticas (chart.js)
 - Migração incremental para TypeScript
 - Sessão em cookie HTTP-only
 
@@ -265,7 +264,7 @@ De Timeline:
 
 - O modo visitante deve ocultar apenas botões de escrita ou também bloquear rotas `/criar` no guard?
 - Vale manter `HomeView.vue` (legacy, não usada) até quando?
-- O endpoint `/api/books/stats` será consumido aqui ou exclusivo do `dashboard__journal`?
+~~O endpoint `/api/books/stats` será consumido aqui ou exclusivo do `dashboard__journal`?~~ **Resolvido (Decisão 009): exclusivo do `dashboard__journal` — este app não terá estatísticas.**
 
 ---
 

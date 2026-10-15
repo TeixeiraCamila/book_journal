@@ -56,7 +56,7 @@
 - `Notification.vue` e `ToastContainer.vue`: substituídos por `vue-toastification`
 - `HomeView.vue`: view legacy não usada
 - `Star` importado mas não usado em `CardStatus.vue`
-- Dependências não usadas: `chart.js`, `@vueuse/motion`, `@biomejs/biome`
+- Dependências não usadas: `@vueuse/motion`, `@biomejs/biome` (`chart.js` removida em 2026-10-15 — Decisão 009)
 
 ---
 
