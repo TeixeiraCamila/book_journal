@@ -16,7 +16,7 @@ A API do Notion pagina por cursor; paginação numérica clássica não existe n
 
 Decisão:
 
-`GET /api/books` com `startCursor` + `pageSize`; store mantém pilha `previous_cursors` para o botão "anterior" (`bookStore.next_page`/`previous_page`).
+`GET /api/books` com `startCursor` + `pageSize`; store mantém pilha `previousCursors` para o botão "anterior" (`bookStore.nextPage`/`previousPage`).
 
 Alternativas:
 
@@ -115,7 +115,7 @@ O backend agrupa campos relacionados em objetos aninhados; versões anteriores d
 
 Decisão:
 
-Enviar/receber `pages: { totalPages, currentlyPage }`, `seriesInfo: { bookSeries, volume }`, `startEnd: { start, end }` conforme `DATABASE.md`. Formulário mantém o shape agrupado até no `form_data`.
+Enviar/receber `pages: { totalPages, currentlyPage }`, `seriesInfo: { bookSeries, volume }`, `startEnd: { start, end }` conforme `DATABASE.md`. Formulário mantém o shape agrupado até no `formData`.
 
 Consequências:
 
@@ -136,7 +136,7 @@ A home é um Swiper (EffectCards vertical). Listas "Lendo", "Ano" e "TBR" não f
 
 Decisão:
 
-Slides definidos por tipo lógico (`LOGICAL_SLIDES`) e filtrados por dados; dados buscados conforme o slide ativo (`fetch_data_for_type`); chunks pré-carregados em produção; deep-link `?slide=N`.
+Slides definidos por tipo lógico (`LOGICAL_SLIDES`) e filtrados por dados; dados buscados conforme o slide ativo (`fetchDataForType`); chunks pré-carregados em produção; deep-link `?slide=N`.
 
 Consequências:
 
@@ -157,9 +157,42 @@ Contexto:
 
 Decisão:
 
-Guard de rotas chama `userStore.validate_session()` (`GET /api/auth/me`, timeout 5 s) **uma vez por carga de app** (flag `sessao_revalidada`). **Só 401 derruba a sessão** — rede/timeout/5xx mantêm o login, pois não provam token inválido.
+Guard de rotas chama `userStore.validateSession()` (`GET /api/auth/me`, timeout 5 s) **uma vez por carga de app** (flag `sessaoRevalidada`). **Só 401 derruba a sessão** — rede/timeout/5xx mantêm o login, pois não provam token inválido.
 
 Consequências:
 
 - Positivo: sem revalidar a cada navegação; login não cai por instabilidade momentânea
 - Trade-off: token revogado pode sobreviver até o próximo 401 real
+
+---
+
+## Decisão 008 — Migração de identificadores de snake_case para camelCase
+
+Data: 2026-10-15
+
+Status: Aceita
+
+Contexto:
+
+O `AGENTS.md` da raiz (bloco comum aos 5 repositórios) pedia `snake_case` para identificadores próprios. No `book_journal`, o restante do ecossistema já era camelCase: chaves de payload/query da API (`wasReadIn`, `pageSize`, `startCursor`), props Vue (`isEdit`, `modelValue`) e nomes de arquivos (`bookStore.js`, `useBookFormatters.js`). A assimetria forçava tradução mental em toda camada de fronteira.
+
+Decisão:
+
+Renomear **todos os identificadores JS** de `src/` para camelCase: variáveis, funções, parâmetros, getters/actions e estado da Pinia (`form_data` → `formData`, `fetch_books` → `fetchBooks`, `use_book_store` → `useBookStore`). Constantes permanecem em SCREAMING_SNAKE_CASE (`BOOK_STATUS_MAP`, `DEFAULT_PAGE_SIZE`).
+
+Fora de escopo (continuam como estão):
+
+- Classes CSS e custom properties BEM (`card_back__text`, `--accent_muted`, `--button_color`)
+- Chaves de contrato do backend (`has_more`, `next_cursor`, `avatar_url` — ver `API.md`)
+- Nomes de assets/paths (`card_this_year/left_top.webp`) e de outros repos (`notion_api`)
+
+Alternativas:
+
+- Manter snake_case só no JS (assimetria permanente com API/props)
+- Renomear também CSS e chaves de API (quebraria contrato e BEM)
+
+Consequências:
+
+- Positivo: fronteiras consistentes — o que vem da API/props já chega em camelCase e não precisa de mapeamento
+- Trade-off: diverge do bloco comum do `AGENTS.md` raiz (que segue snake_case para os outros 4 repos) — a divergência está marcada no `AGENTS.md` deste repo
+- Ação: comentários e docs do projeto atualizados junto com o código

@@ -2,7 +2,7 @@
 <script setup>
 // Diálogo de confirmação modal — usado para deletar livros com confirmação do usuário
 import { ref } from 'vue';
-import { use_notifications } from '@/composables/useNotifications';
+import { useNotifications } from '@/composables/useNotifications';
 import Button from '@/components/ui/Button.vue';
 
 const props = defineProps({
@@ -14,30 +14,30 @@ const props = defineProps({
 
 const emit = defineEmits(['confirm', 'cancel']);
 
-const { add_notification } = use_notifications();
-const is_open = ref(false);
+const { addNotification } = useNotifications();
+const isOpen = ref(false);
 
 const open = () => {
-  is_open.value = true;
+  isOpen.value = true;
 };
 
 const close = () => {
-  is_open.value = false;
+  isOpen.value = false;
 };
 
-const handle_confirm = async () => {
+const handleConfirm = async () => {
   try {
     if (props.onConfirm) {
       await props.onConfirm();
-      add_notification('Livro deletado com sucesso!');
+      addNotification('Livro deletado com sucesso!');
       close();
     }
   } catch (error) {
-    add_notification('Erro ado deletar o livro', error);
+    addNotification('Erro ado deletar o livro', error);
   }
 };
 
-const handle_cancel = () => {
+const handleCancel = () => {
   emit('cancel');
   close();
 };
@@ -52,7 +52,7 @@ defineExpose({
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="is_open" class="confirm-dialog__overlay" @click="handle_cancel">
+      <div v-if="isOpen" class="confirm-dialog__overlay" @click="handleCancel">
         <div class="confirm-dialog__content" @click.stop>
           <div class="confirm-dialog__header">
             <h3 class="confirm-dialog__title">{{ title }}</h3>
@@ -63,8 +63,8 @@ defineExpose({
           </div>
 
           <div class="confirm-dialog__footer">
-            <Button @click="handle_cancel" variant="secondary">Cancelar</Button>
-            <Button @click="handle_confirm" variant="danger">
+            <Button @click="handleCancel" variant="secondary">Cancelar</Button>
+            <Button @click="handleConfirm" variant="danger">
               {{ confirmText }}
             </Button>
           </div>

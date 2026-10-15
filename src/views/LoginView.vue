@@ -3,11 +3,11 @@
 // (email + código de acesso). Visitante segue como sessão de leitura.
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { use_user_store } from '@/stores/userStore';
+import { useUserStore } from '@/stores/userStore';
 import Button from '@/components/ui/Button.vue';
 
 const router = useRouter();
-const userStore = use_user_store();
+const userStore = useUserStore();
 
 const step = ref('entry');
 const email = ref('');
@@ -15,24 +15,24 @@ const codigo = ref('');
 const error = ref('');
 const submitting = ref(false);
 
-const go_to_form = () => {
+const goToForm = () => {
   step.value = 'form';
 };
 
-const back_to_entry = () => {
+const backToEntry = () => {
   step.value = 'entry';
   error.value = '';
 };
 
 // Entra como visitante: sessão de leitura sem conta, sem token
-const handle_guest_login = () => {
+const handleGuestLogin = () => {
   error.value = '';
-  userStore.set_guest_user();
+  userStore.setGuestUser();
   router.push({ name: 'home' });
 };
 
 // Autentica com email + código de acesso no backend
-const handle_login = async () => {
+const handleLogin = async () => {
   error.value = '';
   submitting.value = true;
 
@@ -54,17 +54,15 @@ const handle_login = async () => {
       <h2 class="login-view__title">Diário de Leitura</h2>
       <p class="login-view__subtitle">Sua estante espera por você.</p>
 
-      <form class="login-view__form" @submit.prevent="go_to_form">
+      <form class="login-view__form" @submit.prevent="goToForm">
         <Button type="submit" class="login-view__button"> Entrar no diário </Button>
       </form>
 
-      <button type="button" class="login-view__guest" @click="handle_guest_login">
-        Só observar
-      </button>
+      <button type="button" class="login-view__guest" @click="handleGuestLogin">Só observar</button>
     </div>
 
     <!-- Etapa 2: entrada -->
-    <form v-else class="login-view__content" @submit.prevent="handle_login">
+    <form v-else class="login-view__content" @submit.prevent="handleLogin">
       <h2 class="login-view__title">Quem está entrando?</h2>
 
       <div class="login-view__form-group">
@@ -101,7 +99,7 @@ const handle_login = async () => {
         {{ submitting ? 'Entrando…' : 'Entrar' }}
       </Button>
 
-      <button type="button" class="login-view__back" @click="back_to_entry">Voltar</button>
+      <button type="button" class="login-view__back" @click="backToEntry">Voltar</button>
     </form>
 
     <div class="login-view__typewriter">

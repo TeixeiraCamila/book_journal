@@ -137,7 +137,7 @@ Regras:
 - Primary: fundo acento, texto escuro
 - Secondary: contorno/fundo neutro
 - Danger: usa `--danger`
-- Disabled/loading: desabilitar interação e mostrar estado (o form usa `is_submitting`)
+- Disabled/loading: desabilitar interação e mostrar estado (o form usa `isSubmitting`)
 - Erros de formulário e de API sempre em `--danger`
 
 ---
@@ -197,7 +197,7 @@ Erro:
 
 Sucesso:
 
-Toasts (`use_notifications`), 3 s, `top-right`.
+Toasts (`useNotifications`), 3 s, `top-right`.
 
 ---
 

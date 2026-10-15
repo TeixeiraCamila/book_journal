@@ -29,10 +29,10 @@ api.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     const url = error.config?.url || '';
-    const is_auth_call = url.startsWith('/api/auth/');
-    const is_on_login_page = typeof window !== 'undefined' && window.location.pathname === '/login';
+    const isAuthCall = url.startsWith('/api/auth/');
+    const isOnLoginPage = typeof window !== 'undefined' && window.location.pathname === '/login';
 
-    if (status === 401 && !is_auth_call && !is_on_login_page) {
+    if (status === 401 && !isAuthCall && !isOnLoginPage) {
       localStorage.removeItem('SESSION_TOKEN');
       localStorage.removeItem('SESSION_USER');
       window.location.href = '/login';
@@ -45,7 +45,7 @@ export { api };
 
 // ==== Books API ==== //
 // Endpoints CRUD para livros com paginação baseada em cursor
-export const books_api = {
+export const booksApi = {
   list(options = {}) {
     const {
       pageSize = 20,
@@ -68,7 +68,7 @@ export const books_api = {
     return api.get('/api/books', { params });
   },
 
-  list_all() {
+  listAll() {
     return api.get('/api/books/all', { timeout: 60000 });
   },
 
@@ -96,7 +96,7 @@ export const books_api = {
     return api.get('/api/books/stats');
   },
 
-  finished_this_year(options = {}) {
+  finishedThisYear(options = {}) {
     const { year, pageSize, startCursor } = options;
     const params = {};
 
@@ -116,7 +116,7 @@ export const books_api = {
 
 // ==== Auth API ==== //
 // Endpoints de autenticação — login com código de acesso e revalidação de sessão
-export const auth_api = {
+export const authApi = {
   login(data) {
     return api.post('/api/auth/login', data);
   },

@@ -142,8 +142,8 @@ Slide "Acervo" (`BookList`) → `Filters` (busca com debounce de 400 ms + radios
 Critérios de aceite:
 
 - Busca por título/autor/gênero (`searchBy`) com debounce de 400 ms
-- Respostas obsoletas descartadas (`search_token`)
-- Próxima/anterior via cursor; troca de `page_size`
+- Respostas obsoletas descartadas (`searchToken`)
+- Próxima/anterior via cursor; troca de `pageSize`
 - Estados de loading (skeleton só na primeira carga), erro e vazio com textos distintos (com/sem filtro ativo)
 
 ### Feature 3 — Pilha de cartas (home)

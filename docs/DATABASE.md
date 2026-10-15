@@ -32,7 +32,7 @@ camelCase; atenção às assimetrias documentadas abaixo
 
 Campos internos do app (stores, utils):
 
-snake_case (convenção do repo)
+camelCase (convenção do repo — ver `DECISIONS.md`, Decisão 008)
 
 Vazios:
 

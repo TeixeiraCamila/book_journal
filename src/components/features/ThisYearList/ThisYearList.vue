@@ -1,7 +1,7 @@
 // Lista de livros lidos no ano atual agrupados por mês
 <script setup>
 import { useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
+import { useBookStore } from '@/stores/bookStore';
 import Button from '@/components/ui/Button.vue';
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 import { computed } from 'vue';
@@ -9,13 +9,13 @@ import { computed } from 'vue';
 import CardStatus from '@/components/books/BookCard/CardStatus.vue';
 
 const router = useRouter();
-const bookStore = use_book_store();
-const current_year = new Date().getFullYear();
+const bookStore = useBookStore();
+const currentYear = new Date().getFullYear();
 
-function get_month_from_book(book) {
-  const data_str = book.startEnd?.end || book.startEnd?.start;
-  if (!data_str) return null;
-  const date = new Date(data_str);
+function getMonthFromBook(book) {
+  const dataStr = book.startEnd?.end || book.startEnd?.start;
+  if (!dataStr) return null;
+  const date = new Date(dataStr);
   if (isNaN(date)) return null;
   return {
     month: date.getMonth(),
@@ -24,13 +24,13 @@ function get_month_from_book(book) {
   };
 }
 
-const books_by_month = computed(() => {
+const booksByMonth = computed(() => {
   const groups = {};
-  const no_date_books = [];
-  for (const book of bookStore.book_lists.thisYear) {
-    const m = get_month_from_book(book);
+  const noDateBooks = [];
+  for (const book of bookStore.bookLists.thisYear) {
+    const m = getMonthFromBook(book);
     if (!m) {
-      no_date_books.push(book);
+      noDateBooks.push(book);
       continue;
     }
     const key = `${m.year}-${String(m.month).padStart(2, '0')}`;
@@ -40,13 +40,13 @@ const books_by_month = computed(() => {
   const sections = Object.entries(groups)
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([, v]) => v);
-  if (no_date_books.length) {
-    sections.push({ label: 'Sem data', books: no_date_books });
+  if (noDateBooks.length) {
+    sections.push({ label: 'Sem data', books: noDateBooks });
   }
   return sections;
 });
 
-const navigate_to_edit = (bookId) => {
+const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`);
 };
 </script>
@@ -71,29 +71,29 @@ const navigate_to_edit = (bookId) => {
     <!-- <header class="this-year__header">
       <h1 class="this-year__title">
         Lidos em <br />
-        {{ current_year }}
+        {{ currentYear }}
       </h1>
     </header> -->
 
-    <div v-if="bookStore.has_error && !bookStore.loading_states.thisYear" class="this-year__error">
+    <div v-if="bookStore.hasError && !bookStore.loadingStates.thisYear" class="this-year__error">
       <p class="this-year__error-message">{{ bookStore.error }}</p>
-      <Button @click="bookStore.fetch_books_read_this_year()"> Tentar Novamente </Button>
+      <Button @click="bookStore.fetchBooksReadThisYear()"> Tentar Novamente </Button>
     </div>
 
-    <LoadingSpinner v-else-if="bookStore.loading_states.thisYear">
-      <p>Carregando livros lidos em {{ current_year }}...</p>
+    <LoadingSpinner v-else-if="bookStore.loadingStates.thisYear">
+      <p>Carregando livros lidos em {{ currentYear }}...</p>
     </LoadingSpinner>
 
     <div
-      v-else-if="bookStore.this_year_count === 0 && !bookStore.loading_states.thisYear"
+      v-else-if="bookStore.thisYearCount === 0 && !bookStore.loadingStates.thisYear"
       class="this-year__empty"
     >
-      <h2 class="this-year__empty-title">Nenhum livro lido em {{ current_year }}</h2>
+      <h2 class="this-year__empty-title">Nenhum livro lido em {{ currentYear }}</h2>
     </div>
 
     <div v-else class="this-year__container">
       <div class="this-year__grid">
-        <div v-for="section in books_by_month" :key="section.label" class="this-year__month-group">
+        <div v-for="section in booksByMonth" :key="section.label" class="this-year__month-group">
           <h2 class="this-year__month-title">{{ section.label }} - {{ section.books.length }}</h2>
           <div class="this-year__grid">
             <article v-for="book in section.books" :key="book.id" class="this-year-card">
@@ -106,7 +106,7 @@ const navigate_to_edit = (bookId) => {
                   :alt="`Capa do livro ${book.title}`"
                   class="this-year-card__image"
                   loading="lazy"
-                  @click="navigate_to_edit(book.id)"
+                  @click="navigateToEdit(book.id)"
                 />
                 <div v-else class="this-year-card__placeholder">📖</div>
               </div>

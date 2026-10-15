@@ -10,7 +10,7 @@ App pessoal, single-user, SPA estática. **Não há telemetria, analytics ou err
 
 Mecanismo atual:
 
-`console` via `utils/errorHandler.js` → `log_error(action, error)` com prefixo ❌ e nome da action (`fetch_books`, `create_book`, `login`...).
+`console` via `utils/errorHandler.js` → `logError(action, error)` com prefixo ❌ e nome da action (`fetchBooks`, `createBook`, `login`...).
 
 Logar:
 

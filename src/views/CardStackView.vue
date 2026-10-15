@@ -1,7 +1,7 @@
 <script setup>
 import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
+import { useBookStore } from '@/stores/bookStore';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 import CardIntro from '@/components/features/Stack/CardIntro.vue';
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
@@ -11,10 +11,10 @@ import { EffectCards } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 
-const bookStore = use_book_store();
+const bookStore = useBookStore();
 const route = useRoute();
 
-const swiper_instance = ref(null);
+const swiperInstance = ref(null);
 const modules = [EffectCards];
 
 // Ordem lógica dos slides
@@ -27,35 +27,35 @@ const LOGICAL_SLIDES = [
 ];
 
 // Slides visíveis com base nas condições atuais
-const visible_slides = computed(() => {
+const visibleSlides = computed(() => {
   return LOGICAL_SLIDES.filter((slide) => {
     if (slide.type === 'intro') return true;
     if (slide.type === 'books') return true;
-    if (slide.type === 'reading') return bookStore.book_lists.reading.length > 0;
-    if (slide.type === 'year') return bookStore.this_year_count > 0;
-    if (slide.type === 'tbr') return bookStore.book_lists.tbr.length > 0;
+    if (slide.type === 'reading') return bookStore.bookLists.reading.length > 0;
+    if (slide.type === 'year') return bookStore.thisYearCount > 0;
+    if (slide.type === 'tbr') return bookStore.bookLists.tbr.length > 0;
     return false;
   });
 });
 
 // Mapeia índice renderizado (Swiper) → tipo lógico visível
-function get_active_logical_type(active_index) {
-  const visible = visible_slides.value;
-  return visible[active_index]?.type ?? null;
+function getActiveLogicalType(activeIndex) {
+  const visible = visibleSlides.value;
+  return visible[activeIndex]?.type ?? null;
 }
 
 // Próximos tipos lógicos visíveis a partir de um tipo
-function get_next_visible_types(from_type) {
-  const visible = visible_slides.value;
-  const from_index = visible.findIndex((s) => s.type === from_type);
-  if (from_index < 0) return [];
-  return visible.slice(from_index + 1).map((s) => s.type);
+function getNextVisibleTypes(fromType) {
+  const visible = visibleSlides.value;
+  const fromIndex = visible.findIndex((s) => s.type === fromType);
+  if (fromIndex < 0) return [];
+  return visible.slice(fromIndex + 1).map((s) => s.type);
 }
 
 // Loaders puros dos componentes para reuso (evita duplicação)
 // defineAsyncComponent + loader = "carrega quando for renderizado" (lazy loading + UX de loading)
 // chamar import() direto = "carrega agora, para já estar pronto quando for renderizado" (prefetch/warm-up)
-const component_loaders = {
+const componentLoaders = {
   books: () => import('@/components/books/BookList/BookList.vue'),
   reading: () => import('@/components/features/ReadingList/ReadingList.vue'),
   year: () => import('@/components/features/ThisYearList/ThisYearList.vue'),
@@ -64,25 +64,25 @@ const component_loaders = {
 
 // Fallback exibido enquanto o chunk de cada lista é baixado (evita slide em branco)
 const BookList = defineAsyncComponent({
-  loader: component_loaders.books,
+  loader: componentLoaders.books,
   loadingComponent: LoadingSpinner,
   delay: 200,
 });
 
 const TBRList = defineAsyncComponent({
-  loader: component_loaders.tbr,
+  loader: componentLoaders.tbr,
   loadingComponent: LoadingSpinner,
   delay: 200,
 });
 
 const ReadingList = defineAsyncComponent({
-  loader: component_loaders.reading,
+  loader: componentLoaders.reading,
   loadingComponent: LoadingSpinner,
   delay: 200,
 });
 
 const ThisYearList = defineAsyncComponent({
-  loader: component_loaders.year,
+  loader: componentLoaders.year,
   loadingComponent: LoadingSpinner,
   delay: 200,
 });
@@ -90,10 +90,10 @@ const ThisYearList = defineAsyncComponent({
 // Pré-carrega chunks para tipos lógicos específicos (apenas em produção)
 // import() direto dispara o download antecipado para que o chunk já esteja cacheado
 // quando o componente assíncrono for renderizado
-function prefetch_chunks_for_types(types) {
+function prefetchChunksForTypes(types) {
   if (import.meta.env.PROD) {
     types.forEach((type) => {
-      const loader = component_loaders[type];
+      const loader = componentLoaders[type];
       if (loader) {
         loader().catch(() => {});
       }
@@ -102,91 +102,91 @@ function prefetch_chunks_for_types(types) {
 }
 
 // Busca dados necessários ao entrar em determinado tipo de slide
-function fetch_data_for_type(type) {
+function fetchDataForType(type) {
   if (type === 'books') {
     // Carrega lista geral + leituras em andamento ao acessar o card de livros
-    bookStore.fetch_books_by_status();
-    bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);
-    // O slide "year" só existe após this_year_count > 0; buscar aqui evita o loop morto
-    bookStore.fetch_books_read_this_year();
+    bookStore.fetchBooksByStatus();
+    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
+    // O slide "year" só existe após thisYearCount > 0; buscar aqui evita o loop morto
+    bookStore.fetchBooksReadThisYear();
     return;
   }
 
   if (type === 'reading') {
     // Garante dados de leituras em andamento (caso ainda não carregados)
-    bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);
+    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
     // Garante que o slide "year" possa surgir mesmo sem passar pelo slide de livros
-    bookStore.fetch_books_read_this_year();
+    bookStore.fetchBooksReadThisYear();
     return;
   }
 
   if (type === 'year') {
-    bookStore.fetch_books_read_this_year();
+    bookStore.fetchBooksReadThisYear();
     return;
   }
 }
 
 // Ao inicializar o Swiper
-function on_swiper_init(swiper) {
-  swiper_instance.value = swiper;
+function onSwiperInit(swiper) {
+  swiperInstance.value = swiper;
 }
 
 // Slides entram/saem conforme os dados chegam; o Swiper precisa recalcular
 watch(
-  () => visible_slides.value.length,
+  () => visibleSlides.value.length,
   () => {
-    nextTick(() => swiper_instance.value?.update());
+    nextTick(() => swiperInstance.value?.update());
   },
 );
 
 // Ao mudar de slide
-function on_slide_change(swiper) {
-  const active_type = get_active_logical_type(swiper.activeIndex);
-  if (!active_type) return;
+function onSlideChange(swiper) {
+  const activeType = getActiveLogicalType(swiper.activeIndex);
+  if (!activeType) return;
 
   // Busca dados conforme o tipo ativo
-  fetch_data_for_type(active_type);
+  fetchDataForType(activeType);
 
   // Pré-carrega chunks dos próximos slides visíveis
-  const next_types = get_next_visible_types(active_type);
-  prefetch_chunks_for_types(next_types);
+  const nextTypes = getNextVisibleTypes(activeType);
+  prefetchChunksForTypes(nextTypes);
 }
 
 // Pré-carrega chunks dos próximos slides visíveis a partir de um tipo
-function prefetch_from_type(type) {
-  prefetch_chunks_for_types(get_next_visible_types(type));
+function prefetchFromType(type) {
+  prefetchChunksForTypes(getNextVisibleTypes(type));
 }
 
 // Na montagem, pré-carrega slides e verifica se há slide alvo via query string
 onMounted(() => {
   // Pré-carregamento dos próximos chunks após o primeiro carregamento
   setTimeout(() => {
-    const first_visible = visible_slides.value[0]?.type ?? null;
-    if (first_visible) {
-      prefetch_from_type(first_visible);
+    const firstVisible = visibleSlides.value[0]?.type ?? null;
+    if (firstVisible) {
+      prefetchFromType(firstVisible);
     } else {
-      prefetch_chunks_for_types(['books', 'reading', 'year', 'tbr']);
+      prefetchChunksForTypes(['books', 'reading', 'year', 'tbr']);
     }
   }, 1500);
 
-  const slide_target = route.query.slide;
-  if (slide_target !== undefined && slide_target !== null) {
-    const target_index = Number(slide_target);
+  const slideTarget = route.query.slide;
+  if (slideTarget !== undefined && slideTarget !== null) {
+    const targetIndex = Number(slideTarget);
 
     // Busca dados com base no índice alvo
-    if (target_index >= 2) {
-      bookStore.fetch_books_by_status();
-      bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING);
+    if (targetIndex >= 2) {
+      bookStore.fetchBooksByStatus();
+      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
     }
-    if (target_index >= 3) {
-      bookStore.fetch_books_read_this_year();
+    if (targetIndex >= 3) {
+      bookStore.fetchBooksReadThisYear();
     }
 
     nextTick(() => {
       // Tenta navegar para o índice alvo (respeitando slides renderizados)
-      const max_index = Math.max(0, visible_slides.value.length - 1);
-      const clamped = Math.min(target_index, max_index);
-      swiper_instance.value?.slideTo(clamped, 300);
+      const maxIndex = Math.max(0, visibleSlides.value.length - 1);
+      const clamped = Math.min(targetIndex, maxIndex);
+      swiperInstance.value?.slideTo(clamped, 300);
     });
   }
 });
@@ -199,10 +199,10 @@ onMounted(() => {
     :modules="modules"
     :direction="'vertical'"
     class="stack-view__swiper"
-    @swiper="on_swiper_init"
-    @slideChange="on_slide_change"
+    @swiper="onSwiperInit"
+    @slideChange="onSlideChange"
   >
-    <SwiperSlide v-for="slide in visible_slides" :key="slide.id" class="stack-view__slide">
+    <SwiperSlide v-for="slide in visibleSlides" :key="slide.id" class="stack-view__slide">
       <CardIntro v-if="slide.type === 'intro'" class="stack-view__card stack-view__intro" />
 
       <div v-else-if="slide.type === 'books'" class="stack-view__card stack-view__book-list">

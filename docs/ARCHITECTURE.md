@@ -105,17 +105,17 @@ Notion API (database Books / persons)
 Exemplo — criar livro:
 
 1. Usuário preenche `BookForm` e submete
-2. Validação de campo roda no cliente (`field_errors`)
-3. `bookStore.create_book()` chama `POST /api/books`
+2. Validação de campo roda no cliente (`fieldErrors`)
+3. `bookStore.createBook()` chama `POST /api/books`
 4. Axios anexa `Authorization: Bearer <token>` (interceptor)
 5. Backend valida com Zod + JWT e escreve no Notion
-6. Store refaz `fetch_books()` + `fetch_books_by_status()` se for TBR
+6. Store refaz `fetchBooks()` + `fetchBooksByStatus()` se for TBR
 7. Toast de sucesso e navegação para `/?slide=1`
 
 Exemplo — busca:
 
 1. Input dispara após debounce de 400 ms
-2. `search_token` é incrementado (invalida respostas em voo)
+2. `searchToken` é incrementado (invalida respostas em voo)
 3. `GET /api/books?search=&searchBy=&status=`
 4. Resposta só é aplicada se o token ainda casar
 
@@ -139,7 +139,7 @@ src/
 ├── composables/             # useAnimatedModal, useNotifications, useBookFormatters
 ├── constants/               # book.js (opções fallback), toast.js
 ├── router/index.js          # rotas lazy + guard de auth
-├── services/api.js          # instância Axios + books_api/auth_api
+├── services/api.js          # instância Axios + booksApi/authApi
 ├── stores/                  # bookStore.js, userStore.js
 ├── utils/                   # validation.js, errorHandler.js
 └── views/                   # LoginView, CardStackView, CreateBookView (+ HomeView legado)
@@ -153,7 +153,7 @@ src/
 - Componentes de UI não conhecem a API — recebem props/emit
 - Só `services/api.js` fala com HTTP; só stores importam `services/api`
 - `constants/` é fallback, nunca fonte primária quando o backend responde
-- Identificadores próprios em snake_case; chaves de dados/API em camelCase (contrato do backend)
+- Identificadores próprios em camelCase; chaves de dados/API em camelCase (contrato do backend); constantes em SCREAMING_SNAKE_CASE
 
 ---
 
@@ -193,9 +193,9 @@ App single-user; escalabilidade de dados é do Notion (limite de ~100 itens/pág
 
 | Falha | Comportamento esperado |
 |---|---|
-| Backend indisponível | `extract_error_message` → "Erro de conexão. Verifique sua internet." + estado de erro com retry |
+| Backend indisponível | `extractErrorMessage` → "Erro de conexão. Verifique sua internet." + estado de erro com retry |
 | Timeout (10 s) | Tratado como erro de conexão |
 | Token expirado (401) | Interceptor limpa sessão e manda para `/login` |
 | Notion fora do ar (5xx) | Mensagem "Erro no servidor" + retry; options/stats caem em fallback local |
-| Busca durante requisição em voo | Resposta obsoleta descartada (`search_token`) |
+| Busca durante requisição em voo | Resposta obsoleta descartada (`searchToken`) |
 | `/auth/me` falha por rede no boot | Sessão mantida (só 401 derruba) |

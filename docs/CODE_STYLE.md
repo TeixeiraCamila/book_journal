@@ -20,7 +20,7 @@ PascalCase para arquivos e pastas (`BookCard/BookCard.vue`)
 
 Funções, variáveis e parâmetros (identificadores próprios):
 
-snake_case (`fetch_books`, `book_data`, `is_submitting`)
+camelCase (`fetchBooks`, `bookData`, `isSubmitting`)
 
 Constantes:
 
@@ -32,11 +32,15 @@ Seguem o ecossistema/contrato — camelCase na API (`wasReadIn`, `seriesInfo`), 
 
 Arquivos:
 
-`.vue` PascalCase; `.js` snake_case ou camelCase conforme existente (`bookStore.js`, `useBookFormatters.js`)
+`.vue` PascalCase; `.js` camelCase (`bookStore.js`, `useBookFormatters.js`)
 
 Rotas:
 
 Paths em pt-BR (`/criar`, `/editar/:id`)
+
+CSS (fora do JS):
+
+Classes BEM e custom properties mantêm o padrão do projeto (`card_back__text`, `--accent_muted`, `--button_color`) — não são identificadores JS e **não** seguem camelCase
 
 ---
 
@@ -73,8 +77,8 @@ Seguir a árvore de `ARCHITECTURE.md`. Regras:
 ## 6. Funções
 
 - Uma função = uma responsabilidade lógica
-- Nomes descritivos em snake_case
-- Ações de store iniciam com verbo (`fetch_`, `create_`, `update_`, `delete_`)
+- Nomes descritivos em camelCase
+- Ações de store iniciam com verbo (`fetchBooks`, `createBook`, `updateBook`, `deleteBook`)
 - Sem complexidade desnecessária; early return preferível a aninhamento
 
 ---
@@ -83,7 +87,7 @@ Seguir a árvore de `ARCHITECTURE.md`. Regras:
 
 Use:
 
-`utils/errorHandler.js` — `extract_error_message(error)` para mensagem pt-BR e `log_error(action, error)` para console com ❌. Stores usam o padrão `_handle_error(action, error)`.
+`utils/errorHandler.js` — `extractErrorMessage(error)` para mensagem pt-BR e `logError(action, error)` para console com ❌. Stores usam o padrão `_handleError(action, error)`.
 
 Não fazer:
 
@@ -99,7 +103,7 @@ Explicam o _que_ e o _porquê_, não o _como_:
 
 - Topo de arquivo: 1 linha de responsabilidade
 - Topo de função/componente: 1–2 linhas
-- Inline: só lógica não óbvia ou decisão de design (ex.: por que `search_token` invalida respostas)
+- Inline: só lógica não óbvia ou decisão de design (ex.: por que `searchToken` invalida respostas)
 - Máximo 3 linhas; marcadores ✅ ❌ 🔍 ⚡ 📝 em logs
 - Sem comentários que repetem o código; sem blocos de código comentado morto
 
@@ -109,11 +113,11 @@ Explicam o _que_ e o _porquê_, não o _como_:
 
 Biblioteca:
 
-Nenhuma — `console` direto, encapsulado por `log_error`.
+Nenhuma — `console` direto, encapsulado por `logError`.
 
 Regras:
 
-- Erros com `❌` via `log_error`; nunca logar token/código de acesso/email
+- Erros com `❌` via `logError`; nunca logar token/código de acesso/email
 - Sem `console.log` de produção (remover antes de commitar)
 
 ---
@@ -140,7 +144,7 @@ Executar após edições:
 
 ## 11. Faça
 
-- Reutilizar padrões existentes (`StateHandler`, `use_notifications`, `useBookFormatters`)
+- Reutilizar padrões existentes (`StateHandler`, `useNotifications`, `useBookFormatters`)
 - Manter mudanças focadas no pedido
 - Seguir o design system (`DESIGN_SYSTEM.md`) e o BEM no CSS
 - Remover código morto ao mexer no arquivo

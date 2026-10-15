@@ -1,13 +1,13 @@
 <script setup>
 // Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
 import { computed } from 'vue';
-import { use_user_store } from '@/stores/userStore';
+import { useUserStore } from '@/stores/userStore';
 import { BOOK_TYPE_LABELS } from '@/constants/book';
 import CardStatus from './CardStatus.vue';
 import Button from '@/components/ui/Button.vue';
 import { PencilLine, Trash } from 'lucide-vue-next';
 
-import { use_book_formatters } from '@/composables/useBookFormatters';
+import { useBookFormatters } from '@/composables/useBookFormatters';
 
 const props = defineProps({
   book: { type: Object, required: true },
@@ -16,34 +16,34 @@ const props = defineProps({
 
 const emit = defineEmits(['edit', 'delete']);
 
-const userStore = use_user_store();
+const userStore = useUserStore();
 
-const { get_publication_string } = use_book_formatters();
+const { getPublicationString } = useBookFormatters();
 
-const string = computed(() => get_publication_string(props.book));
+const string = computed(() => getPublicationString(props.book));
 
-const was_read_string = computed(() => {
+const wasReadString = computed(() => {
   if (!props.book.wasReadIn?.length) return '';
   return props.book.wasReadIn.join(', ');
 });
 
-const series_string = computed(() => {
+const seriesString = computed(() => {
   const serie = props.book.seriesInfo?.bookSeries;
   if (!serie) return '';
   const volume = props.book.seriesInfo?.volume;
   return volume ? `${serie} #${volume}` : serie;
 });
 
-const type_string = computed(() => {
+const typeString = computed(() => {
   if (!props.book.type?.length) return '';
   return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ');
 });
 
-const handle_edit = () => {
+const handleEdit = () => {
   emit('edit', props.book);
 };
 
-const handle_delete = () => {
+const handleDelete = () => {
   emit('delete', props.book);
 };
 </script>
@@ -57,7 +57,7 @@ const handle_delete = () => {
           <h4 class="card_back__title">{{ book.title }}</h4>
         </div>
 
-        <p class="card_back__text" v-if="series_string">Série: {{ series_string }}</p>
+        <p class="card_back__text" v-if="seriesString">Série: {{ seriesString }}</p>
 
         <p class="card_back__text" v-if="book.author?.length">
           <span v-if="book.literaryAtlas" v-html="book.literaryAtlas" />
@@ -70,13 +70,13 @@ const handle_delete = () => {
           </p>
         </div>
 
-        <p class="card_back__text" v-if="type_string">Tipo: {{ type_string }}</p>
+        <p class="card_back__text" v-if="typeString">Tipo: {{ typeString }}</p>
 
         <p class="card_back__text" v-if="string">
           {{ string }}
         </p>
 
-        <p class="card_back__text" v-if="was_read_string">Lido em: {{ was_read_string }}</p>
+        <p class="card_back__text" v-if="wasReadString">Lido em: {{ wasReadString }}</p>
 
         <ul class="card_back__genres">
           <li v-for="(genre, index) in book.genres" :key="index" class="card_back__genre">
@@ -85,11 +85,11 @@ const handle_delete = () => {
         </ul>
       </div>
 
-      <div class="card_back__actions" v-if="!userStore.is_guest">
-        <Button class="card_back__action-btn" @click="handle_edit" variant="secondary">
+      <div class="card_back__actions" v-if="!userStore.isGuest">
+        <Button class="card_back__action-btn" @click="handleEdit" variant="secondary">
           <PencilLine />
         </Button>
-        <Button class="card_back__action-btn" @click="handle_delete" variant="secondary">
+        <Button class="card_back__action-btn" @click="handleDelete" variant="secondary">
           <Trash />
         </Button>
       </div>

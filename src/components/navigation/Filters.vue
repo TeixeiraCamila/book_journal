@@ -3,8 +3,8 @@
 // Barra de filtros — busca por título/autor/gênero e status em radio, com botão limpar
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
-import { use_user_store } from '@/stores/userStore';
+import { useBookStore } from '@/stores/bookStore';
+import { useUserStore } from '@/stores/userStore';
 import {
   BOOK_SEARCH_MODES,
   BOOK_SEARCH_PLACEHOLDERS,
@@ -14,69 +14,67 @@ import {
 } from '@/constants/book';
 import Button from '@/components/ui/Button.vue';
 
-const bookStore = use_book_store();
-const userStore = use_user_store();
+const bookStore = useBookStore();
+const userStore = useUserStore();
 const router = useRouter();
-const local_search = ref(bookStore.search_term);
-const local_search_by = ref(bookStore.search_by);
-const local_status = ref(bookStore.filter_status);
+const localSearch = ref(bookStore.searchTerm);
+const localSearchBy = ref(bookStore.searchBy);
+const localStatus = ref(bookStore.filterStatus);
 
-let search_timer = null;
+let searchTimer = null;
 
-const status_options = computed(() => bookStore.status_options);
+const statusOptions = computed(() => bookStore.statusOptions);
 
 // "Todos" entra no mesmo grupo dos demais, mantendo o radio como seletor único
-const status_radio_options = computed(() => [
+const statusRadioOptions = computed(() => [
   { value: 'all', label: 'Todos' },
-  ...status_options.value.map((status) => ({
+  ...statusOptions.value.map((status) => ({
     value: status,
     label: BOOK_STATUS_LABELS[status] || status,
   })),
 ]);
 
-const search_placeholder = computed(
-  () => BOOK_SEARCH_PLACEHOLDERS[local_search_by.value] || BOOK_SEARCH_PLACEHOLDERS.title,
+const searchPlaceholder = computed(
+  () => BOOK_SEARCH_PLACEHOLDERS[localSearchBy.value] || BOOK_SEARCH_PLACEHOLDERS.title,
 );
 
-const has_active_filters = computed(
-  () => bookStore.search_term || bookStore.filter_status !== 'all',
-);
+const hasActiveFilters = computed(() => bookStore.searchTerm || bookStore.filterStatus !== 'all');
 
-const navigate_to_create = () => {
+const navigateToCreate = () => {
   router.push('/criar');
 };
 
-const handle_search = () => {
-  if (local_search.value.trim() === bookStore.search_term) return;
-  bookStore.search(local_search.value);
+const handleSearch = () => {
+  if (localSearch.value.trim() === bookStore.searchTerm) return;
+  bookStore.search(localSearch.value);
 };
 
-const handle_search_by_change = () => {
-  bookStore.set_search_by(local_search_by.value);
+const handleSearchByChange = () => {
+  bookStore.setSearchBy(localSearchBy.value);
 };
 
-const handle_filter_change = () => {
-  bookStore.filter_by_status(local_status.value);
+const handleFilterChange = () => {
+  bookStore.filterByStatus(localStatus.value);
 };
 
-const clear_filters = () => {
-  clearTimeout(search_timer);
-  local_search.value = '';
-  local_search_by.value = DEFAULT_SEARCH_MODE;
-  local_status.value = 'all';
+const clearFilters = () => {
+  clearTimeout(searchTimer);
+  localSearch.value = '';
+  localSearchBy.value = DEFAULT_SEARCH_MODE;
+  localStatus.value = 'all';
   bookStore.search('');
-  bookStore.set_search_by(DEFAULT_SEARCH_MODE);
-  bookStore.filter_by_status('all');
+  bookStore.setSearchBy(DEFAULT_SEARCH_MODE);
+  bookStore.filterByStatus('all');
 };
 
 // Debounce manual: @vueuse/core não é dependência direta (só @vueuse/motion),
 // então watchDebounced não está disponível aqui.
-watch(local_search, () => {
-  clearTimeout(search_timer);
-  search_timer = setTimeout(handle_search, SEARCH_DEBOUNCE_MS);
+watch(localSearch, () => {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(handleSearch, SEARCH_DEBOUNCE_MS);
 });
 
-onUnmounted(() => clearTimeout(search_timer));
+onUnmounted(() => clearTimeout(searchTimer));
 </script>
 
 <template>
@@ -84,14 +82,14 @@ onUnmounted(() => clearTimeout(search_timer));
     <div class="filters__row">
       <input
         type="text"
-        :placeholder="search_placeholder"
-        v-model="local_search"
-        @keyup.enter="handle_search"
+        :placeholder="searchPlaceholder"
+        v-model="localSearch"
+        @keyup.enter="handleSearch"
         class="filters__input"
       />
 
       <div class="select_wrapper">
-        <select v-model="local_search_by" @change="handle_search_by_change">
+        <select v-model="localSearchBy" @change="handleSearchByChange">
           <option v-for="mode in BOOK_SEARCH_MODES" :key="mode.value" :value="mode.value">
             {{ mode.label }}
           </option>
@@ -100,26 +98,26 @@ onUnmounted(() => clearTimeout(search_timer));
 
       <fieldset class="filters__group">
         <legend class="filters__legend">Status</legend>
-        <label v-for="option in status_radio_options" :key="option.value" class="filters__option">
+        <label v-for="option in statusRadioOptions" :key="option.value" class="filters__option">
           <input
             type="radio"
             class="filters__radio"
             name="book-status"
             :value="option.value"
-            v-model="local_status"
-            @change="handle_filter_change"
+            v-model="localStatus"
+            @change="handleFilterChange"
           />
           <span>{{ option.label }}</span>
         </label>
       </fieldset>
 
-      <Button v-if="has_active_filters" @click="clear_filters" variant="secondary">
+      <Button v-if="hasActiveFilters" @click="clearFilters" variant="secondary">
         Limpar filtros
       </Button>
     </div>
 
     <div class="filters__row">
-      <Button v-if="!userStore.is_guest" @click="navigate_to_create">
+      <Button v-if="!userStore.isGuest" @click="navigateToCreate">
         <svg
           width="20"
           height="20"

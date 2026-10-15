@@ -2,44 +2,44 @@
 import { useToast } from 'vue-toastification';
 import { TOAST_CONFIG } from '@/constants/toast';
 
-export function use_notifications() {
+export function useNotifications() {
   const toast = useToast();
 
-  const add_notification = (message, type = 'info', options = {}) => {
+  const addNotification = (message, type = 'info', options = {}) => {
     if (!toast) {
       return;
     }
 
-    const toast_options = {
+    const toastOptions = {
       ...TOAST_CONFIG,
       ...options,
     };
 
     switch (type) {
       case 'success':
-        toast.success(message, toast_options);
+        toast.success(message, toastOptions);
         break;
       case 'error':
-        toast.error(message, toast_options);
+        toast.error(message, toastOptions);
         break;
       case 'warning':
-        toast.warning(message, toast_options);
+        toast.warning(message, toastOptions);
         break;
       case 'info':
       default:
-        toast.info(message, toast_options);
+        toast.info(message, toastOptions);
         break;
     }
   };
 
-  const remove_notification = (id) => {
+  const removeNotification = (id) => {
     if (toast && toast.dismiss) {
       toast.dismiss(id);
     }
   };
 
   return {
-    add_notification,
-    remove_notification,
+    addNotification,
+    removeNotification,
   };
 }

@@ -1,25 +1,25 @@
 <script setup>
 // Lista de livros em leitura — exibe cards detalhados com barra de progresso
 import { useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
+import { useBookStore } from '@/stores/bookStore';
 import { PencilLine } from 'lucide-vue-next';
 import Button from '@/components/ui/Button.vue';
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 const router = useRouter();
-const bookStore = use_book_store();
-import { use_book_formatters } from '@/composables/useBookFormatters.js';
+const bookStore = useBookStore();
+import { useBookFormatters } from '@/composables/useBookFormatters.js';
 
-const { get_author_string, get_pages_string, get_publication_string } = use_book_formatters();
+const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters();
 
-const calculate_progress = (currentPage, total) => {
+const calculateProgress = (currentPage, total) => {
   if (!currentPage || !total || total === 0) return 0;
   return Math.round((parseInt(currentPage) / parseInt(total)) * 100);
 };
 /**
  * Formata data para exibição em português
  */
-const format_date = (dateString) => {
+const formatDate = (dateString) => {
   if (!dateString) return '';
   return new Date(dateString).toLocaleDateString('pt-BR');
 };
@@ -27,13 +27,13 @@ const format_date = (dateString) => {
 /**
  * Formata string de período de leitura
  */
-const get_reading_period_string = (book) => {
+const getReadingPeriodString = (book) => {
   const se = book.startEnd;
 
   if (!se?.start || !se?.end) return '';
 
-  const start = format_date(se.start);
-  const end = format_date(se.end);
+  const start = formatDate(se.start);
+  const end = formatDate(se.end);
 
   return `Lido de ${start} até ${end}`;
 };
@@ -41,7 +41,7 @@ const get_reading_period_string = (book) => {
 /**
  * Formata string de tipo
  */
-const get_type_string = (book) => {
+const getTypeString = (book) => {
   if (!book.type?.length) return '';
   return ` ${book.type.join(', ')}`;
 };
@@ -49,7 +49,7 @@ const get_type_string = (book) => {
 /**
  * Retorna notas adicionais
  */
-const get_additional_notes = (book) => {
+const getAdditionalNotes = (book) => {
   const notes = [];
 
   if (book.notes) {
@@ -62,7 +62,7 @@ const get_additional_notes = (book) => {
 /**
  * Verifica se há informações de publicação
  */
-const has_publication_info = (book) => {
+const hasPublicationInfo = (book) => {
   // publishedBy é select simples: string, não array — [0] devolveria só a 1ª letra
   return !!(book.publishedBy || book.firstPublished);
 };
@@ -70,7 +70,7 @@ const has_publication_info = (book) => {
 /**
  * Navega para editar livro
  */
-const navigate_to_edit = (bookId) => {
+const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`);
 };
 </script>
@@ -80,28 +80,25 @@ const navigate_to_edit = (bookId) => {
     <header class="reading-list__header">
       <h1 class="reading-list__title">Em Leitura</h1>
       <p class="reading-list__subtitle">
-        {{ bookStore.book_lists.reading.length }}
-        {{ bookStore.book_lists.reading.length === 1 ? 'livro' : 'livros' }} em leitura
+        {{ bookStore.bookLists.reading.length }}
+        {{ bookStore.bookLists.reading.length === 1 ? 'livro' : 'livros' }} em leitura
       </p>
     </header>
 
-    <div
-      v-if="bookStore.has_error && !bookStore.loading_states.reading"
-      class="reading-list__error"
-    >
+    <div v-if="bookStore.hasError && !bookStore.loadingStates.reading" class="reading-list__error">
       <div class="reading-list__error-icon">⚠️</div>
       <p class="reading-list__error-message">{{ bookStore.error }}</p>
-      <Button @click="bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.READING)">
+      <Button @click="bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING)">
         Tentar Novamente
       </Button>
     </div>
 
-    <LoadingSpinner v-else-if="bookStore.loading_states.reading">
+    <LoadingSpinner v-else-if="bookStore.loadingStates.reading">
       <p>Carregando livros em leitura...</p>
     </LoadingSpinner>
 
     <div
-      v-else-if="bookStore.book_lists.reading.length === 0 && !bookStore.loading_states.reading"
+      v-else-if="bookStore.bookLists.reading.length === 0 && !bookStore.loadingStates.reading"
       class="reading-list__empty"
     >
       <div class="reading-list__empty-icon">📚</div>
@@ -114,7 +111,7 @@ const navigate_to_edit = (bookId) => {
     <div v-else class="reading-list__container">
       <div class="reading-list__grid">
         <article
-          v-for="(book, index) in bookStore.book_lists.reading"
+          v-for="(book, index) in bookStore.bookLists.reading"
           :key="book.id"
           class="reading-card"
           :class="`reading-card--blob-${(index % 6) + 1}`"
@@ -137,36 +134,39 @@ const navigate_to_edit = (bookId) => {
                 <div>
                   <h2 class="reading-card__title">{{ book.title }}</h2>
 
-                  <div class="reading-card__type" v-if="get_type_string(book)">
-                    <span class="reading-card__value">{{ get_type_string(book) }}</span>
+                  <div class="reading-card__type" v-if="getTypeString(book)">
+                    <span class="reading-card__value">{{ getTypeString(book) }}</span>
                   </div>
                 </div>
-                <span class="reading-card__author">{{ get_author_string(book) }}</span>
+                <span class="reading-card__author">{{ getAuthorString(book) }}</span>
               </div>
             </header>
 
             <div class="reading-card__info">
-              <div class="reading-card__info-item" v-if="has_publication_info(book)">
+              <div class="reading-card__info-item" v-if="hasPublicationInfo(book)">
                 <span class="reading-card__label">Publicação:</span>
-                <span class="reading-card__value">{{ get_publication_string(book) }}</span>
+                <span class="reading-card__value">{{ getPublicationString(book) }}</span>
               </div>
 
-              <div class="reading-card__info-item" v-if="get_reading_period_string(book)">
+              <div class="reading-card__info-item" v-if="getReadingPeriodString(book)">
                 <span class="reading-card__label">Período:</span>
-                <span class="reading-card__value">{{ get_reading_period_string(book) }}</span>
+                <span class="reading-card__value">{{ getReadingPeriodString(book) }}</span>
               </div>
 
-              <div class="reading-card__info-item" v-if="book.pages?.totalPages && book.pages?.currentlyPage">
+              <div
+                class="reading-card__info-item"
+                v-if="book.pages?.totalPages && book.pages?.currentlyPage"
+              >
                 <span class="reading-card__label">Progresso:</span>
                 <div class="reading-card__progress">
                   <div class="reading-card__progress-text">
-                    <span>{{ get_pages_string(book) }}</span>
+                    <span>{{ getPagesString(book) }}</span>
                   </div>
                   <div class="reading-card__progress-bar">
                     <div
                       class="reading-card__progress-fill"
                       :style="{
-                        width: `${calculate_progress(book.pages.currentlyPage, book.pages.totalPages)}%`,
+                        width: `${calculateProgress(book.pages.currentlyPage, book.pages.totalPages)}%`,
                       }"
                     ></div>
                   </div>
@@ -186,11 +186,11 @@ const navigate_to_edit = (bookId) => {
                 </div>
               </div>
 
-              <div class="reading-card__info-item" v-if="get_additional_notes(book).length > 0">
+              <div class="reading-card__info-item" v-if="getAdditionalNotes(book).length > 0">
                 <span class="reading-card__label">Notas:</span>
                 <div class="reading-card__notes">
                   <p
-                    v-for="(note, index) in get_additional_notes(book)"
+                    v-for="(note, index) in getAdditionalNotes(book)"
                     :key="index"
                     class="reading-card__note"
                   >
@@ -201,7 +201,7 @@ const navigate_to_edit = (bookId) => {
             </div>
 
             <div class="reading-card__actions">
-              <Button @click="navigate_to_edit(book.id)">
+              <Button @click="navigateToEdit(book.id)">
                 <PencilLine :size="16" />
                 Editar
               </Button>

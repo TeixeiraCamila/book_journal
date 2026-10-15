@@ -1,26 +1,26 @@
 <script setup>
 // Lista "To Be Read" — exibe livros pendentes em formato de selos (stamps) com rotação alternada
 import { useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
+import { useBookStore } from '@/stores/bookStore';
 import { computed } from 'vue';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 import Button from '@/components/ui/Button.vue';
 import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
 
 const router = useRouter();
-const bookStore = use_book_store();
+const bookStore = useBookStore();
 
-const handle_retry = async () => {
-  await bookStore.fetch_books_by_status(undefined, BOOK_STATUS_MAP.TO_BE_READ);
+const handleRetry = async () => {
+  await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ);
 };
 
-const show_empty_state = computed(() => {
+const showEmptyState = computed(() => {
   return (
-    !bookStore.loading_states.tbr && bookStore.book_lists.tbr.length === 0 && !bookStore.has_error
+    !bookStore.loadingStates.tbr && bookStore.bookLists.tbr.length === 0 && !bookStore.hasError
   );
 });
 
-const navigate_to_edit = (bookId) => {
+const navigateToEdit = (bookId) => {
   router.push(`/editar/${bookId}`);
 };
 </script>
@@ -43,21 +43,21 @@ const navigate_to_edit = (bookId) => {
 
       <h1 class="tbr-list__title">To Be Read</h1>
       <p class="tbr-list__subtitle">
-        {{ bookStore.tbr_count }} {{ bookStore.tbr_count === 1 ? 'livro' : 'livros' }} para ler
+        {{ bookStore.tbrCount }} {{ bookStore.tbrCount === 1 ? 'livro' : 'livros' }} para ler
       </p>
     </header>
 
-    <div v-if="bookStore.has_error && !bookStore.loading_states.tbr" class="tbr-list__error">
+    <div v-if="bookStore.hasError && !bookStore.loadingStates.tbr" class="tbr-list__error">
       <div class="tbr-list__error-icon">⚠️</div>
       <p class="tbr-list__error-message">{{ bookStore.error }}</p>
-      <Button @click="handle_retry"> Tentar Novamente </Button>
+      <Button @click="handleRetry"> Tentar Novamente </Button>
     </div>
 
-    <LoadingSpinner v-else-if="bookStore.loading_states.tbr">
+    <LoadingSpinner v-else-if="bookStore.loadingStates.tbr">
       <p>Carregando livros...</p>
     </LoadingSpinner>
 
-    <div v-else-if="show_empty_state" class="tbr-list__empty">
+    <div v-else-if="showEmptyState" class="tbr-list__empty">
       <div class="tbr-list__empty-icon">📚</div>
       <h2 class="tbr-list__empty-title">Lista vazia</h2>
       <p class="tbr-list__empty-text">
@@ -67,12 +67,12 @@ const navigate_to_edit = (bookId) => {
 
     <TransitionGroup v-else name="stamp" tag="div" class="tbr-list__grid">
       <div
-        v-for="(book, index) in bookStore.book_lists.tbr"
+        v-for="(book, index) in bookStore.bookLists.tbr"
         :key="book.id"
         class="stamp-wrapper"
         :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }"
       >
-        <article class="stamp" @click="navigate_to_edit(book.id)">
+        <article class="stamp" @click="navigateToEdit(book.id)">
           <div class="stamp__inner">
             <div class="stamp__image-container">
               <img

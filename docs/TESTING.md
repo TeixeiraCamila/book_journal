@@ -33,14 +33,14 @@ Testar:
 - `utils/errorHandler.js` (mapeamento de status → mensagem)
 - `constants/book.js` (labels/mappings)
 - `composables/useBookFormatters.js` (formatters de autor/páginas/datas)
-- Transformação de dados do `BookForm` (`fill_form_from_book`, montagem do payload)
+- Transformação de dados do `BookForm` (`fillFormFromBook`, montagem do payload)
 
 ### Integração
 
 Testar:
 
-- `stores/bookStore.js` (actions com Axios mockado: paginação, `search_token`, `$reset`)
-- `stores/userStore.js` (login, `load_session`, `validate_session` — só 401 derruba)
+- `stores/bookStore.js` (actions com Axios mockado: paginação, `searchToken`, `$reset`)
+- `stores/userStore.js` (login, `loadSession`, `validateSession` — só 401 derruba)
 - Interceptors de `services/api.js` (anexo de token, redirect em 401)
 
 ### E2E (futuro)

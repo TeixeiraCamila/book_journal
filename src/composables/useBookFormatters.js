@@ -1,12 +1,12 @@
 // Funções utilitárias para formatar dados de livros
-export function use_book_formatters() {
-  const get_author_string = (book) => {
-    const literary_atlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
+export function useBookFormatters() {
+  const getAuthorString = (book) => {
+    const literaryAtlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
     const authors = Array.isArray(book.author) ? book.author.join(', ') : book.author || '';
-    return `${literary_atlas}${authors}`.trim();
+    return `${literaryAtlas}${authors}`.trim();
   };
 
-  const get_pages_string = (book) => {
+  const getPagesString = (book) => {
     const current = book.pages?.currentlyPage;
     const total = book.pages?.totalPages;
     if (!current || !total) return '';
@@ -14,7 +14,7 @@ export function use_book_formatters() {
     return `Páginas: ${current} / ${total} (${progress}%)`;
   };
 
-  const get_publication_string = (book) => {
+  const getPublicationString = (book) => {
     // publishedBy é select simples no Notion: string, não array
     const publisher = book.publishedBy;
     const year = book.firstPublished;
@@ -34,5 +34,5 @@ export function use_book_formatters() {
     return 'Informação de publicação não disponível';
   };
 
-  return { get_author_string, get_pages_string, get_publication_string };
+  return { getAuthorString, getPagesString, getPublicationString };
 }

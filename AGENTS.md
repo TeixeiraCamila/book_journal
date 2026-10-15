@@ -42,8 +42,10 @@ Regras:
 
 ### JavaScript
 
-- Identificadores próprios (variáveis, funções e parâmetros) em **snake_case**
+- Identificadores próprios (variáveis, funções e parâmetros) em **camelCase**
+- Constantes em SCREAMING_SNAKE_CASE (`BOOK_STATUS_MAP`, `DEFAULT_PAGE_SIZE`)
 - Componentes, chaves de dados/API e APIs de bibliotecas seguem a convenção do ecossistema
+- **Divergência do bloco comum** (que pede `snake_case` para os outros 5 repos): este projeto migrou para camelCase em 2026-10-15 — ver `docs/DECISIONS.md` (Decisão 008)
 
 ## Comandos
 
@@ -68,7 +70,7 @@ Regras:
 - Single quotes `'`
 - Ponto e vírgula obrigatório (`.prettierrc.json` com `semi: true`)
 - `const` / `let` (nunca `var`)
-- snake_case
+- camelCase
 - Função: JSDoc-style `/** */` com descrição curta
 
 ## Componentes Vue

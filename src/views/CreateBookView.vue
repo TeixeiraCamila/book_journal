@@ -2,69 +2,69 @@
 // View de criação/edição de livro — gerencia carregamento assíncrono e exibe formulário
 import { ref, onMounted, computed, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
-import { use_notifications } from '@/composables/useNotifications';
+import { useBookStore } from '@/stores/bookStore';
+import { useNotifications } from '@/composables/useNotifications';
 import BookForm from '@/components/forms/BookForm/BookForm.vue';
 import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue';
 import Button from '@/components/ui/Button.vue';
 
-const { add_notification } = use_notifications();
+const { addNotification } = useNotifications();
 
 const route = useRoute();
 const router = useRouter();
-const bookStore = use_book_store();
+const bookStore = useBookStore();
 
 const book = ref(null);
-const is_loading = ref(false);
+const isLoading = ref(false);
 const error = ref(null);
-const is_edit = computed(() => !!route.params.id);
+const isEdit = computed(() => !!route.params.id);
 
 // Carrega dados do livro para edição — busca da store ou API se necessário
-const load_book = async () => {
-  if (!is_edit.value) return;
+const loadBook = async () => {
+  if (!isEdit.value) return;
 
-  const book_id = route.params.id;
-  is_loading.value = true;
+  const bookId = route.params.id;
+  isLoading.value = true;
   error.value = null;
 
   try {
     // Primeiro, garantir que temos os livros carregados
-    if (bookStore.all_books.length === 0) {
-      await bookStore.fetch_books();
+    if (bookStore.allBooks.length === 0) {
+      await bookStore.fetchBooks();
     }
 
     // Buscar livro pelo ID
-    book.value = bookStore.get_book_by_id(book_id);
+    book.value = bookStore.getBookById(bookId);
 
     if (!book.value) {
       // Tentar buscar o livro diretamente da API
       try {
-        book.value = await bookStore.fetch_book_by_id(book_id);
+        book.value = await bookStore.fetchBookById(bookId);
       } catch {
         throw new Error('Livro não encontrado');
       }
     }
   } catch (err) {
     error.value = err.message || 'Erro ao carregar livro';
-    add_notification(error.value, 'error');
+    addNotification(error.value, 'error');
   } finally {
-    is_loading.value = false;
+    isLoading.value = false;
   }
 };
 
 // Carregar livro quando o componente for montado ou quando o ID da rota mudar
-onMounted(load_book);
-watch(() => route.params.id, load_book);
+onMounted(loadBook);
+watch(() => route.params.id, loadBook);
 
-const handle_submit = () => {
+const handleSubmit = () => {
   // Notificação já é exibida no BookForm após sucesso da operação
 };
 
-const handle_edit_success = () => {
+const handleEditSuccess = () => {
   router.push({ path: '/', query: { slide: '1' } });
 };
 
-const handle_cancel = () => {
+const handleCancel = () => {
   router.push({ path: '/', query: { slide: '1' } });
 };
 </script>
@@ -77,25 +77,25 @@ const handle_cancel = () => {
           <span class="create-book-view__back-icon">←</span>
           <span>Voltar para lista</span>
         </router-link>
-        <h1 v-if="is_edit" class="create-book-view__title">Editar Livro</h1>
+        <h1 v-if="isEdit" class="create-book-view__title">Editar Livro</h1>
         <h1 v-else class="create-book-view__title">Novo Livro</h1>
       </div>
     </header>
 
     <main class="create-book-view__content">
-      <FormSkeleton v-if="is_loading" />
+      <FormSkeleton v-if="isLoading" />
       <div v-else-if="error" class="create-book-view__error">
         <h3>Erro ao carregar livro</h3>
         <p>{{ error }}</p>
-        <Button @click="load_book">Tentar novamente</Button>
+        <Button @click="loadBook">Tentar novamente</Button>
       </div>
       <BookForm
         v-else
         :book="book"
-        :is-edit="is_edit"
-        @submit="handle_submit"
-        @cancel="handle_cancel"
-        @edit-success="handle_edit_success"
+        :is-edit="isEdit"
+        @submit="handleSubmit"
+        @cancel="handleCancel"
+        @edit-success="handleEditSuccess"
       />
     </main>
   </div>

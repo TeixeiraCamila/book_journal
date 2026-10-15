@@ -1,8 +1,8 @@
 // Pinia store de sessão — login/saída/visitante. Não guarda lista de usuários:
 // o backend valida o email contra o workspace e o front não conhece essa lista.
 import { defineStore } from 'pinia';
-import { auth_api } from '../services/api';
-import { extract_error_message } from '@/utils/errorHandler';
+import { authApi } from '../services/api';
+import { extractErrorMessage } from '@/utils/errorHandler';
 
 const GUEST_USER = {
   id: 'guest',
@@ -16,16 +16,16 @@ const STORAGE_KEYS = {
   GUEST: 'IS_GUEST',
 };
 
-export const use_user_store = defineStore('user', {
+export const useUserStore = defineStore('user', {
   state: () => ({
-    user_active: null,
+    userActive: null,
     error: null,
-    is_guest: false,
+    isGuest: false,
     token: null,
   }),
 
   getters: {
-    is_authenticated: (state) => state.token !== null,
+    isAuthenticated: (state) => state.token !== null,
   },
 
   actions: {
@@ -34,11 +34,11 @@ export const use_user_store = defineStore('user', {
       this.error = null;
 
       try {
-        const { data } = await auth_api.login({ email, codigo });
+        const { data } = await authApi.login({ email, codigo });
 
         this.token = data.token;
-        this.user_active = data.user;
-        this.is_guest = false;
+        this.userActive = data.user;
+        this.isGuest = false;
 
         localStorage.setItem(STORAGE_KEYS.TOKEN, data.token);
         localStorage.setItem(STORAGE_KEYS.USER, JSON.stringify(data.user));
@@ -47,21 +47,21 @@ export const use_user_store = defineStore('user', {
         return data.user;
       } catch (error) {
         // Mensagem específica do backend (ex: "O código não confere.")
-        this.error = error.response?.data?.message || extract_error_message(error);
+        this.error = error.response?.data?.message || extractErrorMessage(error);
         throw error;
       }
     },
 
     // Restaura a sessão persistida (token ou modo visitante)
-    load_session() {
+    loadSession() {
       const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
-      const stored_user = localStorage.getItem(STORAGE_KEYS.USER);
+      const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 
-      if (token && stored_user) {
+      if (token && storedUser) {
         try {
           this.token = token;
-          this.user_active = JSON.parse(stored_user);
-          this.is_guest = false;
+          this.userActive = JSON.parse(storedUser);
+          this.isGuest = false;
           return true;
         } catch {
           this.logout();
@@ -69,7 +69,7 @@ export const use_user_store = defineStore('user', {
       }
 
       if (localStorage.getItem(STORAGE_KEYS.GUEST) === 'true') {
-        this.set_guest_user();
+        this.setGuestUser();
         return true;
       }
 
@@ -78,11 +78,11 @@ export const use_user_store = defineStore('user', {
 
     // Revalida o token guardado contra o /me no boot; só 401 derruba a sessão
     // (rede/timeout/5xx não provam nada sobre o token, então mantêm o login)
-    async validate_session() {
+    async validateSession() {
       if (!this.token) return true;
 
       try {
-        await auth_api.me({ timeout: 5000 });
+        await authApi.me({ timeout: 5000 });
         return true;
       } catch (erro) {
         if (erro.response?.status === 401) {
@@ -94,9 +94,9 @@ export const use_user_store = defineStore('user', {
     },
 
     // Modo visitante: acesso de leitura sem conta
-    set_guest_user() {
-      this.user_active = { ...GUEST_USER };
-      this.is_guest = true;
+    setGuestUser() {
+      this.userActive = { ...GUEST_USER };
+      this.isGuest = true;
       this.token = null;
 
       localStorage.setItem(STORAGE_KEYS.GUEST, 'true');
@@ -107,8 +107,8 @@ export const use_user_store = defineStore('user', {
     // Encerra a sessão (login ou visitante) e limpa o armazenamento
     logout() {
       this.token = null;
-      this.user_active = null;
-      this.is_guest = false;
+      this.userActive = null;
+      this.isGuest = false;
 
       localStorage.removeItem(STORAGE_KEYS.TOKEN);
       localStorage.removeItem(STORAGE_KEYS.USER);

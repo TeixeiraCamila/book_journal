@@ -37,7 +37,7 @@ Permissões:
 
 Regra fundamental:
 
-**A autorização é obrigatória no servidor** (`require_auth` do backend em todas as escritas). No cliente, ocultar botões de escrita para o visitante (`Filters` verifica `userStore.is_guest`) é só UX — nunca segurança.
+**A autorização é obrigatória no servidor** (`require_auth` do backend em todas as escritas). No cliente, ocultar botões de escrita para o visitante (`Filters` verifica `userStore.isGuest`) é só UX — nunca segurança.
 
 ---
 
@@ -110,7 +110,7 @@ Nunca logar:
 
 Logar:
 
-- Erros de ação via `log_error` (`console.error` com ❌) — só `error` do Axios, sem headers
+- Erros de ação via `logError` (`console.error` com ❌) — só `error` do Axios, sem headers
 - Falhas de autenticação (mensagem, sem credenciais)
 
 ---

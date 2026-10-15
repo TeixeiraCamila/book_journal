@@ -42,7 +42,7 @@ Response `200`:
 { "user": { "id": "uuid", "name": "Teixeira", "nivel": "dona" } }
 ```
 
-Uso no front: revalidação única no boot (`userStore.validate_session`, timeout 5 s). Só `401` derruba a sessão.
+Uso no front: revalidação única no boot (`userStore.validateSession`, timeout 5 s). Só `401` derruba a sessão.
 
 ---
 

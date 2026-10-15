@@ -2,14 +2,14 @@
 // Grid de livros com filtros, paginação e estados de loading/erro/vazio
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { use_book_store } from '@/stores/bookStore';
+import { useBookStore } from '@/stores/bookStore';
 import { DEFAULT_SEARCH_MODE } from '@/constants/book';
 import BookCard from '@/components/books/BookCard/BookCard.vue';
 import BookCardSkeleton from '@/components/ui/Skeleton/BookCardSkeleton.vue';
 import Pagination from '@/components/navigation/Pagination.vue';
 import Filters from '@/components/navigation/Filters.vue';
 import Button from '@/components/ui/Button.vue';
-const bookStore = use_book_store();
+const bookStore = useBookStore();
 const router = useRouter();
 
 /**
@@ -17,19 +17,19 @@ const router = useRouter();
  */
 onMounted(async () => {
   // Configura filtros iniciais
-  bookStore.filter_status = 'all';
-  bookStore.search_term = '';
-  bookStore.search_by = DEFAULT_SEARCH_MODE;
-  bookStore.search_token += 1; // Invalida qualquer busca em voo ao trocar de tela
+  bookStore.filterStatus = 'all';
+  bookStore.searchTerm = '';
+  bookStore.searchBy = DEFAULT_SEARCH_MODE;
+  bookStore.searchToken += 1; // Invalida qualquer busca em voo ao trocar de tela
 
   // Busca opções do backend e livros
-  await Promise.all([bookStore.fetch_book_options(), bookStore.fetch_books()]);
+  await Promise.all([bookStore.fetchBookOptions(), bookStore.fetchBooks()]);
 });
 
 /**
  * Redireciona para página de edição
  */
-const handle_edit_book = (book) => {
+const handleEditBook = (book) => {
   router.push(`/editar/${book.id}`);
 };
 </script>
@@ -44,26 +44,26 @@ const handle_edit_book = (book) => {
     <div class="book-list-content">
       <!-- Estado de Loading (só na primeira carga; paginação mantém a grade visível) -->
       <div
-        v-if="bookStore.loading_states.main && bookStore.all_books.length === 0"
+        v-if="bookStore.loadingStates.main && bookStore.allBooks.length === 0"
         class="book-list__skeletons"
       >
-        <BookCardSkeleton v-for="n in bookStore.pagination.page_size" :key="n" />
+        <BookCardSkeleton v-for="n in bookStore.pagination.pageSize" :key="n" />
       </div>
 
       <!-- Estado de Erro -->
-      <div v-else-if="bookStore.has_error" class="book-list__state book-list__state--error">
+      <div v-else-if="bookStore.hasError" class="book-list__state book-list__state--error">
         <div class="book-list__error-icon">⚠️</div>
         <p class="book-list__error-message">{{ bookStore.error }}</p>
-        <Button @click="bookStore.fetch_books()"> Tentar Novamente </Button>
+        <Button @click="bookStore.fetchBooks()"> Tentar Novamente </Button>
       </div>
 
       <!-- Estado Vazio -->
-      <div v-else-if="bookStore.all_books.length === 0" class="book-list__state">
+      <div v-else-if="bookStore.allBooks.length === 0" class="book-list__state">
         <div class="book-list__empty-icon">📚</div>
         <h2 class="book-list__empty-title">Nenhum livro encontrado</h2>
         <p class="book-list__empty-text">
           {{
-            bookStore.search_term || bookStore.filter_status !== 'all'
+            bookStore.searchTerm || bookStore.filterStatus !== 'all'
               ? 'Tente ajustar seus filtros de busca'
               : 'Comece adicionando seu primeiro livro!'
           }}
@@ -76,25 +76,25 @@ const handle_edit_book = (book) => {
           name="book-list"
           tag="div"
           class="book-list__grid"
-          :class="{ 'book-list__grid--loading': bookStore.loading_states.main }"
+          :class="{ 'book-list__grid--loading': bookStore.loadingStates.main }"
         >
           <BookCard
-            v-for="book in bookStore.all_books"
+            v-for="book in bookStore.allBooks"
             :key="book.id"
             :book="book"
-            @edit="handle_edit_book"
+            @edit="handleEditBook"
           />
         </TransitionGroup>
 
         <!-- Paginação -->
         <Pagination
-          :book-count="bookStore.book_count"
-          :page-size="bookStore.pagination.page_size"
-          :has-previous="bookStore.has_previous_page"
-          :has-next="bookStore.has_next_page"
-          @previous="bookStore.previous_page"
-          @next="bookStore.next_page"
-          @change-size="bookStore.change_page_size"
+          :book-count="bookStore.bookCount"
+          :page-size="bookStore.pagination.pageSize"
+          :has-previous="bookStore.hasPreviousPage"
+          :has-next="bookStore.hasNextPage"
+          @previous="bookStore.previousPage"
+          @next="bookStore.nextPage"
+          @change-size="bookStore.changePageSize"
         />
       </template>
     </div>
