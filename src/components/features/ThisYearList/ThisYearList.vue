@@ -1,15 +1,14 @@
 // Lista de livros lidos no ano atual agrupados por mês
 <script setup>
-import { useRouter } from 'vue-router';
 import { useBookStore } from '@/stores/bookStore';
-import Button from '@/components/ui/Button.vue';
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import StateHandler from '@/components/ui/StateHandler.vue';
 import { computed } from 'vue';
 // import tape from '@/assets/images/tape.webp'
 import CardStatus from '@/components/books/BookCard/CardStatus.vue';
+import { useBookNavigation } from '@/composables/useBookNavigation';
 
-const router = useRouter();
 const bookStore = useBookStore();
+const { navigateToEdit } = useBookNavigation();
 const currentYear = new Date().getFullYear();
 
 function getMonthFromBook(book) {
@@ -45,10 +44,6 @@ const booksByMonth = computed(() => {
   }
   return sections;
 });
-
-const navigateToEdit = (bookId) => {
-  router.push(`/editar/${bookId}`);
-};
 </script>
 
 <template>
@@ -75,46 +70,42 @@ const navigateToEdit = (bookId) => {
       </h1>
     </header> -->
 
-    <div v-if="bookStore.hasError && !bookStore.loadingStates.thisYear" class="this-year__error">
-      <p class="this-year__error-message">{{ bookStore.error }}</p>
-      <Button @click="bookStore.fetchBooksReadThisYear()"> Tentar Novamente </Button>
-    </div>
-
-    <LoadingSpinner v-else-if="bookStore.loadingStates.thisYear">
-      <p>Carregando livros lidos em {{ currentYear }}...</p>
-    </LoadingSpinner>
-
-    <div
-      v-else-if="bookStore.thisYearCount === 0 && !bookStore.loadingStates.thisYear"
-      class="this-year__empty"
+    <StateHandler
+      :loading="bookStore.loadingStates.thisYear"
+      :error="bookStore.hasError ? bookStore.error : false"
+      :empty="bookStore.thisYearCount === 0"
+      :loading-message="`Carregando livros lidos em ${currentYear}...`"
+      empty-icon=""
+      :empty-title="`Nenhum livro lido em ${currentYear}`"
+      @retry="bookStore.fetchBooksReadThisYear()"
     >
-      <h2 class="this-year__empty-title">Nenhum livro lido em {{ currentYear }}</h2>
-    </div>
+      <div class="this-year__container">
+        <div class="this-year__grid">
+          <div v-for="section in booksByMonth" :key="section.label" class="this-year__month-group">
+            <h2 class="this-year__month-title">
+              {{ section.books.length }} lidos em <span>{{ section.label }}</span>
+            </h2>
+            <div class="this-year__grid">
+              <article v-for="book in section.books" :key="book.id" class="this-year-card">
+                <div class="this-year-card__cover">
+                  <CardStatus :back="true" :book="book" />
 
-    <div v-else class="this-year__container">
-      <div class="this-year__grid">
-        <div v-for="section in booksByMonth" :key="section.label" class="this-year__month-group">
-          <h2 class="this-year__month-title">{{ section.label }} - {{ section.books.length }}</h2>
-          <div class="this-year__grid">
-            <article v-for="book in section.books" :key="book.id" class="this-year-card">
-              <div class="this-year-card__cover">
-                <CardStatus :back="true" :book="book" />
-
-                <img
-                  v-if="book.cover?.[0]"
-                  :src="book.cover[0]"
-                  :alt="`Capa do livro ${book.title}`"
-                  class="this-year-card__image"
-                  loading="lazy"
-                  @click="navigateToEdit(book.id)"
-                />
-                <div v-else class="this-year-card__placeholder">📖</div>
-              </div>
-            </article>
+                  <img
+                    v-if="book.cover?.[0]"
+                    :src="book.cover[0]"
+                    :alt="`Capa do livro ${book.title}`"
+                    class="this-year-card__image"
+                    loading="lazy"
+                    @click="navigateToEdit(book.id)"
+                  />
+                  <div v-else class="this-year-card__placeholder">📖</div>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </StateHandler>
   </div>
 </template>
 
@@ -172,32 +163,7 @@ const navigateToEdit = (bookId) => {
   margin: 0;
 }
 
-.this-year__error,
-.this-year__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: var(--black);
-}
-
-.this-year__error {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: var(--radius);
-  margin: 2rem;
-}
-
-.this-year__error-message {
-  font-size: 1.125rem;
-  margin-bottom: 1.5rem;
-}
-
-.this-year__empty-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-}
+/* ===== ESTADOS (ERROR, LOADING, EMPTY) — estilos no StateHandler ===== */
 
 .this-year__container {
   max-width: 700px;
@@ -216,10 +182,11 @@ const navigateToEdit = (bookId) => {
 }
 
 .this-year__month-title {
-  text-transform: uppercase;
   margin-bottom: 1.75rem;
 }
-
+.this-year__month-title span {
+  text-transform: capitalize;
+}
 .this-year-card {
   background: var(--white);
   padding: 0.5rem;

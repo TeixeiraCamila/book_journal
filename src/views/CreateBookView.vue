@@ -6,7 +6,7 @@ import { useBookStore } from '@/stores/bookStore';
 import { useNotifications } from '@/composables/useNotifications';
 import BookForm from '@/components/forms/BookForm/BookForm.vue';
 import FormSkeleton from '@/components/ui/Skeleton/FormSkeleton.vue';
-import Button from '@/components/ui/Button.vue';
+import StateHandler from '@/components/ui/StateHandler.vue';
 
 const { addNotification } = useNotifications();
 
@@ -56,15 +56,8 @@ const loadBook = async () => {
 onMounted(loadBook);
 watch(() => route.params.id, loadBook);
 
-const handleSubmit = () => {
-  // Notificação já é exibida no BookForm após sucesso da operação
-};
-
-const handleEditSuccess = () => {
-  router.push({ path: '/', query: { slide: '1' } });
-};
-
-const handleCancel = () => {
+// Volta para a home (após criar, editar ou cancelar)
+const goHome = () => {
   router.push({ path: '/', query: { slide: '1' } });
 };
 </script>
@@ -83,20 +76,18 @@ const handleCancel = () => {
     </header>
 
     <main class="create-book-view__content">
-      <FormSkeleton v-if="isLoading" />
-      <div v-else-if="error" class="create-book-view__error">
-        <h3>Erro ao carregar livro</h3>
-        <p>{{ error }}</p>
-        <Button @click="loadBook">Tentar novamente</Button>
-      </div>
-      <BookForm
-        v-else
-        :book="book"
-        :is-edit="isEdit"
-        @submit="handleSubmit"
-        @cancel="handleCancel"
-        @edit-success="handleEditSuccess"
-      />
+      <StateHandler
+        :loading="isLoading"
+        :error="error ? error : false"
+        empty-icon=""
+        @retry="loadBook"
+      >
+        <template #loading>
+          <FormSkeleton />
+        </template>
+
+        <BookForm :book="book" :is-edit="isEdit" @cancel="goHome" @edit-success="goHome" />
+      </StateHandler>
     </main>
   </div>
 </template>
@@ -146,27 +137,5 @@ const handleCancel = () => {
   font-weight: 600;
   color: var(--black);
   margin: 0;
-}
-
-.create-book-view__error {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-  text-align: center;
-  background: rgba(239, 68, 68, 0.05);
-  border-radius: var(--radius);
-  margin: 2rem;
-}
-
-.create-book-view__error h3 {
-  color: var(--danger);
-  margin-bottom: 1rem;
-}
-
-.create-book-view__error p {
-  color: var(--danger);
-  margin-bottom: 1.5rem;
 }
 </style>

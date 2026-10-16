@@ -1,28 +1,12 @@
 <script setup>
 // Lista "To Be Read" — exibe livros pendentes em formato de selos (stamps) com rotação alternada
-import { useRouter } from 'vue-router';
 import { useBookStore } from '@/stores/bookStore';
-import { computed } from 'vue';
 import { BOOK_STATUS_MAP } from '@/constants/book';
-import Button from '@/components/ui/Button.vue';
-import LoadingSpinner from '@/components/ui/LoadingSpinner.vue';
+import StateHandler from '@/components/ui/StateHandler.vue';
+import { useBookNavigation } from '@/composables/useBookNavigation';
 
-const router = useRouter();
 const bookStore = useBookStore();
-
-const handleRetry = async () => {
-  await bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ);
-};
-
-const showEmptyState = computed(() => {
-  return (
-    !bookStore.loadingStates.tbr && bookStore.bookLists.tbr.length === 0 && !bookStore.hasError
-  );
-});
-
-const navigateToEdit = (bookId) => {
-  router.push(`/editar/${bookId}`);
-};
+const { navigateToEdit } = useBookNavigation();
 </script>
 
 <template>
@@ -47,56 +31,48 @@ const navigateToEdit = (bookId) => {
       </p>
     </header>
 
-    <div v-if="bookStore.hasError && !bookStore.loadingStates.tbr" class="tbr-list__error">
-      <div class="tbr-list__error-icon">⚠️</div>
-      <p class="tbr-list__error-message">{{ bookStore.error }}</p>
-      <Button @click="handleRetry"> Tentar Novamente </Button>
-    </div>
+    <StateHandler
+      :loading="bookStore.loadingStates.tbr"
+      :error="bookStore.hasError ? bookStore.error : false"
+      :empty="bookStore.bookLists.tbr.length === 0"
+      loading-message="Carregando livros..."
+      empty-title="Lista vazia"
+      empty-text='Adicione livros com o status "To be read" para vê-los aqui!'
+      @retry="bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.TO_BE_READ)"
+    >
+      <TransitionGroup name="stamp" tag="div" class="tbr-list__grid">
+        <div
+          v-for="(book, index) in bookStore.bookLists.tbr"
+          :key="book.id"
+          class="stamp-wrapper"
+          :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }"
+        >
+          <article class="stamp" @click="navigateToEdit(book.id)">
+            <div class="stamp__inner">
+              <div class="stamp__image-container">
+                <img
+                  v-if="book.cover?.[0]"
+                  :src="book.cover[0]"
+                  :alt="`Capa do livro ${book.title}`"
+                  class="stamp__image"
+                  loading="lazy"
+                />
+                <div v-else class="stamp__placeholder" aria-label="Sem capa disponível">📖</div>
+                <div class="stamp__overlay" aria-hidden="true"></div>
+              </div>
 
-    <LoadingSpinner v-else-if="bookStore.loadingStates.tbr">
-      <p>Carregando livros...</p>
-    </LoadingSpinner>
-
-    <div v-else-if="showEmptyState" class="tbr-list__empty">
-      <div class="tbr-list__empty-icon">📚</div>
-      <h2 class="tbr-list__empty-title">Lista vazia</h2>
-      <p class="tbr-list__empty-text">
-        Adicione livros com o status "To be read" para vê-los aqui!
-      </p>
-    </div>
-
-    <TransitionGroup v-else name="stamp" tag="div" class="tbr-list__grid">
-      <div
-        v-for="(book, index) in bookStore.bookLists.tbr"
-        :key="book.id"
-        class="stamp-wrapper"
-        :style="{ transform: `rotate(${index % 2 === 0 ? -2 : 2}deg)` }"
-      >
-        <article class="stamp" @click="navigateToEdit(book.id)">
-          <div class="stamp__inner">
-            <div class="stamp__image-container">
-              <img
-                v-if="book.cover?.[0]"
-                :src="book.cover[0]"
-                :alt="`Capa do livro ${book.title}`"
-                class="stamp__image"
-                loading="lazy"
-              />
-              <div v-else class="stamp__placeholder" aria-label="Sem capa disponível">📖</div>
-              <div class="stamp__overlay" aria-hidden="true"></div>
+              <div class="stamp__details">
+                <h3 class="stamp__title">{{ book.title }}</h3>
+                <p v-if="book.author?.length" class="stamp__author">
+                  {{ book.author.join(', ') }}
+                </p>
+                <p v-else class="stamp__author">Autor desconhecido</p>
+              </div>
             </div>
-
-            <div class="stamp__details">
-              <h3 class="stamp__title">{{ book.title }}</h3>
-              <p v-if="book.author?.length" class="stamp__author">
-                {{ book.author.join(', ') }}
-              </p>
-              <p v-else class="stamp__author">Autor desconhecido</p>
-            </div>
-          </div>
-        </article>
-      </div>
-    </TransitionGroup>
+          </article>
+        </div>
+      </TransitionGroup>
+    </StateHandler>
   </div>
 </template>
 
@@ -138,52 +114,7 @@ const navigateToEdit = (bookId) => {
   color: var(--black);
 }
 
-/* ===== ESTADOS (ERROR, LOADING, EMPTY) ===== */
-.tbr-list__error,
-.tbr-list__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-  color: var(--black);
-}
-
-/* Estado de Erro */
-.tbr-list__error {
-  background: rgba(239, 68, 68, 0.1);
-  border-radius: var(--radius);
-  margin: 2rem;
-}
-
-.tbr-list__error-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.tbr-list__error-message {
-  font-size: 1.125rem;
-  margin-bottom: 1.5rem;
-  color: var(--danger);
-}
-
-/* Estado Vazio */
-.tbr-list__empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.tbr-list__empty-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-}
-
-.tbr-list__empty-text {
-  color: var(--muted);
-  max-width: 400px;
-}
+/* ===== ESTADOS (ERROR, LOADING, EMPTY) — estilos no StateHandler ===== */
 
 /* ===== GRID DE LIVROS ===== */
 .tbr-list__grid {

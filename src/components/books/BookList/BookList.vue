@@ -1,16 +1,24 @@
 <script setup>
 // Grid de livros com filtros, paginação e estados de loading/erro/vazio
-import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { computed, onMounted } from 'vue';
 import { useBookStore } from '@/stores/bookStore';
 import { DEFAULT_SEARCH_MODE } from '@/constants/book';
 import BookCard from '@/components/books/BookCard/BookCard.vue';
 import BookCardSkeleton from '@/components/ui/Skeleton/BookCardSkeleton.vue';
 import Pagination from '@/components/navigation/Pagination.vue';
 import Filters from '@/components/navigation/Filters.vue';
-import Button from '@/components/ui/Button.vue';
+import StateHandler from '@/components/ui/StateHandler.vue';
+import { useBookNavigation } from '@/composables/useBookNavigation';
+
 const bookStore = useBookStore();
-const router = useRouter();
+const { navigateToEdit } = useBookNavigation();
+
+// Texto do estado vazio muda conforme há filtros ativos
+const emptyText = computed(() =>
+  bookStore.searchTerm || bookStore.filterStatus !== 'all'
+    ? 'Tente ajustar seus filtros de busca'
+    : 'Comece adicionando seu primeiro livro!',
+);
 
 /**
  * Carrega livros ao montar o componente
@@ -25,13 +33,6 @@ onMounted(async () => {
   // Busca opções do backend e livros
   await Promise.all([bookStore.fetchBookOptions(), bookStore.fetchBooks()]);
 });
-
-/**
- * Redireciona para página de edição
- */
-const handleEditBook = (book) => {
-  router.push(`/editar/${book.id}`);
-};
 </script>
 
 <template>
@@ -42,36 +43,20 @@ const handleEditBook = (book) => {
     </div>
 
     <div class="book-list-content">
-      <!-- Estado de Loading (só na primeira carga; paginação mantém a grade visível) -->
-      <div
-        v-if="bookStore.loadingStates.main && bookStore.allBooks.length === 0"
-        class="book-list__skeletons"
+      <StateHandler
+        :loading="bookStore.loadingStates.main && bookStore.allBooks.length === 0"
+        :error="bookStore.hasError ? bookStore.error : false"
+        :empty="bookStore.allBooks.length === 0"
+        :empty-text="emptyText"
+        @retry="bookStore.fetchBooks()"
       >
-        <BookCardSkeleton v-for="n in bookStore.pagination.pageSize" :key="n" />
-      </div>
+        <!-- Esqueleto de cards na primeira carga; paginação mantém a grade visível depois -->
+        <template #loading>
+          <div class="book-list__skeletons">
+            <BookCardSkeleton v-for="n in bookStore.pagination.pageSize" :key="n" />
+          </div>
+        </template>
 
-      <!-- Estado de Erro -->
-      <div v-else-if="bookStore.hasError" class="book-list__state book-list__state--error">
-        <div class="book-list__error-icon">⚠️</div>
-        <p class="book-list__error-message">{{ bookStore.error }}</p>
-        <Button @click="bookStore.fetchBooks()"> Tentar Novamente </Button>
-      </div>
-
-      <!-- Estado Vazio -->
-      <div v-else-if="bookStore.allBooks.length === 0" class="book-list__state">
-        <div class="book-list__empty-icon">📚</div>
-        <h2 class="book-list__empty-title">Nenhum livro encontrado</h2>
-        <p class="book-list__empty-text">
-          {{
-            bookStore.searchTerm || bookStore.filterStatus !== 'all'
-              ? 'Tente ajustar seus filtros de busca'
-              : 'Comece adicionando seu primeiro livro!'
-          }}
-        </p>
-      </div>
-
-      <!-- Grid de Livros -->
-      <template v-else>
         <TransitionGroup
           name="book-list"
           tag="div"
@@ -82,7 +67,7 @@ const handleEditBook = (book) => {
             v-for="book in bookStore.allBooks"
             :key="book.id"
             :book="book"
-            @edit="handleEditBook"
+            @edit="navigateToEdit($event.id)"
           />
         </TransitionGroup>
 
@@ -96,7 +81,7 @@ const handleEditBook = (book) => {
           @next="bookStore.nextPage"
           @change-size="bookStore.changePageSize"
         />
-      </template>
+      </StateHandler>
     </div>
   </div>
 </template>
@@ -127,15 +112,6 @@ const handleEditBook = (book) => {
   padding: 1rem 0;
   overflow: scroll;
 }
-.book-list__state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  flex: 1;
-  text-align: center;
-  padding: 4rem 2rem;
-}
 
 /* Estado de Loading */
 .book-list__skeletons {
@@ -144,43 +120,6 @@ const handleEditBook = (book) => {
   gap: 3rem 1.5rem;
   flex: 1;
   margin-top: 2rem;
-}
-
-/* Estado de Erro */
-.book-list__state--error {
-  border-radius: var(--radius);
-  width: 100%;
-  margin: 0 auto;
-}
-
-.book-list__error-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-}
-
-.book-list__error-message {
-  font-size: 1.125rem;
-  color: var(--danger);
-  margin-bottom: 1.5rem;
-}
-
-/* Estado Vazio */
-.book-list__empty-icon {
-  font-size: 4rem;
-  margin-bottom: 1rem;
-}
-
-.book-list__empty-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--black);
-  margin-bottom: 0.5rem;
-}
-
-.book-list__empty-text {
-  color: var(--white);
-  max-width: 400px;
-  line-height: 1.6;
 }
 
 /* ===== GRID DE LIVROS ===== */
@@ -229,10 +168,6 @@ const handleEditBook = (book) => {
 
   .filters {
     height: fit-content;
-  }
-
-  .book-list__state {
-    padding: 2rem 1rem;
   }
 }
 </style>
