@@ -44,7 +44,8 @@ src/
 ├── App.vue                  # Root component
 ├── main.js                  # Entry point (Pinia, Router, Toast)
 ├── assets/
-│   └── main.css             # Global styles
+│   ├── main.css             # Global styles entry
+│   └── css/                 # vars.css (tokens), style.css, toast-override.css
 ├── components/
 │   ├── index.js             # Barrel exports
 │   ├── books/
@@ -53,11 +54,13 @@ src/
 │   │   │   ├── CardBack.vue
 │   │   │   ├── CardFront.vue
 │   │   │   └── CardStatus.vue
+│   │   ├── BookCover/       # Cover image with local placeholder fallback
 │   │   └── BookList/        # Book list
 │   ├── features/
-│   │   ├── Stack/           # Card stack
+│   │   ├── Stack/           # Card stack (CardIntro)
 │   │   ├── ReadingList/     # Current reading list
-│   │   └── TBRList/         # "To read" list
+│   │   ├── TBRList/         # "To read" list
+│   │   └── ThisYearList/    # Books read this year
 │   ├── forms/
 │   │   ├── BookForm/        # Book form
 │   │   ├── FormField.vue
@@ -66,26 +69,22 @@ src/
 │   ├── ui/                  # Base components
 │   │   ├── Button.vue
 │   │   ├── LoadingSpinner.vue
-│   │   ├── Modal.vue
-│   │   ├── Badge.vue
-│   │   ├── Card.vue
-│   │   └── Skeleton/        # Loading states
-│   ├── layout/
-│   │   ├── Header.vue
-│   │   ├── Layout.vue
-│   │   └── Container.vue
+│   │   ├── StateHandler.vue
+│   │   └── Skeleton/        # BookCardSkeleton, FormSkeleton
 │   ├── navigation/
 │   │   ├── Pagination.vue
-│   │   ├── Filters.vue
+│   │   └── Filters.vue
 │   └── feedback/
-│       ├── Notification.vue
-│       ├── ToastContainer.vue
 │       └── ConfirmDialog.vue
 ├── composables/
 │   ├── useAnimatedModal.js
+│   ├── useBookFormatters.js
+│   ├── useBookNavigation.js
 │   └── useNotifications.js
 ├── constants/
-│   └── book.js              # Status, type, label constants
+│   ├── book.js              # Status, type, label constants
+│   ├── formLayout.js        # Canonical form sections/fields
+│   └── toast.js             # Toast config
 ├── router/
 │   └── index.js             # Routes + auth guard
 ├── services/
@@ -94,7 +93,8 @@ src/
 │   ├── bookStore.js         # Book state (Pinia)
 │   └── userStore.js         # User state (Pinia)
 ├── utils/
-│   └── validation.js        # Validation helpers
+│   ├── validation.js        # Validation helpers
+│   └── errorHandler.js      # Shared error extraction/logging
 └── views/
     ├── CardStackView.vue
     ├── CreateBookView.vue
@@ -134,8 +134,8 @@ The app follows a **Vue 3 SPA** architecture:
 - **Pinia** as the global store, split per domain (`bookStore`, `userStore`)
 - **Vue Router** with lazy-loaded views and an auth navigation guard
 - **Service layer** centralized in `services/api.js` with Axios
-- **Constants** in `constants/` as fallback for backend options
-- **Composables** for reusable logic (animated modals, notifications)
+- **Constants** in `constants/` for backend option fallbacks and the canonical form layout
+- **Composables** for reusable logic (animated modals, notifications, book formatters/navigation)
 - **Barrel exports** in `components/index.js` for easier imports
 
 ### Data flow

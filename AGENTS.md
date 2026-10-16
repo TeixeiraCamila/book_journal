@@ -104,7 +104,7 @@ Regras:
 src/
 ├── components/{books,features,forms,ui,layout,navigation,feedback}/
 ├── composables/          # useAnimatedModal, useNotifications...
-├── constants/            # fallback de opções do backend
+├── constants/            # opções fallback do backend + layout do form
 ├── router/               # rotas + guard de auth
 ├── services/             # api.js (Axios client)
 ├── stores/               # Pinia (bookStore, userStore)

@@ -1,6 +1,6 @@
 # Decisões de Arquitetura
 
-Registro das decisões técnicas que já foram tomadas — para não redecidir o que já foi resolvido. Novas decisões entram aqui com o próximo número.
+Registro das decisões técnicas já tomadas, para não redecidir o que está resolvido. Novas decisões entram aqui com o próximo número.
 
 ---
 
@@ -46,7 +46,7 @@ Guardar `SESSION_TOKEN`/`SESSION_USER` no `localStorage`; interceptor anexa `Bea
 
 Alternativas:
 
-- Cookie HTTP-only (planejado — `ROADMAP.md`)
+- Cookie HTTP-only (planejado; ver `ROADMAP.md`)
 - Memória apenas (perdia sessão no reload)
 
 Consequências:
@@ -64,7 +64,7 @@ Status: Aceita
 
 Contexto:
 
-Queria-se permitir "entrar sem conta" para só leitura.
+Queria permitir "entrar sem conta" para só leitura.
 
 Decisão:
 
@@ -78,7 +78,7 @@ Alternativas:
 Consequências:
 
 - Positivo: zero mudanças no backend; leitura 100% pública já é o contrato da API
-- Trade-off: "segurança" do visitante é só UX — qualquer um pode chamar a API de escrita sem token (e levará 401)
+- Trade-off: "segurança" do visitante é só UX; qualquer um pode chamar a API de escrita sem token (e levará 401)
 
 ---
 
@@ -99,7 +99,7 @@ Decisão:
 Consequências:
 
 - Positivo: UI nunca fica sem opções
-- Trade-off: catálogo duplicado — se mudar no Notion, o fallback fica defasado (aceito; é só fallback)
+- Trade-off: catálogo duplicado; se mudar no Notion, o fallback fica defasado (aceito; é só fallback)
 
 ---
 
@@ -157,7 +157,7 @@ Contexto:
 
 Decisão:
 
-Guard de rotas chama `userStore.validateSession()` (`GET /api/auth/me`, timeout 5 s) **uma vez por carga de app** (flag `sessaoRevalidada`). **Só 401 derruba a sessão** — rede/timeout/5xx mantêm o login, pois não provam token inválido.
+Guard de rotas chama `userStore.validateSession()` (`GET /api/auth/me`, timeout 5 s) **uma vez por carga de app** (flag `sessaoRevalidada`). **Só 401 derruba a sessão**; rede/timeout/5xx mantêm o login, pois não provam token inválido.
 
 Consequências:
 
@@ -183,7 +183,7 @@ Renomear **todos os identificadores JS** de `src/` para camelCase: variáveis, f
 Fora de escopo (continuam como estão):
 
 - Classes CSS e custom properties BEM (`card_back__text`, `--accent_muted`, `--button_color`)
-- Chaves de contrato do backend (`has_more`, `next_cursor`, `avatar_url` — ver `API.md`)
+- Chaves de contrato do backend (`has_more`, `next_cursor`, `avatar_url`; ver `API.md`)
 - Nomes de assets/paths (`card_this_year/left_top.webp`) e de outros repos (`notion_api`)
 
 Alternativas:
@@ -193,8 +193,8 @@ Alternativas:
 
 Consequências:
 
-- Positivo: fronteiras consistentes — o que vem da API/props já chega em camelCase e não precisa de mapeamento
-- Trade-off: diverge do bloco comum do `AGENTS.md` raiz (que segue snake_case para os outros 4 repos) — a divergência está marcada no `AGENTS.md` deste repo
+- Positivo: fronteiras consistentes; o que vem da API/props já chega em camelCase e não precisa de mapeamento
+- Trade-off: diverge do bloco comum do `AGENTS.md` raiz (que segue snake_case para os outros 4 repos); a divergência está marcada no `AGENTS.md` deste repo
 - Ação: comentários e docs do projeto atualizados junto com o código
 
 ---
@@ -207,7 +207,7 @@ Status: Aceita
 
 Contexto:
 
-O backend expõe `GET /api/books/stats` (métricas agregadas: contagem por status, páginas lidas, distribuição de notas, gêneros/autor mais lidos etc.). No front deste repo só restava código morto: `booksApi.stats()` sem chamador e o estado `stats`/`statsLoading` no `bookStore` sem nenhuma view que os consumisse. `chart.js` estava instalada sem um único import — o `ROADMAP.md` já listava a dúvida "duplicar o painel aqui ou deixar para o `dashboard__journal`?".
+O backend expõe `GET /api/books/stats` (métricas agregadas: contagem por status, páginas lidas, distribuição de notas, gêneros/autor mais lidos etc.). No front deste repo só restava código morto: `booksApi.stats()` sem chamador e o estado `stats`/`statsLoading` no `bookStore` sem nenhuma view que os consumisse. `chart.js` estava instalada sem um único import; o `ROADMAP.md` já listava a dúvida "duplicar o painel aqui ou deixar para o `dashboard__journal`?".
 
 Decisão:
 
@@ -223,3 +223,30 @@ Consequências:
 - Positivo: −1 dependência, −1 endpoint no client, store enxuta; decisão encerra questão aberta do `PRD.md`
 - Trade-off: qualquer métrica agregada no futuro deste app terá que ser calculada client-side a partir das listas
 - Ação: docs (PRD, ROADMAP, API, ARCHITECTURE, OBSERVABILITY) e `AGENTS.md` ajustados
+
+---
+
+## Decisão 010 — Layout canônico do form em `constants/formLayout.js`
+
+Data: 2026-10-16
+
+Status: Aceita
+
+Contexto:
+
+O `FormSkeleton` espelhava o `BookForm` à mão (5 seções + campos hardcoded) e já havia divergido: campo "Capa (URLs)" na seção errada, cabeçalho interno duplicando o da `CreateBookView` e ausência da coluna de capa. Manter os dois em sincronia exigia editar sempre 2 arquivos a cada mudança de form.
+
+Decisão:
+
+Criar `src/constants/formLayout.js` com as 5 seções, os campos (`label` + `kind`) e as ações do form. O `FormSkeleton` renderiza a partir do config (incluindo a coluna de capa 20/80); o `BookForm` importa os títulos das seções e os textos dos botões. O form em si continua escrito à mão.
+
+Alternativas:
+
+- Gerar o form inteiro do config (tipos variados: datalist, chips, rating, file; refatoração de dias para o ganho de hoje)
+- Manter o skeleton manual (é exatamente o que gerou a divergência)
+
+Consequências:
+
+- Positivo: estrutura/títulos sincronizados sem reescrever um form de ~700 linhas; mudar seção = 1 arquivo
+- Trade-off: o config espelha, não comanda; ordem, `v-if` e detalhes de cada campo seguem no template do `BookForm`
+- Ação: Fase 4 do `PLANO_DEDUPLICACAO.md` marcada e `analise-melhorias.md` atualizados

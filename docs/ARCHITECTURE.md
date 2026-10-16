@@ -2,7 +2,7 @@
 
 ## 1. Visão Geral do Sistema
 
-SPA Vue 3 100% client-side. Não possui backend próprio: consome o `notion_api` (repositório irmão, Express 5), que lê e escreve num database do Notion. O Notion é o CMS/ferramenta de dados; a API é a camada de tradução HTTP ↔ Notion.
+SPA Vue 3 100% client-side. Não possui backend próprio: consome o `notion_api` (repositório irmão, Express 5), que lê e escreve num database do Notion. O Notion é o CMS; a API traduz HTTP ↔ Notion.
 
 ---
 
@@ -12,9 +12,7 @@ Padrão:
 
 SPA em camadas com stores como fachada de estado: `View → Store (Pinia) → services/api.js (Axios) → notion_api → Notion`.
 
-Motivo:
-
-Separa a lógica de UI do transporte HTTP; stores centralizam estado compartilhado entre slides/listas e evitam refetch duplicado.
+O padrão separa a lógica de UI do transporte HTTP; as stores centralizam o estado compartilhado entre slides/listas e evitam refetch duplicado.
 
 ---
 
@@ -71,7 +69,7 @@ Responsabilidades:
 
 - Validar payloads (Zod) e autenticar (JWT HS256)
 - Mapear propriedades do Notion para o objeto `book` e vice-versa
-- Paginar com cursor do Notion, cachear `options` (300 s) e `stats` (300 s — só consumido pelo `dashboard__journal`)
+- Paginar com cursor do Notion, cachear `options` (300 s) e `stats` (300 s; só consumido pelo `dashboard__journal`)
 
 ### Notion
 
@@ -102,7 +100,7 @@ Notion API (database Books / persons)
 
 ## 6. Fluxo de Dados
 
-Exemplo — criar livro:
+Exemplo de criação de livro:
 
 1. Usuário preenche `BookForm` e submete
 2. Validação de campo roda no cliente (`fieldErrors`)
@@ -112,7 +110,7 @@ Exemplo — criar livro:
 6. Store refaz `fetchBooks()` + `fetchBooksByStatus()` se for TBR
 7. Toast de sucesso e navegação para `/?slide=1`
 
-Exemplo — busca:
+Exemplo de busca:
 
 1. Input dispara após debounce de 400 ms
 2. `searchToken` é incrementado (invalida respostas em voo)
@@ -129,15 +127,15 @@ src/
 ├── main.js                  # createApp + Pinia + Router + Toast
 ├── assets/css/              # vars.css (tokens), style.css, toast-override.css
 ├── components/
-│   ├── books/               # BookCard (front/back/status), BookList
+│   ├── books/               # BookCard (front/back/status), BookCover, BookList
 │   ├── features/            # Stack (CardIntro), ReadingList, TBRList, ThisYearList
 │   ├── forms/               # BookForm, FormField, FormSection, FormActions
 │   ├── ui/                  # Button, LoadingSpinner, StateHandler, Skeleton/
 │   ├── navigation/          # Filters, Pagination
 │   ├── feedback/            # ConfirmDialog
 │   └── index.js             # barrel exports
-├── composables/             # useAnimatedModal, useNotifications, useBookFormatters
-├── constants/               # book.js (opções fallback), toast.js
+├── composables/             # useAnimatedModal, useNotifications, useBookFormatters, useBookNavigation
+├── constants/               # book.js (opções fallback), toast.js, formLayout.js (layout do form)
 ├── router/index.js          # rotas lazy + guard de auth
 ├── services/api.js          # instância Axios + booksApi/authApi
 ├── stores/                  # bookStore.js, userStore.js
@@ -149,23 +147,24 @@ src/
 
 ## 8. Regras de Dependência
 
-- Views nunca chamam Axios direto — sempre via stores
-- Componentes de UI não conhecem a API — recebem props/emit
+- Views nunca chamam Axios direto; sempre via stores
+- Componentes de UI não conhecem a API; recebem props/emit
 - Só `services/api.js` fala com HTTP; só stores importam `services/api`
-- `constants/` é fallback, nunca fonte primária quando o backend responde
+- `constants/` de opções (`book.js`, `toast.js`) é fallback, nunca fonte primária quando o backend responde; `formLayout.js` é config local de UI (Decisão 010)
 - Identificadores próprios em camelCase; chaves de dados/API em camelCase (contrato do backend); constantes em SCREAMING_SNAKE_CASE
 
 ---
 
 ## 9. Decisões Técnicas Principais
 
-Registradas em `DECISIONS.md` (001–007). Resumo:
+Registradas em `DECISIONS.md` (001–010). Resumo:
 
 - Paginação por cursor (Notion) em vez de páginas numéricas
 - Token JWT em `localStorage` (com trade-off documentado; cookie HTTP-only no roadmap)
 - Modo visitante simulado no cliente (backend não o conhece)
 - Constantes locais como fallback do catálogo do Notion
 - Prefetch de chunks em produção + slides dinâmicos
+- Layout canônico do form em `constants/formLayout.js` (form + skeleton sincronizados, Decisão 010)
 
 ---
 
@@ -174,18 +173,18 @@ Registradas em `DECISIONS.md` (001–007). Resumo:
 - Lazy loading de rotas e `defineAsyncComponent` nas listas (chunk por slide)
 - Prefetch dos próximos chunks após 1,5 s e ao trocar de slide (só `PROD`)
 - Debounce de 400 ms na busca + descarte de respostas obsoletas
-- `node-cache` no backend para `options`/`stats` (300 s; `stats` fora do escopo deste app — Decisão 009)
+- `node-cache` no backend para `options`/`stats` (300 s; `stats` fora do escopo deste app, ver Decisão 009)
 - `/api/books/all` com timeout estendido (60 s)
 
 Risco conhecido:
 
-Sem virtual scrolling — `BookList` degrada com bibliotecas muito grandes (`ROADMAP.md`).
+Sem virtual scrolling, a `BookList` degrada com bibliotecas muito grandes (`ROADMAP.md`).
 
 ---
 
 ## 11. Considerações de Escalabilidade
 
-App single-user; escalabilidade de dados é do Notion (limite de ~100 itens/página da API). A paginação por cursor já absorve acervos grandes no lado da listagem.
+App single-user; a escalabilidade dos dados é do Notion (limite de ~100 itens/página da API). A paginação por cursor absorve acervos grandes no lado da listagem.
 
 ---
 

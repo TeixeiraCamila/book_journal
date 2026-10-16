@@ -15,7 +15,7 @@
 
 ## 🟡 Duplicações
 
-Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil linhas). Plano de ataque em 5 fases: `docs/PLANO_DEDUPLICACAO.md`.
+Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil linhas). Plano de ataque em 5 fases: `docs/PLANO_DEDUPLICACAO.md` — fases 1–5 executadas em 15–16/10/2026.
 
 | Código duplicado | Ocorre em | Status |
 |-----------------|-----------|--------|
@@ -25,15 +25,15 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 | `_handleError` (lógica similar) | `bookStore.js` + `userStore.js` (delegam a `utils/errorHandler`) | ✅ |
 | Form reset `Object.keys(formData).forEach(...)` | `BookForm.vue` (hoje só existe `resetFormData`) | ✅ |
 | `closeModal` e `closeModalWithAnimation` (corpo idêntico) | `useAnimatedModal.js`; usos no `BookCard.vue` | ✅ unificado em `closeModal` (15/10/2026, Fase 1 do plano) |
-| Formatters de autor/páginas/tipo usados pela metade | `useBookFormatters` × cópias manuais: `CardBack` (autor, páginas), `TBRList` (autor), `ReadingList.calculateProgress`, watch de % do `BookForm` | ❌ |
-| Validação inline × utilitário | `BookForm.handleSubmit` × `utils/validation.js` (`validateRequired`/`validatePositiveNumber`/`validateYear` sem uso) | ❌ |
-| `FormSkeleton` espelha o layout do form à mão | `FormSkeleton.vue` × `BookForm.vue` (5 seções + campos hardcoded) | ❌ |
-| Capa ou placeholder | `CardFront` (placehold.co) × `ReadingList`/`TBRList`/`ThisYearList` (📖) | ❌ |
-| Overlay de modal (fixed + backdrop + flex center) | `BookCard.vue` × `ConfirmDialog.vue` | ❌ |
-| Posicionamento do texto da fita de status | `CardStatus.vue` × `ThisYearList.vue` | ❌ |
-| Esqueleto de fetch (loading/token/try-catch-finally) | `bookStore.js`: `fetchBooks`, `fetchBooksByStatus`, `fetchBooksReadThisYear` | ❌ |
-| `search`/`setSearchBy`/`filterByStatus` idênticos + `$reset` × `state()` | `bookStore.js` | ❌ |
-| Sequência de fetch e blocos `defineAsyncComponent` ×4 | `CardStackView.vue` | ❌ |
+| Formatters de autor/páginas/tipo usados pela metade | `useBookFormatters` × cópias manuais: `CardBack` (autor, páginas), `TBRList` (autor), `ReadingList.calculateProgress`, watch de % do `BookForm` | ✅ Fase 2 (16/10/2026): `CardBack`/`TBRList` usam `getAuthorString` (agora com prefixo do `literaryAtlas`), páginas/progresso via `getPagesProgress`+`getPagesString`, tipo via `getTypeString`, `ReadingList` e o watch do Kindle via composable |
+| Validação inline × utilitário | `BookForm.handleSubmit` × `utils/validation.js` (`validateRequired`/`validatePositiveNumber`/`validateYear` sem uso) | ✅ Fase 2 (16/10/2026): `handleSubmit` delega às funções puras + `validatePositiveInteger`/`validateDateRange` novos |
+| `FormSkeleton` espelha o layout do form à mão | `FormSkeleton.vue` × `BookForm.vue` (5 seções + campos hardcoded) | ✅ Fase 4 (16/10/2026): `constants/formLayout.js` virou fonte única (seções, campos, ações); skeleton renderiza dele e o form importa os títulos (Decisão 010) |
+| Capa ou placeholder | `CardFront` (placehold.co) × `ReadingList`/`TBRList`/`ThisYearList` (📖) | ✅ Fase 3 (16/10/2026): componente `BookCover` com fallback local (SVG data-URI) em CardFront, ReadingList, TBRList, ThisYearList e preview do `BookForm` |
+| Overlay de modal (fixed + backdrop + flex center) | `BookCard.vue` × `ConfirmDialog.vue` | ✅ Fase 3 (16/10/2026): base `.modal-overlay` global em `assets/css/style.css`; `z-index` 100/2000 e blur continuam por componente |
+| Posicionamento do texto da fita de status | `CardStatus.vue` × `ThisYearList.vue` | ✅ Fase 3 (16/10/2026): virou modifier `card-status--tight` no `CardStatus` |
+| Esqueleto de fetch (loading/token/try-catch-finally) | `bookStore.js`: `fetchBooks`, `fetchBooksByStatus`, `fetchBooksReadThisYear` | ✅ Fase 5 (16/10/2026): `_fetchPaged` unifica os 3 fetches (token anti-corrida generalizado via flag `useToken`) |
+| `search`/`setSearchBy`/`filterByStatus` idênticos + `$reset` × `state()` | `bookStore.js` | ✅ Fase 5 (16/10/2026): `_applyFilters()` comum e `$reset()` reaproveita `createInitialState()` |
+| Sequência de fetch e blocos `defineAsyncComponent` ×4 | `CardStackView.vue` | ✅ Fase 5 (16/10/2026): registry `listComponents` + `loadLists()` único nos pontos de chamada (chunks separados mantidos no build) |
 | Handlers vazios/idênticos (`handleSubmit`; `handleCancel` = `handleEditSuccess`) | `CreateBookView.vue` | ✅ viraram um único `goHome` e o `emit('submit')` morto saiu do `BookForm` (15/10/2026, Fase 1 do plano) |
 
 ---
@@ -41,7 +41,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 ## 🟢 Oportunidades de Componentização
 
 1. **`StateHandler`**: ✅ criado e aplicado nas 4 listas + `CreateBookView` em 15/10/2026 (suporta slot `#loading` para skeletons)
-2. **`BookCover`**: exibição de capa com fallback placeholder (repetido em 5+ componentes)
+2. **`BookCover`**: exibição de capa com fallback placeholder — ✅ criado em `components/books/BookCover/` e aplicado em 5 lugares (16/10/2026)
 3. **`useBookFormatters`**: composable com `getAuthorString`, `getPagesString`, etc. (✅ criado e aplicado)
 4. **`EmptyState`**: estado vazio padronizado com ícone e texto
 5. **`usePagination`**: extrair cursor-based pagination do `bookStore.js`
@@ -52,11 +52,11 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 
 | Arquivo | Ação | Status |
 |---------|------|--------|
-| `BookForm.vue` (703 linhas) | Extrair validação, transformação de dados e auto-cálculo Kindle para composables | ❌ |
+| `BookForm.vue` (703 linhas) | Extrair validação, transformação de dados e auto-cálculo Kindle para composables | ❌ parcial (validação → `utils/validation` e Kindle → `useBookFormatters` em 16/10/2026; transformação de dados segue no form) |
 | `bookStore.js` (336 linhas) | Extrair pagination para composable, error handling para utilitário | ✅ (errorHandler.js) |
-| `CardStackView.vue` (197 linhas) | Extrair lógica de prefetch e data loading para composable | ❌ |
+| `CardStackView.vue` (197 linhas) | Extrair lógica de prefetch e data loading para composable | ✅ (16/10/2026: viraram `registry listComponents` + `loadLists()` internos — composable à parte dispensado, a lógica é específica do Swiper) |
 | `FormField.vue` (527 linhas) | Consertar dual v-model emission; considerar subcomponentes por tipo | ❌ |
-| `FormSkeleton.vue` | Converter para `<script setup>` (atualmente sem setup) | ❌ |
+| `FormSkeleton.vue` | Converter para `<script setup>` (atualmente sem setup) | ✅ (já estava em `<script setup>` — status defasado; em 16/10/2026 o markup passou a renderizar de `constants/formLayout.js`) |
 | `ConfirmDialog.vue` | Usar callback prop para confirm em vez de `await emit()` | ✅ |
 | `HomeView.vue` | Remover (legacy, importa componente inexistente) | ✅ (removido em 15/10/2026) |
 
@@ -68,7 +68,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 - `Notification.vue` e `ToastContainer.vue`: substituídos por `vue-toastification`
 - `HomeView.vue`: view legacy não usada — ✅ removida em 15/10/2026
 - `flipToOpposite` em `useAnimatedModal.js`: alias de `toggleFlip`, sem uso — ✅ removido em 15/10/2026 (Fase 1)
-- Validadores de `utils/validation.js` (`validateRequired`, `validatePositiveNumber`, `validateYear`): sem import em lugar nenhum
+- Validadores de `utils/validation.js`: sem uso até 16/10/2026 — hoje todos importados pelo `BookForm` (`validateRequired`, `validatePositiveNumber`, `validateYear`, `validatePositiveInteger`, `validateDateRange`)
 - `handleDelete` do `BookCard.vue`: morto até 15/10/2026 (o `ConfirmDialog` não emitia `confirm`) — virou `handleDeleteConfirmed` (só fecha o modal)
 - Dependências não usadas: `@vueuse/motion`, `@biomejs/biome` — ✅ removidas em 2026-10-15 (`chart.js` já tinha saído com a Decisão 009)
 

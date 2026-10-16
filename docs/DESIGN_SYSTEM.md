@@ -1,16 +1,16 @@
 # Design System
 
-Fonte de verdade do vocabulário visual. Tokens reais vivem em `src/assets/css/vars.css`; este documento explica o que eles são e quando usá-los.
+Fonte de verdade do vocabulário visual. Tokens reais estão em `src/assets/css/vars.css`; este documento explica o que são e quando usá-los.
 
 ## 1. Direção de Design
 
 Estilo:
 
-Papel/caderno (notebook journaling) — texturas de papel, fitas adesivas, sombras marcadas.
+Papel/caderno (notebook journaling): texturas de papel, fitas adesivas, sombras marcadas.
 
 Clima:
 
-Acolhedor, artesanal, levemente retrô/typewriter. Nada "flat" ou corporativo.
+Acolhedor, artesanal, retrô/typewriter. Nada "flat" ou corporativo.
 
 Princípios de Design:
 
@@ -35,7 +35,7 @@ Pessoal, curta, em pt-BR. Ex.: "Sua estante espera por você."
 
 ## 3. Paleta de Cores
 
-Definidas como variáveis CSS em `vars.css` — usar sempre via `var(--token)`, nunca hex literal.
+Definidas como variáveis CSS em `vars.css`; usar sempre via `var(--token)`, nunca hex literal.
 
 Primária (acento rosa):
 
@@ -65,7 +65,7 @@ Cores dos slides da home (definidas no scoped style de `CardStackView.vue`):
 
 intro `#123d17` (verde escuro) · acervo `#537d9e` (azul) · lendo `--accent4` · ano `--accent2` · TBR `#e98378` (coral)
 
-Sem tokens globais de sucesso/aviso — feedback de sucesso usa os toasts (`vue-toastification`) com o estilo padrão da lib, sobrescrito em `assets/css/toast-override.css`.
+Sem tokens globais de sucesso/aviso; o feedback de sucesso usa os toasts (`vue-toastification`) com o estilo padrão da lib, sobrescrito em `assets/css/toast-override.css`.
 
 ---
 
@@ -73,11 +73,11 @@ Sem tokens globais de sucesso/aviso — feedback de sucesso usa os toasts (`vue-
 
 Família Principal (corpo):
 
-`'Sour Gummy', sans-serif` — definida em `:root` com `font-size: clamp(0.875rem, 1rem, 1rem)`, `line-height: 1.5`, `font-weight: 400`
+`'Sour Gummy', sans-serif`: definida em `:root` com `font-size: clamp(0.875rem, 1rem, 1rem)`, `line-height: 1.5`, `font-weight: 400`
 
 Fonte de Títulos/Apoio:
 
-`'Raleway'` — importada em `vars.css`; usada em títulos e elementos de interface que pedem contraste com a Sour Gummy
+`'Raleway'`: importada em `vars.css`; usada em títulos e elementos de interface que pedem contraste com a Sour Gummy
 
 Não há escala tipográfica formal de H1–H3; títulos usam `font-weight: 500–600` e tamanhos por contexto (ex.: título da view de criar `1.25rem`).
 
@@ -111,11 +111,11 @@ Não há token "pill".
 
 ## 7. Sombras
 
-`--shadow-sm: 0 1px 3px #0000001a` — cards leves
+`--shadow-sm: 0 1px 3px #0000001a`, usado em cards leves
 
-`--shadow: 0 8px 20px rgba(0, 0, 0, 0.15)` — sombra padrão
+`--shadow: 0 8px 20px rgba(0, 0, 0, 0.15)`, sombra padrão
 
-`--shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.15)` — elevação máxima
+`--shadow-lg: 0 15px 35px rgba(0, 0, 0, 0.15)`, elevação máxima
 
 `--box-shadow` (neumórfica, assinatura do projeto):
 
@@ -148,7 +148,7 @@ Componente: `src/components/forms/FormField.vue` (tipos: text, number, select, a
 
 Regras:
 
-- Estado padrão, foco visível (obrigatório — acessibilidade), erro em `--danger` via prop `error`, placeholder em `--muted`
+- Estado padrão, foco visível (obrigatório por acessibilidade), erro em `--danger` via prop `error`, placeholder em `--muted`
 - Multi-select para gêneros; autocomplete com opções vindas de `/api/books/options`
 
 ---
@@ -173,7 +173,7 @@ Não há header global fixo; cada view cuida do seu cabeçalho (ex.: `CreateBook
 
 Navegação Principal:
 
-A home **é** a navegação — pilha vertical de cartas (Swiper EffectCards) em `/`.
+A home **é** a navegação: pilha vertical de cartas (Swiper EffectCards) em `/`.
 
 Mobile:
 
@@ -185,7 +185,7 @@ Mobile:
 
 Loading:
 
-`LoadingSpinner` (async components), `BookCardSkeleton`, `FormSkeleton`, ou `StateHandler` (genérico; ainda não aplicado nas 4 listas — ver `ROADMAP.md`).
+`LoadingSpinner` (async components), `BookCardSkeleton`, `FormSkeleton`, ou `StateHandler` (genérico; aplicado nas 4 listas + `CreateBookView` em 15/10/2026).
 
 Vazio:
 
@@ -207,7 +207,7 @@ Biblioteca:
 
 `lucide-vue-next`
 
-Alguns estados usam emojis diretamente (⚠️ 📚) — aceito como atalho nos empty/error states.
+Alguns estados usam emojis diretamente (⚠️ 📚), aceito como atalho nos empty/error states.
 
 ---
 
