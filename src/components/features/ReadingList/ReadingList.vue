@@ -233,7 +233,7 @@ const hasPublicationInfo = (book) => {
   transition: all 0.3s ease;
   display: flex;
   gap: 2rem;
-  width: 100%;
+  width: fit-content;
 }
 
 .reading-card:hover {
@@ -286,6 +286,7 @@ const hasPublicationInfo = (book) => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 2rem;
 }
 
 .reading-card__type {
