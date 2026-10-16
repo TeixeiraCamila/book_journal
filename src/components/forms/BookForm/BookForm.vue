@@ -27,7 +27,7 @@ const props = defineProps({
   },
 });
 
-const emit = defineEmits(['cancel', 'submit', 'edit-success']);
+const emit = defineEmits(['cancel', 'edit-success']);
 const bookStore = useBookStore();
 const { addNotification } = useNotifications();
 
@@ -346,8 +346,6 @@ const handleSubmit = async () => {
     if (!props.isEdit) {
       resetFormData();
     }
-
-    emit('submit');
   } catch {
     addNotification(`Erro ao ${props.isEdit ? 'atualizar' : 'criar'} livro`, 'error');
   } finally {
