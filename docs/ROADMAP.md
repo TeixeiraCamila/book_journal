@@ -1,14 +1,15 @@
 # Roadmap
 
-Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board dos 5 repositórios) e `../analise-melhorias.md` (pendências técnicas detalhadas).
+Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board dos 5 repositórios), `../analise-melhorias.md` (pendências técnicas detalhadas) e `PLANO_DEDUPLICACAO.md` (roteiro das 5 fases de deduplicação).
 
 ---
 
 ## AGORA
 
-- **Aplicar `StateHandler` nas 4 listas** — componente criado; `BookList`, `ReadingList`, `TBRList` e `ThisYearList` ainda repetem templates próprios de loading/erro/vazio
-- **Remover `HomeView.vue` legado** — importa componente inexistente; quebraria build se ativado
-- **Limpar barrel exports fantasmas** em `components/index.js` (`Input`, `Modal`, `Card`, `Badge`, `BookDetails`, `ReadingProgress`, `Layout`, `Container`, `SearchBar`, `Notification`, `ToastContainer`)
+- **Executar `PLANO_DEDUPLICACAO.md`** — roteiro das 5 fases de deduplicação; Fase 1 ✅ em 15/10/2026 (corpos idênticos + código morto)
+- ~~**Aplicar `StateHandler` nas 4 listas**~~ — ✅ feito em 15/10/2026: `StateHandler` real aplicado em `BookList`, `ReadingList`, `TBRList`, `ThisYearList` e no erro do `CreateBookView`
+- ~~**Remover `HomeView.vue` legado**~~ — ✅ removido em 15/10/2026 (importava `@/components/BookList.vue`, inexistente)
+- ~~**Limpar barrel exports fantasmas**~~ — ✅ feito em 15/10/2026: os 5 `index.js` de `components/` exportam só arquivos existentes e os `export *` para diretórios sem `index.js` saíram
 - **Asset quebrado** `this-year__header.png` (caminho absoluto) em `ThisYearList.vue`
 - **Commitar revalidação de sessão no boot** (`DECISIONS.md` 007) — alterações em `router/index.js`, `services/api.js`, `userStore.js`
 
@@ -17,20 +18,20 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 ## PRÓXIMO
 
 - **Suíte de testes** — Vitest + `@vue/test-utils` + `happy-dom`; começar por `validation.js`, `errorHandler.js`, `userStore` (`TESTING.md`)
-- **Deduplicar estados das 4 listas** (relacionado ao `StateHandler`)
-- **Componente `BookCover`** — capa com fallback, hoje repetida em 5+ componentes
-- **`EmptyState` padronizado** — ícone + texto reutilizável
+- ~~**Deduplicar estados das 4 listas**~~ — ✅ feito em 15/10/2026 (mesma entrega do `StateHandler`; ver `analise-melhorias.md`)
+- **Componente `BookCover`** — capa com fallback, hoje repetida em 5+ componentes (Fase 3 do `PLANO_DEDUPLICACAO.md`)
+- ~~**`EmptyState` padronizado**~~ — ✅ absorvido em 15/10/2026 pelo `StateHandler` (ícone + título + texto configuráveis)
 - **Composable `usePagination`** — extrair cursor pagination do `bookStore`
-- **Deduplicar `closeModal`/`closeModalWithAnimation`** em `useAnimatedModal.js`
-- **Remover dependências não usadas** — `@vueuse/motion`, `@biomejs/biome` (`chart.js` removida com a Decisão 009)
+- ~~**Deduplicar `closeModal`/`closeModalWithAnimation`**~~ — ✅ feito em 15/10/2026 (corpos idênticos; junto com `flipToOpposite` morto)
+- ~~**Remover dependências não usadas**~~ — ✅ `@vueuse/motion` e `@biomejs/biome` removidas em 15/10/2026 (`chart.js` já tinha saído com a Decisão 009)
 - **Remover `tsconfig.json` órfão** (ou migrar de vez — ver DEPOIS)
 
 ---
 
 ## DEPOIS
 
-- **Enxugar `BookForm.vue` (726 linhas)** — extrair validação/transformação/auto-cálculo Kindle para composables
-- **Revisar `FormField.vue` (544 linhas)** — subcomponentes por tipo de campo; consertar emissão dupla de `v-model`
+- **Enxugar `BookForm.vue` (701 linhas)** — extrair validação/transformação/auto-cálculo Kindle para composables (Fase 2 do `PLANO_DEDUPLICACAO.md`)
+- **Revisar `FormField.vue` (527 linhas)** — subcomponentes por tipo de campo; consertar emissão dupla de `v-model`
 - **Enxugar `CardStackView.vue`** — extrair prefetch e data loading para composable
 - **Virtual scrolling na `BookList`** — para acervos grandes
 - **Blur-up placeholder nas capas** — lazy loading com placeholder desfocado

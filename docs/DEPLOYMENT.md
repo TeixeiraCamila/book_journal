@@ -2,15 +2,15 @@
 
 ## Ambientes
 
-Desenvolvimento:
+#### Desenvolvimento:
 
 `http://localhost:5173` (Vite; proxy `/api` para `notion_api` em `localhost:3000`)
 
-Produção:
+#### Produção:
 
 Vercel — SPA estática + backend `notion_api` também na Vercel (`notion-api-green.vercel.app`)
 
-Staging:
+#### Staging:
 
 não existe
 
@@ -24,7 +24,7 @@ não existe
 4. Verificar smoke test manual (ver abaixo)
 5. Conferir que `VITE_API_URL` está configurada no projeto da Vercel
 
-Build command na Vercel:
+#### Build command na Vercel:
 
 `npm run vercel-build` (alias de `npm run build`)
 
