@@ -62,7 +62,7 @@ Regras:
 - **Vue Router 4**: views lazy-loading + navigation guard de auth.
 - **Vite 7** com alias `@/` e proxy `/api → http://localhost:3000` em dev.
 - **Axios**: client centralizado em `services/api.js`.
-- **GSAP + VueUse Motion**: animações; **Swiper**: sliders/carousels.
+- **GSAP**: animações; **Swiper**: sliders/carousels.
 - **lucide-vue-next** (ícones) e **vue-toastification** (toasts).
 
 ## JavaScript
@@ -109,7 +109,7 @@ src/
 ├── services/             # api.js (Axios client)
 ├── stores/               # Pinia (bookStore, userStore)
 ├── utils/                # validation, errorHandler
-├── views/                # HomeView, CardStackView, CreateBookView, LoginView
+├── views/                # CardStackView, CreateBookView, LoginView
 └── assets/css/           # vars.css, style.css
 ```
 
@@ -124,5 +124,5 @@ Views → Pinia Stores → services/api.js (Axios) → notion_api → Notion CMS
 ## Docs
 
 - `README.md`: visão geral, estrutura, endpoints consumidos (inglês).
-- `docs/`: documentação completa em pt-BR no modelo "Vibe Coding Blueprint" — `PRD.md` (produto), `DESIGN_SYSTEM.md` (tokens visuais), `UX_FLOWS.md` (jornadas), `ARCHITECTURE.md` (camadas), `DATABASE.md` (modelo de dado books), `API.md` (contratos consumidos), `SECURITY.md` (auth/sessão), `CODE_STYLE.md` (convenções), `TESTING.md` (estado e estratégia de testes), `AGENTS.md` (ponte para o AGENTS.md da raiz), `ENVIRONMENT.md`, `ERROR_HANDLING.md`, `DEPLOYMENT.md`, `OBSERVABILITY.md`, `DECISIONS.md` (ADRs), `ROADMAP.md`, `CHANGELOG.md`.
+- `docs/`: documentação completa em pt-BR no modelo "Vibe Coding Blueprint" — `PRD.md` (produto), `DESIGN_SYSTEM.md` (tokens visuais), `UX_FLOWS.md` (jornadas), `ARCHITECTURE.md` (camadas), `DATABASE.md` (modelo de dado books), `API.md` (contratos consumidos), `SECURITY.md` (auth/sessão), `CODE_STYLE.md` (convenções), `TESTING.md` (estado e estratégia de testes), `AGENTS.md` (ponte para o AGENTS.md da raiz), `ENVIRONMENT.md`, `ERROR_HANDLING.md`, `DEPLOYMENT.md`, `OBSERVABILITY.md`, `DECISIONS.md` (ADRs), `ROADMAP.md`.
 - `analise-melhorias.md`: bugs, duplicações e oportunidades registradas.

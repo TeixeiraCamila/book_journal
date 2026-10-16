@@ -3,6 +3,3 @@ export { default as FormField } from './FormField.vue';
 export { default as FormSection } from './FormSection.vue';
 export { default as FormActions } from './FormActions.vue';
 export { default as BookForm } from './BookForm/BookForm.vue';
-
-// Re-exporta todos os componentes do subdiretório BookForm
-export * from './BookForm';

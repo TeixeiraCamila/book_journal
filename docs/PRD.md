@@ -2,19 +2,19 @@
 
 ## 1. Visão do Produto
 
-Nome do Produto:
+#### Nome do Produto:
 
 Book Journal
 
-Descrição em uma linha:
+#### Descrição em uma linha:
 
 SPA web para catalogar e acompanhar leituras pessoais (biblioteca pessoal), com dados persistidos no Notion via API própria.
 
-Tipo de Produto:
+#### Tipo de Produto:
 
 Aplicação pessoal (ferramenta de uso próprio / Internal Tool)
 
-Plataforma Primária:
+#### Plataforma Primária:
 
 Web (desktop e mobile via browser; app Android em estudo — ver `ROADMAP.md`)
 
@@ -22,15 +22,15 @@ Web (desktop e mobile via browser; app Android em estudo — ver `ROADMAP.md`)
 
 ## 2. Problema
 
-Qual problema resolvemos?
+#### Qual problema resolvemos?
 
 Registrar leituras em planilhas ou no Notion manualmente é trabalhoso e não oferece visão rápida do que está em andamento, do que foi lido no ano e do que está na fila.
 
-Por que esse problema importa?
+#### Por que esse problema importa?
 
 A leitura é um hábito acompanhado ao longo do tempo; sem um registro estruturado, perde-se histórico de progresso e notas.
 
-Como o usuário resolve isso hoje?
+#### Como o usuário resolve isso hoje?
 
 Planilhas, Goodreads/Storygraph ou o próprio database do Notion sem interface dedicada.
 
@@ -38,11 +38,11 @@ Planilhas, Goodreads/Storygraph ou o próprio database do Notion sem interface d
 
 ## 3. Objetivo
 
-Objetivo Principal:
+#### Objetivo Principal:
 
 Ter uma interface rápida e agradável para cadastrar livros, acompanhar progresso de leitura e revisar o histórico no ano.
 
-Objetivos Secundários:
+#### Objetivos Secundários:
 
 - Consultar o acervo com busca e filtros sem carregar a página inteira
 - Registrar conclusões de leitura por ano ("Lidos neste ano")
@@ -54,32 +54,32 @@ Objetivos Secundários:
 
 ### Tipo de Usuário 1 — Proprietária (dona)
 
-Descrição:
+#### Descrição:
 
 Dono do database do Notion; única pessoa com conta real no sistema.
 
-Necessidades:
+#### Necessidades:
 
 - CRUD completo de livros (criar, editar, arquivar)
 - Acompanhar leituras em progresso e definir a nota final
 - Filtrar/buscar no acervo
 
-Dores:
+#### Dores:
 
 - Digitar os mesmos dados em vários lugares
 - Não ter visão imediata do "lendo agora" e do "lido neste ano"
 
 ### Tipo de Usuário 2 — Visitante
 
-Descrição:
+#### Descrição:
 
 Qualquer pessoa com o link, sem conta.
 
-Necessidades:
+#### Necessidades:
 
 - Apenas leitura do acervo e das listas
 
-Limitações:
+#### Limitações:
 
 - Sem acesso a criação/edição; escritas no backend retornam 401
 
@@ -101,45 +101,45 @@ Limitações:
 
 ### Feature 1 — Cadastro e edição de livro
 
-Propósito:
+#### Propósito:
 
 Registrar um livro completo no acervo.
 
-Fluxo do usuário:
+#### Fluxo do usuário:
 
 `/criar` (ou `/editar/:id`) → `BookForm` → validação → `POST /api/books` (ou `PATCH /:id`) → toast de sucesso → redireciona ao slide da lista (`/?slide=1`).
 
-Entradas:
+#### Entradas:
 
 título, autor (multi), status, nota (❤/⭐), páginas (total/atual), tipo, primeiro ano de publicação, "tenho cópia", anos de leitura, datas início/fim, URL da capa, atlas literário, gêneros (multi), editora, série + volume.
 
-Saídas:
+#### Saídas:
 
 Livro persistido no Notion, refletido nas listas (main/TBR/leitura/ano).
 
-Critérios de aceite:
+#### Critérios de aceite:
 
 - Título e autor são obrigatórios
 - Auto-cálculo do campo atual quando informado o total de páginas Kindle (%)
 - Preencher a data de fim auto-muda o status para "Read" e preenche o ano em "wasReadIn"
 - Estados de loading (FormSkeleton) e erro com "Tentar novamente"
 
-Casos de borda:
+#### Casos de borda:
 
 - ISBN/capa inexistente → placeholder
 - Valores fora do catálogo do Notion (ex.: tipo desconhecido) → exibe o valor cru
 
 ### Feature 2 — Acervo com busca, filtros e paginação
 
-Propósito:
+#### Propósito:
 
 Navegar o acervo sem sobrecarregar.
 
-Fluxo do usuário:
+#### Fluxo do usuário:
 
 Slide "Acervo" (`BookList`) → `Filters` (busca com debounce de 400 ms + radios de status) → `GET /api/books` → grid com `Pagination` (cursor-based).
 
-Critérios de aceite:
+#### Critérios de aceite:
 
 - Busca por título/autor/gênero (`searchBy`) com debounce de 400 ms
 - Respostas obsoletas descartadas (`searchToken`)
@@ -148,15 +148,15 @@ Critérios de aceite:
 
 ### Feature 3 — Pilha de cartas (home)
 
-Propósito:
+#### Propósito:
 
 Home navegável como pilha vertical de cartas.
 
-Fluxo do usuário:
+#### Fluxo do usuário:
 
 `/` → Swiper (EffectCards, vertical) com slides dinâmicos: intro → acervo → lendo → ano → TBR; slides vazios não aparecem; deep-link `?slide=N`.
 
-Critérios de aceite:
+#### Critérios de aceite:
 
 - Slides de status só aparecem se houver livros
 - Dados buscados conforme o slide ativo; chunks pré-carregados (produção)
@@ -164,15 +164,15 @@ Critérios de aceite:
 
 ### Feature 4 — Autenticação e sessão
 
-Propósito:
+#### Propósito:
 
 Proteger escritas e manter sessão.
 
-Fluxo:
+#### Fluxo:
 
 `/login` em 2 etapas → email + código → `POST /api/auth/login` → JWT guardado em `localStorage` → guard de rotas revalida no boot via `GET /api/auth/me` → modo visitante opcional.
 
-Critérios de aceite:
+#### Critérios de aceite:
 
 - Rotas com `meta.requiresAuth` redirecionam para `/login`
 - 401 fora do login limpa a sessão e redireciona
@@ -263,7 +263,8 @@ De Timeline:
 ## 12. Questões em Aberto
 
 - O modo visitante deve ocultar apenas botões de escrita ou também bloquear rotas `/criar` no guard?
-- Vale manter `HomeView.vue` (legacy, não usada) até quando?
+~~Vale manter `HomeView.vue` (legacy, não usada) até quando?~~ **Resolvido: removida em 15/10/2026 (não era rota e importava componente inexistente).**
+
 ~~O endpoint `/api/books/stats` será consumido aqui ou exclusivo do `dashboard__journal`?~~ **Resolvido (Decisão 009): exclusivo do `dashboard__journal` — este app não terá estatísticas.**
 
 ---

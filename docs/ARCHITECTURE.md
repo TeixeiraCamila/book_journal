@@ -142,7 +142,7 @@ src/
 ├── services/api.js          # instância Axios + booksApi/authApi
 ├── stores/                  # bookStore.js, userStore.js
 ├── utils/                   # validation.js, errorHandler.js
-└── views/                   # LoginView, CardStackView, CreateBookView (+ HomeView legado)
+└── views/                   # LoginView, CardStackView, CreateBookView
 ```
 
 ---

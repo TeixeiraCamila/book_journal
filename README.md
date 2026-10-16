@@ -96,7 +96,6 @@ src/
 ├── utils/
 │   └── validation.js        # Validation helpers
 └── views/
-    ├── HomeView.vue
     ├── CardStackView.vue
     ├── CreateBookView.vue
     └── LoginView.vue
