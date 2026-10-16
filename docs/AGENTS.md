@@ -22,7 +22,7 @@ Não existe `docs/AGENTS.md` completo por decisão deliberada: o `AGENTS.md` da 
 ## Regras operacionais
 
 - Não inventar requisitos, campos de banco, endpoints, componentes ou padrões já definidos
-- Mudança de comportamento → atualizar o doc correspondente + `CHANGELOG.md`
+- Mudança de comportamento → atualizar o doc correspondente
 - Decisão técnica nova → registrar em `DECISIONS.md`
 - Prioridades → `ROADMAP.md`; pendências conhecidas → `../analise-melhorias.md`
 - Conflito entre requisitos: **não adivinhar** — perguntar
