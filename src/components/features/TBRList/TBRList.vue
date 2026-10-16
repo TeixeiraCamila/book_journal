@@ -3,10 +3,13 @@
 import { useBookStore } from '@/stores/bookStore';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 import StateHandler from '@/components/ui/StateHandler.vue';
+import BookCover from '@/components/books/BookCover/BookCover.vue';
 import { useBookNavigation } from '@/composables/useBookNavigation';
+import { useBookFormatters } from '@/composables/useBookFormatters';
 
 const bookStore = useBookStore();
 const { navigateToEdit } = useBookNavigation();
+const { getAuthorString } = useBookFormatters();
 </script>
 
 <template>
@@ -50,23 +53,19 @@ const { navigateToEdit } = useBookNavigation();
           <article class="stamp" @click="navigateToEdit(book.id)">
             <div class="stamp__inner">
               <div class="stamp__image-container">
-                <img
-                  v-if="book.cover?.[0]"
-                  :src="book.cover[0]"
+                <BookCover
+                  :src="book.cover?.[0]"
                   :alt="`Capa do livro ${book.title}`"
                   class="stamp__image"
-                  loading="lazy"
                 />
-                <div v-else class="stamp__placeholder" aria-label="Sem capa disponível">📖</div>
                 <div class="stamp__overlay" aria-hidden="true"></div>
               </div>
 
               <div class="stamp__details">
                 <h3 class="stamp__title">{{ book.title }}</h3>
-                <p v-if="book.author?.length" class="stamp__author">
-                  {{ book.author.join(', ') }}
+                <p class="stamp__author">
+                  {{ getAuthorString(book) || 'Autor desconhecido' }}
                 </p>
-                <p v-else class="stamp__author">Autor desconhecido</p>
               </div>
             </div>
           </article>
@@ -122,7 +121,9 @@ const { navigateToEdit } = useBookNavigation();
   flex-wrap: wrap;
   justify-content: center;
   gap: 7rem;
-  margin-top: 2rem;
+  padding-top: 2rem;
+  overflow: scroll;
+  height: 100vh;
 }
 
 /* ===== STAMP CARD ===== */
@@ -176,15 +177,6 @@ const { navigateToEdit } = useBookNavigation();
   height: 100%;
   object-fit: cover;
   filter: sepia(0.2) contrast(1.1);
-}
-
-.stamp__placeholder {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  font-size: 3rem;
-  background: #e5e5e5;
 }
 
 .stamp__overlay {

@@ -8,12 +8,22 @@ import {
   BOOK_TYPES_FALLBACK,
   BOOK_STATUS_MAP,
 } from '@/constants/book';
+import { BOOK_FORM_SECTIONS, BOOK_FORM_ACTIONS } from '@/constants/formLayout';
 
-import { parseCommaSeparated } from '@/utils/validation';
+import {
+  parseCommaSeparated,
+  validateRequired,
+  validatePositiveNumber,
+  validatePositiveInteger,
+  validateYear,
+  validateDateRange,
+} from '@/utils/validation';
 import { useNotifications } from '@/composables/useNotifications';
+import { useBookFormatters } from '@/composables/useBookFormatters';
 import FormSection from '@/components/forms/FormSection.vue';
 import FormField from '@/components/forms/FormField.vue';
 import FormActions from '@/components/forms/FormActions.vue';
+import BookCover from '@/components/books/BookCover/BookCover.vue';
 
 // Recebe o livro para edição ou null para criação
 const props = defineProps({
@@ -30,6 +40,7 @@ const props = defineProps({
 const emit = defineEmits(['cancel', 'edit-success']);
 const bookStore = useBookStore();
 const { addNotification } = useNotifications();
+const { getPageFromProgress } = useBookFormatters();
 
 const formData = reactive({
   name: '',
@@ -88,10 +99,10 @@ const coverUrl = computed(() => {
 
 const isKindle = computed(() => formData.type?.includes('Kindle'));
 
+// Converte o progresso informado em página atual (arredondada)
 watch([() => formData.kindleProgress, () => formData.totalPages], ([progress, total]) => {
-  if (progress && total && Number(progress) > 0 && Number(total) > 0) {
-    formData.currentPage = Math.round((Number(total) * Number(progress)) / 100);
-  }
+  const page = getPageFromProgress(total, progress);
+  if (page !== null) formData.currentPage = page;
 });
 
 // Carrega as opções do Notion na montagem,
@@ -216,67 +227,63 @@ const handleSubmit = async () => {
   fieldErrors.value = {};
   const errorMessages = [];
 
-  if (!formData.name || !formData.name.trim()) {
-    fieldErrors.value.name = 'Título é obrigatório';
-    errorMessages.push('Título');
+  // Registra o erro no campo e na notificação (regras puras em utils/validation.js)
+  const collectError = (fieldKey, label, message) => {
+    if (!message) return;
+    fieldErrors.value[fieldKey] = message;
+    errorMessages.push(label);
+  };
+
+  collectError('name', 'Título', validateRequired(formData.name, 'Título'));
+  collectError('author', 'Autor', validateRequired(formData.author, 'Autor'));
+  collectError(
+    'totalPages',
+    'Total de páginas',
+    validatePositiveNumber(formData.totalPages, 'Total de páginas'),
+  );
+
+  collectError(
+    'currentPage',
+    'Página atual',
+    validatePositiveNumber(formData.currentPage, 'Página atual'),
+  );
+  if (
+    !fieldErrors.value.currentPage &&
+    formData.currentPage &&
+    formData.totalPages &&
+    Number(formData.currentPage) > Number(formData.totalPages)
+  ) {
+    collectError('currentPage', 'Página atual', 'Página atual não pode ser maior que o total');
   }
 
-  if (!formData.author || !formData.author.trim()) {
-    fieldErrors.value.author = 'Autor é obrigatório';
-    errorMessages.push('Autor');
-  }
-
-  if (formData.totalPages) {
-    if (isNaN(formData.totalPages) || formData.totalPages < 0) {
-      fieldErrors.value.totalPages = 'Total de páginas deve ser um número positivo';
-      errorMessages.push('Total de páginas');
-    }
-  }
-
-  if (formData.currentPage) {
-    if (isNaN(formData.currentPage) || formData.currentPage < 0) {
-      fieldErrors.value.currentPage = 'Página atual deve ser um número positivo';
-      errorMessages.push('Página atual');
-    } else if (formData.totalPages && Number(formData.currentPage) > Number(formData.totalPages)) {
-      fieldErrors.value.currentPage = 'Página atual não pode ser maior que o total';
-      errorMessages.push('Página atual');
-    }
-  }
-
-  // Validação de ano (opcional - só valida se preenchido)
-  if (formData.firstPublished) {
+  const yearError = validateYear(formData.firstPublished, 'Ano');
+  if (yearError) {
+    collectError('firstPublished', 'Ano de publicação', yearError);
+  } else if (formData.firstPublished) {
     const currentYear = new Date().getFullYear();
-    if (!/^\d{4}$/.test(formData.firstPublished)) {
-      fieldErrors.value.firstPublished = 'Ano deve ter 4 dígitos';
-      errorMessages.push('Ano de publicação');
-    } else if (
+    if (
       Number(formData.firstPublished) < 1000 ||
       Number(formData.firstPublished) > currentYear + 1
     ) {
-      fieldErrors.value.firstPublished = `Ano deve estar entre 1000 e ${currentYear + 1}`;
-      errorMessages.push('Ano de publicação');
+      collectError(
+        'firstPublished',
+        'Ano de publicação',
+        `Ano deve estar entre 1000 e ${currentYear + 1}`,
+      );
     }
   }
 
   // O schema exige inteiro positivo; string vazia viraria 400 da API
   if (formData.seriesInfo.volume !== '') {
-    const volume = Number(formData.seriesInfo.volume);
-
-    if (!Number.isInteger(volume) || volume < 1) {
-      fieldErrors.value.volume = 'Volume deve ser um número inteiro positivo';
-      errorMessages.push('Volume');
-    }
+    collectError('volume', 'Volume', validatePositiveInteger(formData.seriesInfo.volume, 'Volume'));
   }
 
-  // Validação de datas (opcional - só valida se ambas preenchidas)
   if (formData.startDate && formData.endDate) {
-    const start = new Date(formData.startDate);
-    const end = new Date(formData.endDate);
-
-    if (start > end) {
-      fieldErrors.value.endDate = 'Data de término deve ser posterior à data de início';
-      errorMessages.push('Data de término');
-    }
+    collectError(
+      'endDate',
+      'Data de término',
+      validateDateRange(formData.startDate, formData.endDate),
+    );
   }
 
   // Só mostra notificação se houver erros
@@ -372,16 +379,12 @@ const handleCancel = () => {
         <!-- Coluna Cover (30%) -->
         <div class="book-form__cover-section">
           <div class="book-form__cover-container">
-            <img
-              v-if="coverUrl"
-              :src="coverUrl"
+            <BookCover
+              :src="coverUrl ?? ''"
               alt="Capa do livro"
+              label="Sem capa"
               class="book-form__cover-image"
             />
-            <div v-else class="book-form__cover-placeholder">
-              <span>📖</span>
-              <p>Sem capa</p>
-            </div>
           </div>
 
           <FormField
@@ -395,7 +398,7 @@ const handleCancel = () => {
         <!-- Coluna Campos (70%) -->
         <div class="book-form__fields">
           <!-- Informações Básicas -->
-          <FormSection title="Informações Básicas">
+          <FormSection :title="BOOK_FORM_SECTIONS.basicInfo.title">
             <div class="book-form__grid">
               <FormField
                 v-model="formData.name"
@@ -437,7 +440,7 @@ const handleCancel = () => {
           </FormSection>
 
           <!-- Status e Progresso -->
-          <FormSection title="Status e Progresso">
+          <FormSection :title="BOOK_FORM_SECTIONS.statusProgress.title">
             <div class="book-form__grid">
               <FormField
                 v-model="formData.status"
@@ -476,7 +479,7 @@ const handleCancel = () => {
           </FormSection>
 
           <!-- Avaliação e Classificação -->
-          <FormSection title="Avaliação e Classificação">
+          <FormSection :title="BOOK_FORM_SECTIONS.classification.title">
             <div class="book-form__grid">
               <FormField
                 v-if="formData.status === BOOK_STATUS_MAP.READ"
@@ -510,7 +513,7 @@ const handleCancel = () => {
           </FormSection>
 
           <!-- Detalhes da Publicação -->
-          <FormSection title="Detalhes da Publicação">
+          <FormSection :title="BOOK_FORM_SECTIONS.publication.title">
             <div class="book-form__grid">
               <FormField
                 v-model="formData.firstPublished"
@@ -540,7 +543,7 @@ const handleCancel = () => {
             </div>
           </FormSection>
 
-          <FormSection title="Leitura e Metadados">
+          <FormSection :title="BOOK_FORM_SECTIONS.readingMeta.title">
             <div class="book-form__grid">
               <FormField
                 v-model="formData.wasReadIn"
@@ -581,8 +584,8 @@ const handleCancel = () => {
       <!-- Ações -->
       <FormActions
         :is-submitting="isSubmitting"
-        submit-text="Salvar Livro"
-        cancel-text="Cancelar"
+        :submit-text="BOOK_FORM_ACTIONS.submit"
+        :cancel-text="BOOK_FORM_ACTIONS.cancel"
         @cancel="handleCancel"
       />
     </form>
@@ -637,23 +640,6 @@ const handleCancel = () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-}
-
-.book-form__cover-placeholder {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-  color: #9ca3af;
-}
-
-.book-form__cover-placeholder span {
-  font-size: 3rem;
-}
-
-.book-form__cover-placeholder p {
-  margin: 0;
-  font-size: 0.875rem;
 }
 
 .book-form__fields {

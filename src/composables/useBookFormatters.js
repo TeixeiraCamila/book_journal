@@ -1,4 +1,6 @@
 // Funções utilitárias para formatar dados de livros
+import { BOOK_TYPE_LABELS } from '@/constants/book';
+
 export function useBookFormatters() {
   const getAuthorString = (book) => {
     const literaryAtlas = book.literaryAtlas ? `${book.literaryAtlas} ` : '';
@@ -6,12 +8,31 @@ export function useBookFormatters() {
     return `${literaryAtlas}${authors}`.trim();
   };
 
+  // Percentual de páginas lidas; 0 quando faltam dados
+  const getPagesProgress = (book) => {
+    const current = book.pages?.currentlyPage;
+    const total = book.pages?.totalPages;
+    if (!current || !total) return 0;
+    return Math.round((parseInt(current) / parseInt(total)) * 100);
+  };
+
   const getPagesString = (book) => {
     const current = book.pages?.currentlyPage;
     const total = book.pages?.totalPages;
     if (!current || !total) return '';
-    const progress = Math.round((parseInt(current) / parseInt(total)) * 100);
-    return `Páginas: ${current} / ${total} (${progress}%)`;
+    return `Páginas: ${current} / ${total} (${getPagesProgress(book)}%)`;
+  };
+
+  // Página atual derivada de um percentual (watch de progresso do Kindle)
+  const getPageFromProgress = (totalPages, progress) => {
+    if (!totalPages || !progress || Number(totalPages) <= 0 || Number(progress) <= 0) return null;
+    return Math.round((Number(totalPages) * Number(progress)) / 100);
+  };
+
+  // Tipos sem tradução caem no valor cru (ex.: "Kindle")
+  const getTypeString = (book) => {
+    if (!book.type?.length) return '';
+    return book.type.map((type) => BOOK_TYPE_LABELS[type] || type).join(', ');
   };
 
   const getPublicationString = (book) => {
@@ -34,5 +55,12 @@ export function useBookFormatters() {
     return 'Informação de publicação não disponível';
   };
 
-  return { getAuthorString, getPagesString, getPublicationString };
+  return {
+    getAuthorString,
+    getPagesProgress,
+    getPagesString,
+    getPageFromProgress,
+    getTypeString,
+    getPublicationString,
+  };
 }

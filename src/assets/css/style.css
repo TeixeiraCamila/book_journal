@@ -110,3 +110,15 @@ textarea {
   padding-right: 2.5em;
   color: var(--black);
 }
+
+/* ===== MODAL OVERLAY =====
+   Base fixa/centralizada compartilhada; z-index, fundo e backdrop
+   ficam em cada componente (BookCard z=100 com blur, ConfirmDialog z=2000) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

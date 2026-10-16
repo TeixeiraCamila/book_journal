@@ -5,6 +5,7 @@ import StateHandler from '@/components/ui/StateHandler.vue';
 import { computed } from 'vue';
 // import tape from '@/assets/images/tape.webp'
 import CardStatus from '@/components/books/BookCard/CardStatus.vue';
+import BookCover from '@/components/books/BookCover/BookCover.vue';
 import { useBookNavigation } from '@/composables/useBookNavigation';
 
 const bookStore = useBookStore();
@@ -88,17 +89,14 @@ const booksByMonth = computed(() => {
             <div class="this-year__grid">
               <article v-for="book in section.books" :key="book.id" class="this-year-card">
                 <div class="this-year-card__cover">
-                  <CardStatus :back="true" :book="book" />
+                  <CardStatus :back="true" :book="book" tight />
 
-                  <img
-                    v-if="book.cover?.[0]"
-                    :src="book.cover[0]"
+                  <BookCover
+                    :src="book.cover?.[0]"
                     :alt="`Capa do livro ${book.title}`"
                     class="this-year-card__image"
-                    loading="lazy"
                     @click="navigateToEdit(book.id)"
                   />
-                  <div v-else class="this-year-card__placeholder">📖</div>
                 </div>
               </article>
             </div>
@@ -108,12 +106,6 @@ const booksByMonth = computed(() => {
     </StateHandler>
   </div>
 </template>
-
-<style>
-.this-year-card__cover .card-status__tape img {
-  max-width: 100px;
-}
-</style>
 
 <style scoped>
 .this-year {
@@ -207,37 +199,10 @@ const booksByMonth = computed(() => {
   justify-content: center;
 }
 
-.this-year-card__cover .card-status__tape {
-  position: absolute;
-  top: -15%;
-  left: 50%;
-  z-index: 1;
-}
-
-.this-year-card__cover .card-status__tape .card-status__text {
-  position: absolute;
-  top: 40%;
-  left: 45%;
-  transform: translate(-40%, -50%);
-  width: 60%;
-  text-align: center;
-  font-size: 0.8rem;
-  font-weight: 700;
-  color: var(--black);
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
 .this-year-card__image {
   width: 100%;
   max-height: 150px;
   object-fit: cover;
-}
-
-.this-year-card__placeholder {
-  font-size: 4rem;
-  color: var(--muted);
-  filter: grayscale(1);
 }
 
 @media (max-width: 768px) {

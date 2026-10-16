@@ -62,30 +62,21 @@ const componentLoaders = {
   tbr: () => import('@/components/features/TBRList/TBRList.vue'),
 };
 
-// Fallback exibido enquanto o chunk de cada lista é baixado (evita slide em branco)
-const BookList = defineAsyncComponent({
-  loader: componentLoaders.books,
-  loadingComponent: LoadingSpinner,
-  delay: 200,
-});
+// Registry tipo → componente assíncrono (cada import() gera seu chunk no build)
+const listComponents = Object.fromEntries(
+  Object.entries(componentLoaders).map(([type, loader]) => [
+    type,
+    defineAsyncComponent({ loader, loadingComponent: LoadingSpinner, delay: 200 }),
+  ]),
+);
 
-const TBRList = defineAsyncComponent({
-  loader: componentLoaders.tbr,
-  loadingComponent: LoadingSpinner,
-  delay: 200,
-});
-
-const ReadingList = defineAsyncComponent({
-  loader: componentLoaders.reading,
-  loadingComponent: LoadingSpinner,
-  delay: 200,
-});
-
-const ThisYearList = defineAsyncComponent({
-  loader: componentLoaders.year,
-  loadingComponent: LoadingSpinner,
-  delay: 200,
-});
+// Modificador de cor de card por tipo lógico (espelha os estilos .stack-view__*)
+const SLIDE_CARD_MODIFIERS = {
+  books: 'book-list',
+  reading: 'now',
+  year: 'year',
+  tbr: 'tbr',
+};
 
 // Pré-carrega chunks para tipos lógicos específicos (apenas em produção)
 // import() direto dispara o download antecipado para que o chunk já esteja cacheado
@@ -101,29 +92,26 @@ function prefetchChunksForTypes(types) {
   }
 }
 
+// Carrega as listas pedidas — booleans garantem no máximo 1 fetch por lista
+function loadLists({ tbr = false, reading = false, year = false } = {}) {
+  if (tbr) bookStore.fetchBooksByStatus();
+  if (reading) bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
+  if (year) bookStore.fetchBooksReadThisYear();
+}
+
 // Busca dados necessários ao entrar em determinado tipo de slide
 function fetchDataForType(type) {
-  if (type === 'books') {
-    // Carrega lista geral + leituras em andamento ao acessar o card de livros
-    bookStore.fetchBooksByStatus();
-    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
-    // O slide "year" só existe após thisYearCount > 0; buscar aqui evita o loop morto
-    bookStore.fetchBooksReadThisYear();
-    return;
-  }
+  const loadsByType = {
+    // Lista geral + leituras em andamento ao acessar o card de livros;
+    // o slide "year" só existe após thisYearCount > 0 — buscar aqui evita o loop morto
+    books: { tbr: true, reading: true, year: true },
+    // Garante leituras em andamento e que o slide "year" possa surgir
+    // mesmo sem passar pelo slide de livros
+    reading: { reading: true, year: true },
+    year: { year: true },
+  };
 
-  if (type === 'reading') {
-    // Garante dados de leituras em andamento (caso ainda não carregados)
-    bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
-    // Garante que o slide "year" possa surgir mesmo sem passar pelo slide de livros
-    bookStore.fetchBooksReadThisYear();
-    return;
-  }
-
-  if (type === 'year') {
-    bookStore.fetchBooksReadThisYear();
-    return;
-  }
+  if (loadsByType[type]) loadLists(loadsByType[type]);
 }
 
 // Ao inicializar o Swiper
@@ -165,7 +153,7 @@ onMounted(() => {
     if (firstVisible) {
       prefetchFromType(firstVisible);
     } else {
-      prefetchChunksForTypes(['books', 'reading', 'year', 'tbr']);
+      prefetchChunksForTypes(Object.keys(componentLoaders));
     }
   }, 1500);
 
@@ -174,13 +162,11 @@ onMounted(() => {
     const targetIndex = Number(slideTarget);
 
     // Busca dados com base no índice alvo
-    if (targetIndex >= 2) {
-      bookStore.fetchBooksByStatus();
-      bookStore.fetchBooksByStatus(undefined, BOOK_STATUS_MAP.READING);
-    }
-    if (targetIndex >= 3) {
-      bookStore.fetchBooksReadThisYear();
-    }
+    loadLists({
+      tbr: targetIndex >= 2,
+      reading: targetIndex >= 2,
+      year: targetIndex >= 3,
+    });
 
     nextTick(() => {
       // Tenta navegar para o índice alvo (respeitando slides renderizados)
@@ -205,20 +191,12 @@ onMounted(() => {
     <SwiperSlide v-for="slide in visibleSlides" :key="slide.id" class="stack-view__slide">
       <CardIntro v-if="slide.type === 'intro'" class="stack-view__card stack-view__intro" />
 
-      <div v-else-if="slide.type === 'books'" class="stack-view__card stack-view__book-list">
-        <BookList />
-      </div>
-
-      <div v-else-if="slide.type === 'reading'" class="stack-view__card stack-view__now">
-        <ReadingList />
-      </div>
-
-      <div v-else-if="slide.type === 'year'" class="stack-view__card stack-view__year">
-        <ThisYearList />
-      </div>
-
-      <div v-else-if="slide.type === 'tbr'" class="stack-view__card stack-view__tbr">
-        <TBRList />
+      <div
+        v-else
+        class="stack-view__card"
+        :class="`stack-view__${SLIDE_CARD_MODIFIERS[slide.type]}`"
+      >
+        <component :is="listComponents[slide.type]" />
       </div>
     </SwiperSlide>
   </Swiper>

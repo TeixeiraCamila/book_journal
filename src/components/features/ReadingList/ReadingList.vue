@@ -4,18 +4,16 @@ import { useBookStore } from '@/stores/bookStore';
 import { PencilLine } from 'lucide-vue-next';
 import Button from '@/components/ui/Button.vue';
 import StateHandler from '@/components/ui/StateHandler.vue';
+import BookCover from '@/components/books/BookCover/BookCover.vue';
 import { BOOK_STATUS_MAP } from '@/constants/book';
 import { useBookNavigation } from '@/composables/useBookNavigation';
 const bookStore = useBookStore();
 const { navigateToEdit } = useBookNavigation();
 import { useBookFormatters } from '@/composables/useBookFormatters.js';
 
-const { getAuthorString, getPagesString, getPublicationString } = useBookFormatters();
+const { getAuthorString, getPagesString, getPagesProgress, getPublicationString, getTypeString } =
+  useBookFormatters();
 
-const calculateProgress = (currentPage, total) => {
-  if (!currentPage || !total || total === 0) return 0;
-  return Math.round((parseInt(currentPage) / parseInt(total)) * 100);
-};
 /**
  * Formata data para exibição em português
  */
@@ -36,14 +34,6 @@ const getReadingPeriodString = (book) => {
   const end = formatDate(se.end);
 
   return `Lido de ${start} até ${end}`;
-};
-
-/**
- * Formata string de tipo
- */
-const getTypeString = (book) => {
-  if (!book.type?.length) return '';
-  return ` ${book.type.join(', ')}`;
 };
 
 /**
@@ -97,16 +87,11 @@ const hasPublicationInfo = (book) => {
           >
             <!-- Capa do livro -->
             <div class="reading-card__cover">
-              <img
-                v-if="book.cover?.[0]"
-                :src="book.cover[0]"
+              <BookCover
+                :src="book.cover?.[0]"
                 :alt="`Capa do livro ${book.title}`"
                 class="reading-card__image"
-                loading="lazy"
               />
-              <div v-else class="reading-card__placeholder" aria-label="Sem capa disponível">
-                📖
-              </div>
             </div>
 
             <div class="reading-card__content">
@@ -147,7 +132,7 @@ const hasPublicationInfo = (book) => {
                       <div
                         class="reading-card__progress-fill"
                         :style="{
-                          width: `${calculateProgress(book.pages.currentlyPage, book.pages.totalPages)}%`,
+                          width: `${getPagesProgress(book)}%`,
                         }"
                       ></div>
                     </div>
@@ -273,12 +258,6 @@ const hasPublicationInfo = (book) => {
   object-fit: cover;
   transition: transform 0.3s ease;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-}
-
-.reading-card__placeholder {
-  font-size: 4rem;
-  color: var(--muted);
-  filter: grayscale(1);
 }
 
 .reading-card__content {

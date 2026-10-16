@@ -2,7 +2,6 @@
 // Face posterior do card — detalhes do livro, metadados e botões de ação (editar/deletar)
 import { computed } from 'vue';
 import { useUserStore } from '@/stores/userStore';
-import { BOOK_TYPE_LABELS } from '@/constants/book';
 import CardStatus from './CardStatus.vue';
 import Button from '@/components/ui/Button.vue';
 import { PencilLine, Trash } from 'lucide-vue-next';
@@ -18,8 +17,12 @@ const emit = defineEmits(['edit', 'delete']);
 
 const userStore = useUserStore();
 
-const { getPublicationString } = useBookFormatters();
+const { getAuthorString, getPagesString, getTypeString, getPublicationString } =
+  useBookFormatters();
 
+const authorString = computed(() => getAuthorString(props.book));
+const pagesString = computed(() => getPagesString(props.book));
+const typeString = computed(() => getTypeString(props.book));
 const string = computed(() => getPublicationString(props.book));
 
 const wasReadString = computed(() => {
@@ -32,11 +35,6 @@ const seriesString = computed(() => {
   if (!serie) return '';
   const volume = props.book.seriesInfo?.volume;
   return volume ? `${serie} #${volume}` : serie;
-});
-
-const typeString = computed(() => {
-  if (!props.book.type?.length) return '';
-  return props.book.type.map((t) => BOOK_TYPE_LABELS[t] || t).join(', ');
 });
 
 const handleEdit = () => {
@@ -59,16 +57,9 @@ const handleDelete = () => {
 
         <p class="card_back__text" v-if="seriesString">Série: {{ seriesString }}</p>
 
-        <p class="card_back__text" v-if="book.author?.length">
-          <span v-if="book.literaryAtlas" v-html="book.literaryAtlas" />
-          {{ book.author.join(', ') }}
-        </p>
+        <p class="card_back__text" v-if="authorString">{{ authorString }}</p>
 
-        <div v-if="book.pages?.currentlyPage && book.pages?.totalPages">
-          <p class="card_back__text">
-            Páginas: {{ book.pages.currentlyPage }} / {{ book.pages.totalPages }}
-          </p>
-        </div>
+        <p class="card_back__text" v-if="pagesString">{{ pagesString }}</p>
 
         <p class="card_back__text" v-if="typeString">Tipo: {{ typeString }}</p>
 

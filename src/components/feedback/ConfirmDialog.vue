@@ -54,7 +54,7 @@ defineExpose({
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="isOpen" class="confirm-dialog__overlay" @click="handleCancel">
+      <div v-if="isOpen" class="confirm-dialog__overlay modal-overlay" @click="handleCancel">
         <div class="confirm-dialog__content" @click.stop>
           <div class="confirm-dialog__header">
             <h3 class="confirm-dialog__title">{{ title }}</h3>
@@ -77,16 +77,8 @@ defineExpose({
 </template>
 
 <style scoped>
+/* Posição/centralização/fundo em .modal-overlay (style.css); z-index acima do modal do card */
 .confirm-dialog__overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 2000;
 }
 

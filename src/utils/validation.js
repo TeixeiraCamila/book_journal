@@ -26,6 +26,23 @@ export function validateYear(value, fieldName) {
   return null;
 }
 
+// Valida inteiro positivo (ex.: volume da série — o schema da API exige inteiro)
+export function validatePositiveInteger(value, fieldName) {
+  const number = Number(value);
+  if (!Number.isInteger(number) || number < 1) {
+    return `${fieldName} deve ser um número inteiro positivo`;
+  }
+  return null;
+}
+
+// Valida que a data de término seja igual ou posterior à data de início
+export function validateDateRange(startDate, endDate, fieldName = 'Data de término') {
+  if (new Date(startDate) > new Date(endDate)) {
+    return `${fieldName} deve ser posterior à data de início`;
+  }
+  return null;
+}
+
 // Valida múltiplos valores separados por vírgula
 export function parseCommaSeparated(value) {
   if (!value) return [];

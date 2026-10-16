@@ -78,7 +78,7 @@ const handleEdit = (book) => {
     <Teleport to="body">
       <div
         v-if="isModalOpen"
-        class="book-modal__overlay"
+        class="book-modal__overlay modal-overlay"
         :class="{ visible: isModalVisible }"
         @click.self="closeModal"
       >
@@ -160,15 +160,10 @@ const handleEdit = (book) => {
   }
 }
 
-/* MODAL OVERLAY (FUNDO ESCURECIDO) */
+/* MODAL OVERLAY (FUNDO ESCURECIDO) — posição/centralização em .modal-overlay (style.css) */
 .book-modal__overlay {
-  position: fixed;
-  inset: 0;
   background: rgba(0, 0, 0, 0);
   backdrop-filter: blur(0px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 100;
   transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }

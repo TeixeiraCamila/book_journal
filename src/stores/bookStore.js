@@ -9,25 +9,28 @@ import {
 } from '../constants/book';
 import { extractErrorMessage, logError } from '@/utils/errorHandler';
 
-export const useBookStore = defineStore('books', {
-  state: () => ({
-    bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
-    loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
-    error: null,
-    // ===== PAGINAÇÃO (CURSOR-BASED) =====
-    pagination: {
-      pageSize: DEFAULT_PAGE_SIZE,
-      currentCursor: null,
-      nextCursor: null,
-      previousCursors: [],
-    },
+// Estado inicial — fonte única de state() e $reset() (evita os dois divergirem)
+const createInitialState = () => ({
+  bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
+  loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
+  error: null,
+  // ===== PAGINAÇÃO (CURSOR-BASED) =====
+  pagination: {
+    pageSize: DEFAULT_PAGE_SIZE,
+    currentCursor: null,
+    nextCursor: null,
+    previousCursors: [],
+  },
 
-    searchTerm: '',
-    searchBy: DEFAULT_SEARCH_MODE,
-    filterStatus: 'all',
-    searchToken: 0,
-    bookOptions: null,
-  }),
+  searchTerm: '',
+  searchBy: DEFAULT_SEARCH_MODE,
+  filterStatus: 'all',
+  searchToken: 0,
+  bookOptions: null,
+});
+
+export const useBookStore = defineStore('books', {
+  state: () => createInitialState(),
 
   getters: {
     allBooks: (state) => state.bookLists.main,
@@ -63,6 +66,26 @@ export const useBookStore = defineStore('books', {
       this.error = extractErrorMessage(error);
     },
 
+    // Esqueleto comum de fetch: loading → token anti-corrida → aplicação → erro → finally
+    async _fetchPaged({ key, action, loader, apply, onError, useToken = true }) {
+      this.loadingStates[key] = true;
+      this.error = null;
+      const token = this.searchToken;
+
+      try {
+        const response = await loader();
+        if (useToken && token !== this.searchToken) return; // Busca mudou no meio: descarta resposta obsoleta
+        apply(response);
+      } catch (error) {
+        this._handleError(action, error);
+        if (onError) onError();
+      } finally {
+        // Só a requisição mais recente desliga o loading: uma resposta obsoleta
+        // que retornasse agora apagaria o indicador enquanto a nova segue em voo
+        if (!useToken || token === this.searchToken) this.loadingStates[key] = false;
+      }
+    },
+
     async fetchBookById(bookId) {
       try {
         const response = await booksApi.get(bookId);
@@ -80,22 +103,19 @@ export const useBookStore = defineStore('books', {
 
     // BUSCAR LIVROS (COM CURSOR PAGINATION)
     async fetchBooks(startCursor = undefined) {
-      this.loadingStates.main = true;
-      this.error = null;
-      const token = this.searchToken;
-
-      try {
-        const response = await booksApi.list({
-          pageSize: this.pagination.pageSize,
-          startCursor: startCursor,
-          search: this.searchTerm,
-          searchBy: this.searchBy,
-          status: this.filterStatus,
-        });
-
-        if (token !== this.searchToken) return; // Ignora resposta se a busca mudou durante a requisição
-
-        if (response?.data) {
+      await this._fetchPaged({
+        key: 'main',
+        action: 'fetchBooks',
+        loader: () =>
+          booksApi.list({
+            pageSize: this.pagination.pageSize,
+            startCursor: startCursor,
+            search: this.searchTerm,
+            searchBy: this.searchBy,
+            status: this.filterStatus,
+          }),
+        apply: (response) => {
+          if (!response?.data) return;
           this.bookLists.main = response.data.data || [];
 
           // Atualiza informações de paginação
@@ -105,15 +125,11 @@ export const useBookStore = defineStore('books', {
               ? response.data.pagination.nextCursor
               : null;
           }
-        }
-      } catch (error) {
-        this._handleError('fetchBooks', error);
-        this.bookLists.main = [];
-      } finally {
-        // Só a requisição mais recente desliga o loading: uma resposta obsoleta
-        // que retornasse agora apagaria o indicador enquanto a nova segue em voo
-        if (token === this.searchToken) this.loadingStates.main = false;
-      }
+        },
+        onError: () => {
+          this.bookLists.main = [];
+        },
+      });
     },
 
     async createBook(bookData) {
@@ -176,62 +192,53 @@ export const useBookStore = defineStore('books', {
     async fetchBooksByStatus(startCursor = undefined, status = BOOK_STATUS_MAP.TO_BE_READ) {
       // Cada status tem sua própria flag: TBR e leitura carregam em paralelo sem se sobrescrever
       const loadingKey = status === BOOK_STATUS_MAP.READING ? 'reading' : 'tbr';
-      this.loadingStates[loadingKey] = true;
-      this.error = null;
-      const token = this.searchToken;
+      // Só TBR e leitura têm lista própria; outros status apenas giram o loading
+      const listKey =
+        status === BOOK_STATUS_MAP.READING || status === BOOK_STATUS_MAP.TO_BE_READ
+          ? loadingKey
+          : null;
 
-      try {
-        const response = await booksApi.list({
-          pageSize: 40,
-          startCursor: startCursor,
-          search: this.searchTerm,
-          searchBy: this.searchBy,
-          status: status,
-        });
-
-        if (token !== this.searchToken) return; // Ignora resposta se a busca mudou durante a requisição
-
-        switch (status) {
-          case BOOK_STATUS_MAP.TO_BE_READ:
-            this.bookLists.tbr = response.data.data || [];
-            break;
-          case BOOK_STATUS_MAP.READING:
-            this.bookLists.reading = response.data.data || [];
-            break;
-          default:
-            break;
-        }
-      } catch (error) {
-        this._handleError('fetchBooksByStatus', error);
-        if (status === BOOK_STATUS_MAP.TO_BE_READ) {
-          this.bookLists.tbr = [];
-        } else if (status === BOOK_STATUS_MAP.READING) {
-          this.bookLists.reading = [];
-        }
-      } finally {
-        if (token === this.searchToken) this.loadingStates[loadingKey] = false;
-      }
+      await this._fetchPaged({
+        key: loadingKey,
+        action: 'fetchBooksByStatus',
+        loader: () =>
+          booksApi.list({
+            pageSize: 40,
+            startCursor: startCursor,
+            search: this.searchTerm,
+            searchBy: this.searchBy,
+            status: status,
+          }),
+        apply: (response) => {
+          if (listKey) this.bookLists[listKey] = response.data.data || [];
+        },
+        onError: () => {
+          if (listKey) this.bookLists[listKey] = [];
+        },
+      });
     },
 
     /**
      * Busca livros com data de término no ano atual
      */
     async fetchBooksReadThisYear() {
-      this.loadingStates.thisYear = true;
-      this.error = null;
-      try {
-        const year = new Date().getFullYear();
-        const response = await booksApi.finishedThisYear({
-          year,
-          pageSize: 100,
-        });
-        this.bookLists.thisYear = response.data.results || response.data.data || [];
-      } catch (error) {
-        this._handleError('fetchBooksReadThisYear', error);
-        this.bookLists.thisYear = [];
-      } finally {
-        this.loadingStates.thisYear = false;
-      }
+      await this._fetchPaged({
+        key: 'thisYear',
+        action: 'fetchBooksReadThisYear',
+        // Esta busca não recebe o termo de busca: não precisa do token anti-corrida
+        useToken: false,
+        loader: () =>
+          booksApi.finishedThisYear({
+            year: new Date().getFullYear(),
+            pageSize: 100,
+          }),
+        apply: (response) => {
+          this.bookLists.thisYear = response.data.results || response.data.data || [];
+        },
+        onError: () => {
+          this.bookLists.thisYear = [];
+        },
+      });
     },
 
     async fetchBookOptions() {
@@ -276,51 +283,29 @@ export const useBookStore = defineStore('books', {
       await this.fetchBooks();
     },
 
-    async search(term) {
+    // Recarrega a lista principal com os filtros atualizados (corpo comum de search/setSearchBy/filterByStatus)
+    async _applyFilters(patches) {
       this.searchToken += 1; // Invalida respostas antigas
-      this.searchTerm = term;
+      Object.assign(this, patches);
       this.pagination.previousCursors = [];
 
       await this.fetchBooks();
+    },
+
+    async search(term) {
+      await this._applyFilters({ searchTerm: term });
     },
 
     async setSearchBy(mode) {
-      this.searchToken += 1; // Invalida respostas antigas
-      this.searchBy = mode;
-      this.pagination.previousCursors = [];
-
-      await this.fetchBooks();
+      await this._applyFilters({ searchBy: mode });
     },
 
     async filterByStatus(status) {
-      this.searchToken += 1; // Invalida respostas antigas
-      this.filterStatus = status;
-      this.pagination.previousCursors = [];
-
-      await this.fetchBooks();
+      await this._applyFilters({ filterStatus: status });
     },
 
     $reset() {
-      this.bookLists.main = [];
-      this.bookLists.tbr = [];
-      this.bookLists.reading = [];
-      this.bookLists.thisYear = [];
-      this.loadingStates.main = false;
-      this.loadingStates.tbr = false;
-      this.loadingStates.reading = false;
-      this.loadingStates.thisYear = false;
-      this.error = null;
-      this.pagination = {
-        pageSize: DEFAULT_PAGE_SIZE,
-        currentCursor: null,
-        nextCursor: null,
-        previousCursors: [],
-      };
-      this.searchTerm = '';
-      this.searchBy = DEFAULT_SEARCH_MODE;
-      this.searchToken = 0;
-      this.filterStatus = 'all';
-      this.bookOptions = null;
+      Object.assign(this, createInitialState());
     },
 
     clearError() {
