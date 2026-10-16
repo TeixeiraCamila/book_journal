@@ -85,8 +85,8 @@ Sem filtros: "Comece adicionando seu primeiro livro!"; com filtro: "Tente ajusta
 2. `CreateBookView` renderiza `BookForm` (sem skeleton, sem carga prévia)
 3. Preenchimento: título/autor obrigatórios; gêneros multi-select; opções (status, tipo, autor, série, gênero, ano) vêm de `/api/books/options` com fallback local
 4. Regras automáticas do formulário:
-   - Kindle + "Lendo": campo de progresso % que auto-calcula `currentPage`
-   - Preencher `endDate`: auto-muda status para "Read" e preenche `wasReadIn` com o ano
+   - Kindle + "Lendo": o campo "Página atual" é substituído pela porcentagem, que auto-calcula `currentPage` pelo Total de páginas
+   - "Data de término" só aparece com Status = "Read"; preenchê-la preenche `wasReadIn` com o ano
 5. Submit → `createBook()` → `POST /api/books` → refaz listas → toast de sucesso → volta para `/?slide=1`
 
 #### Error State:

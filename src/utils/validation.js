@@ -18,6 +18,16 @@ export function validatePositiveNumber(value, fieldName) {
   return null;
 }
 
+// Valida percentual de progresso (0–100)
+export function validatePercentage(value, fieldName) {
+  if (!value) return null;
+  const number = Number(value);
+  if (isNaN(number) || number < 0 || number > 100) {
+    return `${fieldName} deve estar entre 0 e 100`;
+  }
+  return null;
+}
+
 // Valida ano (4 dígitos)
 export function validateYear(value, fieldName) {
   if (value && !/^\d{4}$/.test(value)) {

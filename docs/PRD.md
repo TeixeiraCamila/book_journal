@@ -111,7 +111,7 @@ Registrar um livro completo no acervo.
 
 #### Entradas:
 
-título, autor (multi), status, nota (❤/⭐), páginas (total/atual), tipo, primeiro ano de publicação, "tenho cópia", anos de leitura, datas início/fim, URL da capa, atlas literário, gêneros (multi), editora, série + volume.
+título, autor (multi), status, tipo, nota (❤/⭐), páginas (total/atual; total + % no Kindle), primeiro ano de publicação, "tenho cópia", anos de leitura, datas início/fim, URL da capa, atlas literário, gêneros (multi), editora, série + volume.
 
 #### Saídas:
 
@@ -120,8 +120,8 @@ Livro persistido no Notion, refletido nas listas (main/TBR/leitura/ano).
 #### Critérios de aceite:
 
 - Título e autor são obrigatórios
-- Auto-cálculo do campo atual quando informado o total de páginas Kindle (%)
-- Preencher a data de fim auto-muda o status para "Read" e preenche o ano em "wasReadIn"
+- Tipo fica ao lado do Status; com Kindle, o campo "Página atual" é substituído pela porcentagem de progresso, que calcula a página pelo Total de páginas (200 páginas + 50% = página 100)
+- "Data de término" só aparece com Status = "Read"; preenchê-la preenche o ano em "wasReadIn"
 - Estados de loading (FormSkeleton) e erro com "Tentar novamente"
 
 #### Casos de borda:

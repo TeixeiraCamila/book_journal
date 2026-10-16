@@ -15,6 +15,7 @@ export const BOOK_FORM_SECTIONS = {
     title: 'Status e Progresso',
     fields: [
       { label: 'Status', kind: 'select' },
+      { label: 'Tipo', kind: 'select' },
       { label: 'Total de páginas', kind: 'number' },
       { label: 'Progresso Kindle (%)', kind: 'number' },
       { label: 'Página atual', kind: 'number' },
@@ -24,7 +25,6 @@ export const BOOK_FORM_SECTIONS = {
     title: 'Avaliação e Classificação',
     fields: [
       { label: 'Avaliação', kind: 'select' },
-      { label: 'Tipo', kind: 'select' },
       { label: 'Gêneros/Tags', kind: 'multi-select' },
     ],
   },

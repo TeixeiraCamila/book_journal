@@ -14,6 +14,7 @@ import {
   parseCommaSeparated,
   validateRequired,
   validatePositiveNumber,
+  validatePercentage,
   validatePositiveInteger,
   validateYear,
   validateDateRange,
@@ -62,7 +63,7 @@ const formData = reactive({
   publishedBy: '',
   // Espelha o contrato da API: série e volume aninhados em seriesInfo
   seriesInfo: { bookSeries: '', volume: '' },
-  // Inicia como array vazio — o multi-select lida com adição/remoção
+  // Percentual digitado no form; vira currentPage pelo watch abaixo
   kindleProgress: '',
 });
 
@@ -101,6 +102,11 @@ const isKindle = computed(() => formData.type?.includes('Kindle'));
 
 // Converte o progresso informado em página atual (arredondada)
 watch([() => formData.kindleProgress, () => formData.totalPages], ([progress, total]) => {
+  // No Kindle a % é a única fonte de progresso; limpa a página derivada se o percentual sumir
+  if (isKindle.value && !progress) {
+    formData.currentPage = '';
+    return;
+  }
   const page = getPageFromProgress(total, progress);
   if (page !== null) formData.currentPage = page;
 });
@@ -173,7 +179,14 @@ const hydrateForm = (book) => {
     volume: book.seriesInfo?.volume ?? '',
   };
 
-  formData.kindleProgress = '';
+  // No Kindle deriva o percentual salvo para exibir no form; watch recalcula a página a partir dele
+  if (formData.type?.includes('Kindle') && book.pages?.currentlyPage && book.pages?.totalPages) {
+    formData.kindleProgress = Math.round(
+      (Number(book.pages.currentlyPage) / Number(book.pages.totalPages)) * 100,
+    );
+  } else {
+    formData.kindleProgress = '';
+  }
 
   parseStartEndData(book.startEnd);
 };
@@ -246,6 +259,12 @@ const handleSubmit = async () => {
     'currentPage',
     'Página atual',
     validatePositiveNumber(formData.currentPage, 'Página atual'),
+  );
+  // No Kindle a página vem do watch da %; o erro visível é o do percentual
+  collectError(
+    'kindleProgress',
+    'Progresso Kindle',
+    validatePercentage(formData.kindleProgress, 'Progresso Kindle'),
   );
   if (
     !fieldErrors.value.currentPage &&
@@ -451,6 +470,15 @@ const handleCancel = () => {
               />
 
               <FormField
+                v-model="formData.type"
+                label="Tipo"
+                type="select"
+                :options="typeOptions"
+                placeholder="Selecione o tipo"
+                :error="fieldErrors.type"
+              />
+
+              <FormField
                 v-model="formData.totalPages"
                 label="Total de páginas"
                 type="number"
@@ -458,6 +486,7 @@ const handleCancel = () => {
                 :error="fieldErrors.totalPages"
               />
 
+              <!-- Kindle: a % substitui o Página atual e alimenta o watch de currentPage -->
               <FormField
                 v-if="isKindle && formData.status === BOOK_STATUS_MAP.READING"
                 v-model="formData.kindleProgress"
@@ -468,7 +497,7 @@ const handleCancel = () => {
               />
 
               <FormField
-                v-if="formData.status === BOOK_STATUS_MAP.READING"
+                v-if="!isKindle && formData.status === BOOK_STATUS_MAP.READING"
                 v-model="formData.currentPage"
                 label="Página atual"
                 type="number"
@@ -490,15 +519,6 @@ const handleCancel = () => {
                 :labels="BOOK_RATE_LABELS"
                 placeholder="Selecione uma avaliação"
                 :error="fieldErrors.rate"
-              />
-
-              <FormField
-                v-model="formData.type"
-                label="Tipo"
-                type="select"
-                :options="typeOptions"
-                placeholder="Selecione o tipo"
-                :error="fieldErrors.type"
               />
 
               <FormField
@@ -562,6 +582,7 @@ const handleCancel = () => {
               />
 
               <FormField
+                v-if="formData.status === BOOK_STATUS_MAP.READ"
                 v-model="formData.endDate"
                 label="Data de término"
                 type="date"
