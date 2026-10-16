@@ -2,7 +2,7 @@
 
 ## Variáveis Públicas
 
-Variáveis `VITE_*` são embutidas no bundle — qualquer coisa aqui é pública.
+Variáveis `VITE_*` são embutidas no bundle: qualquer coisa aqui é pública.
 
 ```bash
 # URL do backend notion_api (vazio em dev: usa o proxy do Vite)
@@ -28,7 +28,7 @@ Não há variáveis privadas neste repositório. As do backend (`AUTH_ACCESS_COD
 | `.env.exemple` | ✅ | template (⚠️ nome com typo "exemple", não ".example") |
 | `.env.*.local` | ❌ | variações locais |
 
-⚠️ Gotcha: o `.gitignore` ignora `.env.example` (grafado "certo") mas o arquivo real se chama `.env.exemple` — por isso ele é commitado. Renomear exige ajustar o `.gitignore` junto.
+⚠️ Gotcha: o `.gitignore` ignora `.env.example` (grafado "certo") mas o arquivo real se chama `.env.exemple`, e por isso ele é commitado. Renomear exige ajustar o `.gitignore` junto.
 
 ---
 
@@ -43,7 +43,7 @@ Não há variáveis privadas neste repositório. As do backend (`AUTH_ACCESS_COD
 **Produção** (Vercel):
 
 - `VITE_API_URL` aponta para a API implantada
-- CORS do backend restringe origens — adicionar o domínio novo em `CORS_ORIGINS` do `notion_api` se mudar de domínio
+- CORS do backend restringe origens; adicionar o domínio novo em `CORS_ORIGINS` do `notion_api` se mudar de domínio
 - `npm run vercel-build` (= `npm run build`)
 
 ---
@@ -54,4 +54,4 @@ Não há variáveis privadas neste repositório. As do backend (`AUTH_ACCESS_COD
 - Nunca expor variáveis privadas no cliente (só `VITE_*` chega ao bundle)
 - Manter `.env.exemple` atualizado ao introduzir variável nova
 - Config local e produção separadas; não misturar URLs
-- Segredos de verdade (JWT secret, token do Notion) nunca passam por este frontend — ver `SECURITY.md`
+- Segredos de verdade (JWT secret, token do Notion) nunca passam por este frontend, ver `SECURITY.md`

@@ -4,7 +4,7 @@
 
 Provedor:
 
-`notion_api` (próprio) — `POST /api/auth/login` com email + código de acesso; emite **JWT HS256** (exp 30 dias).
+`notion_api` (próprio): `POST /api/auth/login` com email + código de acesso; emite **JWT HS256** (exp 30 dias).
 
 Métodos:
 
@@ -17,7 +17,7 @@ Sessão no cliente:
 
 Trade-off conhecido:
 
-`localStorage` é acessível por JS (risco de XSS). Cookie HTTP-only está no roadmap (`ROADMAP.md`) — não adotar sem revisar `DECISIONS.md`.
+`localStorage` é acessível por JS (risco de XSS). Cookie HTTP-only está no roadmap (`ROADMAP.md`); não adotar sem revisar `DECISIONS.md`.
 
 ---
 
@@ -37,7 +37,7 @@ Permissões:
 
 Regra fundamental:
 
-**A autorização é obrigatória no servidor** (`require_auth` do backend em todas as escritas). No cliente, ocultar botões de escrita para o visitante (`Filters` verifica `userStore.isGuest`) é só UX — nunca segurança.
+**A autorização é obrigatória no servidor** (`require_auth` do backend em todas as escritas). No cliente, ocultar botões de escrita para o visitante (`Filters` verifica `userStore.isGuest`) é medida de UX; a proteção real fica por conta do servidor.
 
 ---
 
@@ -47,7 +47,7 @@ Regras:
 
 - Nenhum segredo de produção no código ou no bundle
 - `.env` está no `.gitignore` (nunca commitar)
-- O backend guarda `AUTH_ACCESS_CODE` e `AUTH_JWT_SECRET` — fora do alcance deste frontend
+- O backend guarda `AUTH_ACCESS_CODE` e `AUTH_JWT_SECRET`; ficam fora do alcance deste frontend
 - Nunca logar token, código de acesso ou header Authorization
 
 ---
@@ -56,7 +56,7 @@ Regras:
 
 Públicas (vão para o bundle):
 
-`VITE_API_URL` — única variável; sem valor em dev (proxy Vite)
+`VITE_API_URL`: única variável; sem valor em dev (proxy Vite)
 
 Privadas:
 
@@ -72,7 +72,7 @@ Validação de input:
 
 Rate limiting:
 
-Backend limita 3 req/s por IP — evitar loops de refetch.
+Backend limita 3 req/s por IP; evitar loops de refetch.
 
 CORS:
 
@@ -110,7 +110,7 @@ Nunca logar:
 
 Logar:
 
-- Erros de ação via `logError` (`console.error` com ❌) — só `error` do Axios, sem headers
+- Erros de ação via `logError` (`console.error` com ❌): só `error` do Axios, sem headers
 - Falhas de autenticação (mensagem, sem credenciais)
 
 ---
@@ -122,7 +122,7 @@ Não há upload de arquivo. Capas são **URLs** coladas pelo usuário (`coverUrl
 Riscos a considerar:
 
 - URL de imagem de origem maliciosa: o `<img>` limita o risco, mas evitar `v-html` com conteúdo do usuário
-- ⚠️ `CardBack.vue` usa `v-html` em `literaryAtlas` — conteúdo vem do Notion (editável só pela dona), risco aceito e baixo, mas **não copiar esse padrão** para campos de entrada livre de terceiros
+- ⚠️ `CardBack.vue` usa `v-html` em `literaryAtlas`: o conteúdo vem do Notion (editável só pela dona), risco aceito e baixo, mas **não copiar esse padrão** para campos de entrada livre de terceiros
 
 ---
 

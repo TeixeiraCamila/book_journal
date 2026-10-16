@@ -1,8 +1,8 @@
 # API
 
-Fonte de verdade dos contratos consumidos pelo `book_journal`. Backend: **`notion_api`** (repositório irmão). Este documento documenta o **lado do consumidor**; a referência completa do backend vive em `notion_api/docs/api-reference.md`.
+Fonte de verdade dos contratos consumidos pelo `book_journal`. Backend: **`notion_api`** (repositório irmão). Este documento cobre o **lado do consumidor**; a referência completa do backend vive em `notion_api/docs/api-reference.md`.
 
-Cliente Axios: `src/services/api.js` — baseURL `VITE_API_URL` (vazio + proxy `/api` em dev), timeout 10 s (`/all` 60 s, `/auth/me` 5 s), header `Content-Type: application/json`, `Authorization: Bearer <token>` quando há sessão.
+Cliente Axios: `src/services/api.js`; baseURL `VITE_API_URL` (vazio + proxy `/api` em dev), timeout 10 s (`/all` 60 s, `/auth/me` 5 s), header `Content-Type: application/json`, `Authorization: Bearer <token>` quando há sessão.
 
 ---
 
@@ -67,7 +67,7 @@ Sem correspondência na busca: `data: []`, `hasMore: false` (sem chamada ao Noti
 
 ### `GET /api/books/all`
 
-Sem params. Response `200`: `{ "data": [book], "total": n }` — timeout do front estendido para 60 s.
+Sem params. Response `200`: `{ "data": [book], "total": n }`; o timeout do front estende para 60 s.
 
 ### `GET /api/books/:id`
 
@@ -75,7 +75,7 @@ Response `200`: o `book` **no topo** (sem envelope `data`).
 
 ### `GET /api/books/options`
 
-Response `200`: objeto **flat** — chave = propriedade do Notion, valor = `string[]`:
+Response `200`: objeto **flat** (chave = propriedade do Notion, valor = `string[]`):
 
 ```json
 {
@@ -103,7 +103,7 @@ Response `200` (objeto direto): `totalBooks`, `currentlyReading` (array), `statu
 
 Query: `year` (obrigatório, 1900–2100), `pageSize`, `startCursor` (cursor **numérico como string**)
 
-Response `200` — atenção: formato **snake_case, diferente do list**:
+Response `200`: atenção, o formato é **snake_case, diferente do list**:
 
 ```json
 {
@@ -177,7 +177,7 @@ Validação Zod (400):
 }
 ```
 
-O frontend lê `error.response.data.message` e, na ausência, aplica mensagem padrão por status (`utils/errorHandler.js`).
+O frontend lê `error.response.data.message` e, se a chave faltar, usa a mensagem padrão do status (`utils/errorHandler.js`).
 
 ---
 
@@ -187,6 +187,6 @@ O frontend lê `error.response.data.message` e, na ausência, aplica mensagem pa
 - Nunca assumir presença de campos no `book` (vazios são apagados)
 - Autorizar escritas no servidor; no cliente, apenas ocultar a UI do visitante
 - Respostas de erro seguem o formato acima; não expor detalhes internos
-- Rate limit no backend: 3 req/s por IP — não fazer polling agressivo
+- Rate limit no backend: 3 req/s por IP; não fazer polling agressivo
 - `GET /books` (sem `/api`) redireciona para `/api/books`
 - Não existe `PATCH /:id/status` no domínio books (só em entertainment)

@@ -8,10 +8,10 @@ Nenhuma falha pode deixar a tela em branco. Todo componente com dado remoto tem 
 
 ## 1. Camadas
 
-1. **Validação de campo** (client-side) — `utils/validation.js` + `fieldErrors` por campo no `BookForm`; bloqueia o envio
-2. **Store** — `_handleError(action, error)` loga (`logError`, ❌) e expõe `store.error` (`extractErrorMessage`)
-3. **View/Componente** — renderiza estado de erro com retry ou toast de erro
-4. **Interceptor Axios** — 401 global (sessão) — ver § 4
+1. **Validação de campo** (client-side): `utils/validation.js` + `fieldErrors` por campo no `BookForm`; bloqueia o envio
+2. **Store**: `_handleError(action, error)` loga (`logError`, ❌) e expõe `store.error` (`extractErrorMessage`)
+3. **View/Componente**: renderiza estado de erro com retry ou toast de erro
+4. **Interceptor Axios**: 401 global (sessão), ver § 4
 
 ---
 
@@ -39,7 +39,7 @@ Formato vindo do backend: `{ error, message, code }` (sem stack). Validação Zo
 | Tela/Componente | Comportamento |
 |---|---|
 | `BookList` | ⚠️ + `bookStore.error` + botão "Tentar Novamente" (`fetchBooks()`) |
-| `ReadingList` / `TBRList` / `ThisYearList` | estado de erro próprio com retry (repetição a eliminar — `ROADMAP.md`) |
+| `ReadingList` / `TBRList` / `ThisYearList` | estado de erro próprio com retry (repetição a eliminar, ver `ROADMAP.md`) |
 | `CreateBookView` | "Erro ao carregar livro" + "Tentar novamente" (`loadBook`) |
 | `BookForm` | erros por campo (`fieldErrors`); falha de API → toast de erro |
 | `LoginView` | mensagem inline no formulário; formulário permanece utilizável |
@@ -61,7 +61,7 @@ Regra do interceptor (`services/api.js`):
 
 - Timeout padrão 10 s (`/all` 60 s, `/auth/me` 5 s) → cai em "Erro de conexão"
 - Retry: sempre manual (botão), nunca automático
-- Busca durante requisição em voo: resposta obsoleta descartada (`searchToken`) — não é erro, é corrida resolvida
+- Busca durante requisição em voo: resposta obsoleta descartada (`searchToken`) antes de chegar à tela
 
 ---
 
@@ -89,7 +89,7 @@ Escritas bloqueadas por UX no cliente; se o backend responder 401 (ex.: token re
 ## 8. Regras para Novos Erros
 
 1. Mensagem pt-BR com fallback ("Erro desconhecido" como última instância)
-2. Log com `logError` (console, ❌) — sem credenciais
+2. Log com `logError` (console, ❌); sem credenciais
 3. Avisar o usuário **e** oferecer retry quando a ação for recuperável
 4. Nunca `catch` vazio
 5. Erro novo recorrente de API → atualizar este doc e, se for mudança de contrato, `API.md`

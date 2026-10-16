@@ -2,7 +2,7 @@
 
 Instruções do agente de IA: ver **`../AGENTS.md`** (raiz do repositório).
 
-Não existe `docs/AGENTS.md` completo por decisão deliberada: o `AGENTS.md` da raiz é a **única fonte de verdade** para comportamento do agente (convenções, comandos, stack, estrutura). Duplicar geraria dois documentos para manter — e divergir.
+Não existe `docs/AGENTS.md` completo por decisão deliberada: o `AGENTS.md` da raiz é a **única fonte de verdade** para comportamento do agente (convenções, comandos, stack, estrutura). Duplicar criaria dois documentos para manter, e eles divergiriam.
 
 ## Antes de codar
 
@@ -25,6 +25,6 @@ Não existe `docs/AGENTS.md` completo por decisão deliberada: o `AGENTS.md` da 
 - Mudança de comportamento → atualizar o doc correspondente
 - Decisão técnica nova → registrar em `DECISIONS.md`
 - Prioridades → `ROADMAP.md`; pendências conhecidas → `../analise-melhorias.md`
-- Conflito entre requisitos: **não adivinhar** — perguntar
+- Conflito entre requisitos: **não adivinhar**; perguntar
 - Rodar `npm run lint` e `npm run build` ao final
 - Commits só quando pedido explicitamente (regra do repo)

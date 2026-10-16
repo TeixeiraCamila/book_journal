@@ -2,7 +2,7 @@
 
 ## Contexto
 
-App pessoal, single-user, SPA estática. **Não há telemetria, analytics ou error tracking** hoje. O que existe é observabilidade via console do browser e logs do backend (`notion_api`/Vercel). Este doc define o que observar e o que seria necessário adotar se o app sair do uso pessoal.
+App pessoal, single-user, SPA estática. **Não há telemetria, analytics ou error tracking** hoje; a observabilidade vem do console do browser e dos logs do backend (`notion_api`/Vercel). Este doc define o que observar e o que adotar se o app sair do uso pessoal.
 
 ---
 
@@ -34,7 +34,7 @@ Não coletadas. Se necessário no futuro:
 
 - Tempo de carregamento das listas (o backend expõe paginação; medir client-side)
 - Taxa de falha por endpoint (contar erros por status no interceptor)
-- Número de livros por status (endpoint `/api/books/stats` existe no backend, mas é consumo do `dashboard__journal` — aqui viraria contagem client-side via listas)
+- Número de livros por status (o endpoint `/api/books/stats` existe no backend, mas é consumo do `dashboard__journal`; aqui viraria contagem client-side via listas)
 
 ---
 
@@ -42,8 +42,8 @@ Não coletadas. Se necessário no futuro:
 
 Não configurado. Opções leves, caso venha a ser necessário:
 
-- **Vercel Analytics/Web Vitals** (zero-config no plano Hobby) — métricas de carga
-- **Sentry Browser** — erros de runtime do front (atenção ao scrub de PII)
+- **Vercel Analytics/Web Vitals** (zero-config no plano Hobby): métricas de carga
+- **Sentry Browser**: erros de runtime do front (atenção ao scrub de PII)
 - Logs do backend: Vercel Functions (retention limitada no plano gratuito)
 
 ---

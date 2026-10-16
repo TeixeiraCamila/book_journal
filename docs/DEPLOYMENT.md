@@ -8,7 +8,7 @@
 
 #### Produção:
 
-Vercel — SPA estática + backend `notion_api` também na Vercel (`notion-api-green.vercel.app`)
+Vercel: SPA estática + backend `notion_api` também na Vercel (`notion-api-green.vercel.app`)
 
 #### Staging:
 
@@ -40,7 +40,7 @@ não existe
 
 Sem isso, `/login` e `/editar/:id` quebram no refresh.
 
-- **Env var do projeto**: `VITE_API_URL` (URL do backend) — definir no painel da Vercel, nunca no repositório
+- **Env var do projeto**: `VITE_API_URL` (URL do backend); definir no painel da Vercel, nunca no repositório
 - **CORS**: o domínio do front precisa estar nas origens permitidas do `notion_api` (`CORS_ORIGINS`)
 
 ---
@@ -52,7 +52,7 @@ Deploy automático por commit. Rollback:
 1. Vercel → Deployments → escolher build anterior → "Promote to Production"
 2. Ou reverter o commit (`git revert`) e push
 
-Sem migrations de banco (Notion), rollback é seguro — o schema não muda com o deploy do front.
+Sem migrations de banco (Notion), rollback é seguro: o schema não muda com o deploy do front.
 
 ---
 

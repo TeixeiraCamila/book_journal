@@ -16,7 +16,7 @@ Aplicação pessoal (ferramenta de uso próprio / Internal Tool)
 
 #### Plataforma Primária:
 
-Web (desktop e mobile via browser; app Android em estudo — ver `ROADMAP.md`)
+Web (desktop e mobile via browser; app Android em estudo, ver `ROADMAP.md`)
 
 ---
 
@@ -28,7 +28,7 @@ Registrar leituras em planilhas ou no Notion manualmente é trabalhoso e não of
 
 #### Por que esse problema importa?
 
-A leitura é um hábito acompanhado ao longo do tempo; sem um registro estruturado, perde-se histórico de progresso e notas.
+A leitura é um hábito acompanhado ao longo do tempo. Quem lê sem registro estruturado perde o histórico de progresso e notas.
 
 #### Como o usuário resolve isso hoje?
 
@@ -133,7 +133,7 @@ Livro persistido no Notion, refletido nas listas (main/TBR/leitura/ano).
 
 #### Propósito:
 
-Navegar o acervo sem sobrecarregar.
+Percorrer o acervo sem carregar a página inteira.
 
 #### Fluxo do usuário:
 
@@ -182,13 +182,13 @@ Proteger escritas e manter sessão.
 
 ## 7. Fora de Escopo (Non-Goals)
 
-Intencionalmente NÃO faz parte desta versão:
+Fora desta versão:
 
 - Cadastro/gerenciamento de múltiplos usuários no app
 - Social (compartilhar, comentar, seguir)
 - Busca por ISBN ou integração com APIs de livros (ex.: Google Books)
-- App nativo / lojas (plano Capacitor em estudo — ver `ROADMAP.md`)
-- Painel de estatísticas com gráficos — **fora de escopo definitivo**; o endpoint `/api/books/stats` é do `dashboard__journal` (Decisão 009, `DECISIONS.md`)
+- App nativo / lojas (plano Capacitor em estudo, ver `ROADMAP.md`)
+- Painel de estatísticas com gráficos: **fora de escopo definitivo**; o endpoint `/api/books/stats` é do `dashboard__journal` (Decisão 009, `DECISIONS.md`)
 
 ---
 
@@ -233,7 +233,7 @@ Secundárias:
 Técnicas:
 
 - Frontend 100% client-side (SPA); sem backend próprio
-- Todo dado vem do Notion via `notion_api` — o schema do Notion é a fonte de verdade do dado
+- Todo dado vem do Notion via `notion_api`; o schema do Notion é a fonte de verdade do dado
 - Leituras (GET) são públicas no backend; escritas exigem JWT
 
 De Negócio:
@@ -265,7 +265,7 @@ De Timeline:
 - O modo visitante deve ocultar apenas botões de escrita ou também bloquear rotas `/criar` no guard?
 ~~Vale manter `HomeView.vue` (legacy, não usada) até quando?~~ **Resolvido: removida em 15/10/2026 (não era rota e importava componente inexistente).**
 
-~~O endpoint `/api/books/stats` será consumido aqui ou exclusivo do `dashboard__journal`?~~ **Resolvido (Decisão 009): exclusivo do `dashboard__journal` — este app não terá estatísticas.**
+~~O endpoint `/api/books/stats` será consumido aqui ou exclusivo do `dashboard__journal`?~~ **Resolvido (Decisão 009): exclusivo do `dashboard__journal`; este app não terá estatísticas.**
 
 ---
 
@@ -275,7 +275,7 @@ A funcionalidade está considerada completa quando:
 
 - [x] Requisitos implementados
 - [x] Fluxos críticos de usuário funcionam (login, CRUD, busca)
-- [ ] Testes passam (hoje: sem suíte de testes — ver `TESTING.md`)
+- [ ] Testes passam (hoje sem suíte de testes, ver `TESTING.md`)
 - [x] Build passa (`npm run build`)
 - [x] Requisitos de segurança respeitados (token, escritas autenticadas no servidor)
 - [x] Documentação atualizada (`docs/`, `KANBAN.md` na raiz)

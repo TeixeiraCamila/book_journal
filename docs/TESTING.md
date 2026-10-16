@@ -7,7 +7,7 @@
 - `npm run lint` (ESLint com `--fix`)
 - `npm run build` (Vite)
 
-Isso é uma lacuna conhecida (`ROADMAP.md` → NOW/NEXT). Até a suíte existir, a validação é manual dos fluxos críticos (§ 5).
+Lacuna conhecida (`ROADMAP.md` → NOW/NEXT). Até a suíte existir, a validação é manual dos fluxos críticos (§ 5).
 
 ---
 
@@ -29,7 +29,7 @@ Funcionalidades críticas:
 
 Testar:
 
-- `utils/validation.js` (funções puras — ponto de partida ideal)
+- `utils/validation.js` (funções puras; ponto de partida ideal)
 - `utils/errorHandler.js` (mapeamento de status → mensagem)
 - `constants/book.js` (labels/mappings)
 - `composables/useBookFormatters.js` (formatters de autor/páginas/datas)
@@ -40,7 +40,7 @@ Testar:
 Testar:
 
 - `stores/bookStore.js` (actions com Axios mockado: paginação, `searchToken`, `$reset`)
-- `stores/userStore.js` (login, `loadSession`, `validateSession` — só 401 derruba)
+- `stores/userStore.js` (login, `loadSession`, `validateSession`; só 401 derruba)
 - Interceptors de `services/api.js` (anexo de token, redirect em 401)
 
 ### E2E (futuro)
@@ -68,7 +68,7 @@ Playwright (a decidir)
 
 Mock:
 
-Axios mockado (`vi.mock`) — sem MSW por enquanto (escopo pequeno)
+Axios mockado (`vi.mock`); sem MSW por enquanto (escopo pequeno)
 
 ---
 
@@ -87,7 +87,7 @@ tests/
     └── critical-flows.spec.js
 ```
 
-Arquivos unitários podem coexistir em `src/**/__tests__/` se preferir proximidade — escolher um padrão e seguir.
+Arquivos unitários podem coexistir em `src/**/__tests__/` se preferir proximidade; escolher um padrão e seguir.
 
 ---
 

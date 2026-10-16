@@ -49,7 +49,7 @@ Leitura liberada; escritas falham no backend (401) e as ações de escrita devem
 1. Usuário autenticado/visitante acessa `/`
 2. Swiper renderiza slides **visíveis**: intro → acervo → lendo (se houver) → lidos no ano (se houver) → TBR (se houver)
 3. Ao navegar para um slide, os dados correspondentes são buscados (`fetchDataForType`)
-4. Slides de status sem livros simplesmente não aparecem; o Swiper recalcula (`swiper.update()`)
+4. Slides de status sem livros não aparecem; o Swiper recalcula (`swiper.update()`)
 
 #### Deep link:
 
@@ -125,8 +125,8 @@ Erros de validação aparecem por campo (`fieldErrors`); erros de API viram toas
 
 Todo componente que consome dado deve ter:
 
-- **Loading** — skeleton/spinner (nunca tela em branco)
-- **Vazio** — ícone + título + texto contextual
-- **Erro** — mensagem + retry
-- **Sucesso** — toast (escritas) ou conteúdo (leituras)
-- **Desabilitado** — visitante sem permissão de escrita
+- **Loading**: skeleton/spinner (nunca tela em branco)
+- **Vazio**: ícone + título + texto contextual
+- **Erro**: mensagem + retry
+- **Sucesso**: toast (escritas) ou conteúdo (leituras)
+- **Desabilitado**: visitante sem permissão de escrita

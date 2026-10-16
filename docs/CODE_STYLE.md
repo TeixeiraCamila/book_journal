@@ -28,7 +28,7 @@ SCREAMING_SNAKE_CASE (`BOOK_STATUS_MAP`, `DEFAULT_PAGE_SIZE`, `SEARCH_DEBOUNCE_M
 
 #### Chaves de dados/API e props:
 
-Seguem o ecossistema/contrato — camelCase na API (`wasReadIn`, `seriesInfo`), camelCase nas props Vue (`isEdit`, `loadingMessage`)
+Seguem o ecossistema/contrato: camelCase na API (`wasReadIn`, `seriesInfo`), camelCase nas props Vue (`isEdit`, `loadingMessage`)
 
 #### Arquivos:
 
@@ -40,7 +40,7 @@ Paths em pt-BR (`/criar`, `/editar/:id`)
 
 #### CSS (fora do JS):
 
-Classes BEM e custom properties mantêm o padrão do projeto (`card_back__text`, `--accent_muted`, `--button_color`) — não são identificadores JS e **não** seguem camelCase
+Classes BEM e custom properties mantêm o padrão do projeto (`card_back__text`, `--accent_muted`, `--button_color`); não são identificadores JS e **não** seguem camelCase
 
 ---
 
@@ -87,7 +87,7 @@ Seguir a árvore de `ARCHITECTURE.md`. Regras:
 
 #### Use:
 
-`utils/errorHandler.js` — `extractErrorMessage(error)` para mensagem pt-BR e `logError(action, error)` para console com ❌. Stores usam o padrão `_handleError(action, error)`.
+`utils/errorHandler.js`: `extractErrorMessage(error)` para mensagem pt-BR e `logError(action, error)` para console com ❌. Stores usam o padrão `_handleError(action, error)`.
 
 #### Não fazer:
 
@@ -113,7 +113,7 @@ Explicam o _que_ e o _porquê_, não o _como_:
 
 #### Biblioteca:
 
-Nenhuma — `console` direto, encapsulado por `logError`.
+Nenhuma: `console` direto, encapsulado por `logError`.
 
 #### Regras:
 
@@ -126,7 +126,7 @@ Nenhuma — `console` direto, encapsulado por `logError`.
 
 #### Formatter:
 
-Prettier — `singleQuote: true`, `semi: true`, `printWidth: 100` (`.prettierrc.json`)
+Prettier: `singleQuote: true`, `semi: true`, `printWidth: 100` (`.prettierrc.json`)
 
 #### Linter:
 
@@ -134,7 +134,7 @@ ESLint flat config + `eslint-plugin-vue` (essential) + `@vue/eslint-config-prett
 
 #### Type Checking:
 
-Nenhum (JS puro; `tsconfig.json` é resíduo sem `typescript` — ver `ROADMAP.md`)
+Nenhum (JS puro; `tsconfig.json` é resíduo sem `typescript`, ver `ROADMAP.md`)
 
 #### Executar após edições:
 
@@ -157,5 +157,5 @@ Nenhum (JS puro; `tsconfig.json` é resíduo sem `typescript` — ver `ROADMAP.m
 - Introduzir dependências desnecessárias (todas as atuais têm uso; não adicionar mais uma sem necessidade)
 - Ignorar a arquitetura (ex.: chamada Axios direta numa view)
 - Mudar arquivos não relacionados
-- Escrever selectores por ID (`#right-image`) — só BEM
+- Escrever selectores por ID (`#right-image`): só BEM
 - Usar `<script>` sem `setup` em componente novo

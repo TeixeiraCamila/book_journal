@@ -2,7 +2,7 @@
 
 ## Propósito
 
-Este frontend **não tem banco de dados próprio**: todo dado vive no **database do Notion**, acessado via `notion_api`. Este documento define o **modelo de dados do domínio books** tal como o frontend o consome — a fonte de verdade para não inventar campos, formatos ou nomes.
+Este frontend **não tem banco de dados próprio**: todo dado vive no **database do Notion**, acessado via `notion_api`. Este documento define o **modelo de dados do domínio books** tal como o frontend o consome, para não inventar campos, formatos ou nomes.
 
 Schema físico (propriedades do Notion) é mantido no backend; mudanças de schema acontecem lá e repercutem aqui.
 
@@ -10,11 +10,11 @@ Schema físico (propriedades do Notion) é mantido no backend; mudanças de sche
 
 ## 1. Motor de Dados
 
-Banco:
+#### Banco:
 
 Notion API (workspace pessoal)
 
-Acesso:
+#### Acesso:
 
 Exclusivamente via `notion_api` (repositório irmão). O frontend nunca fala com o Notion direto.
 
@@ -22,7 +22,7 @@ Exclusivamente via `notion_api` (repositório irmão). O frontend nunca fala com
 
 ## 2. Convenções de Nomenclatura
 
-Objeto devolvido pela API:
+#### Objeto devolvido pela API:
 
 camelCase (`wasReadIn`, `iHaveCopy`, `firstPublished`, `literaryAtlas`, `seriesInfo`)
 
@@ -32,11 +32,11 @@ camelCase; atenção às assimetrias documentadas abaixo
 
 Campos internos do app (stores, utils):
 
-camelCase (convenção do repo — ver `DECISIONS.md`, Decisão 008)
+camelCase (convenção do repo, ver `DECISIONS.md`, Decisão 008)
 
-Vazios:
+#### Vazios:
 
-O backend **apaga campos vazios** do objeto (`null`, `undefined` ou `[]`) — o frontend nunca pode assumir presença fixa de todos os campos. Usar optional chaining (`book.cover?.[0]`).
+O backend **apaga campos vazios** do objeto (`null`, `undefined` ou `[]`); o frontend nunca pode assumir presença fixa de todos os campos. Usar optional chaining (`book.cover?.[0]`).
 
 ---
 
@@ -70,7 +70,7 @@ Formato retornado por `GET /api/books`, `/all`, `/:id`:
 
 | Campo na escrita | Aceita | Observação |
 |---|---|---|
-| `coverUrl` | string | Na leitura vira `cover` (array) — nomes diferentes! |
+| `coverUrl` | string | Na leitura vira `cover` (array); nomes diferentes |
 | `type` | `string \| string[]` | Leitura sempre array |
 | `startEnd` | `string` ou `{ start, end }` | |
 | `status`, `rate`, `pages.*`, `seriesInfo.*` | aceitam `null` | para limpar o valor |
@@ -104,10 +104,10 @@ O backend revalida com Zod (fonte final).
 
 O "índice" é o query do Notion, exposto pela API:
 
-- `search` + `searchBy` (`title` | `author` | `genre`) — match parcial; sem resultado devolve `data: []` sem gastar chamada ao Notion
-- `status` — filtro por select; `all` = sem filtro
-- `genres` — filtro por multi-select (array ou `A,B`)
-- `wasReadIn` — filtro por ano
+- `search` + `searchBy` (`title` | `author` | `genre`): match parcial; sem resultado devolve `data: []` sem gastar chamada ao Notion
+- `status`: filtro por select; `all` = sem filtro
+- `genres`: filtro por multi-select (array ou `A,B`)
+- `wasReadIn`: filtro por ano
 
 ---
 
@@ -120,7 +120,7 @@ O "índice" é o query do Notion, exposto pela API:
 
 ## 8. Soft Delete
 
-Sim — `DELETE /api/books/:id` faz **soft delete** (`archived: true` no Notion). O item some das listagens mas permanece no Notion.
+`DELETE /api/books/:id` faz **soft delete** (`archived: true` no Notion). O item some das listagens e permanece no Notion.
 
 ---
 
@@ -152,4 +152,4 @@ Não renomear campos do contrato sem coordenar com o `notion_api`.
 
 ## 12. Seed / Dados de Desenvolvimento
 
-O "seed" é o próprio database do Notion de produção — não há banco de dev separado. Cuidado ao testar escritas: elas persistem de verdade.
+O "seed" é o próprio database do Notion de produção; não há banco de dev separado. Cuidado ao testar escritas: elas persistem no Notion.
