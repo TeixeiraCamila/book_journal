@@ -67,7 +67,7 @@ const clearFilters = () => {
   bookStore.filterByStatus('all');
 };
 
-// Debounce manual: @vueuse/core não é dependência direta (só @vueuse/motion),
+// Debounce manual: o projeto não usa @vueuse (dependência removida em 15/10/2026),
 // então watchDebounced não está disponível aqui.
 watch(localSearch, () => {
   clearTimeout(searchTimer);
@@ -189,18 +189,21 @@ onUnmounted(() => clearTimeout(searchTimer));
   gap: 0.4rem;
   width: 100%;
   border: none;
-  padding: 0;
+  padding: 0.8em 0.4em;
   margin: 0;
+  background-color: #f0f0f0;
 }
+
 .filters__legend {
-  font-size: 0.7rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  padding: 0;
+  padding: 0 0.8em;
   margin-bottom: 0.2rem;
-  border-bottom: 3px solid;
   width: 100%;
+  background-color: #f0f0f0;
+  box-shadow: -2px 2px 0 rgba(0, 0, 0, 0.7);
 }
+
 .filters__option {
   display: flex;
   align-items: center;
