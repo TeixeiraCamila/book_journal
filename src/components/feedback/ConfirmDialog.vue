@@ -30,10 +30,12 @@ const handleConfirm = async () => {
     if (props.onConfirm) {
       await props.onConfirm();
       addNotification('Livro deletado com sucesso!');
+      // Avisa o pai que a ação terminou (ex.: fechar o modal que abriu o diálogo)
+      emit('confirm');
       close();
     }
   } catch (error) {
-    addNotification('Erro ado deletar o livro', error);
+    addNotification('Erro ao deletar o livro.', error);
   }
 };
 

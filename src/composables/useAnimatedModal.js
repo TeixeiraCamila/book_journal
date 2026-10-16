@@ -37,24 +37,8 @@ export function useAnimatedModal(cardEl) {
     }, 2000);
   };
 
-  // Fecha modal
+  // Fecha modal com fade-out e retorna ao front antes de destruir
   const closeModal = () => {
-    // Inicia fade-out
-    isModalVisible.value = false;
-
-    // Garante que termina no front antes de fechar
-    currentFace.value = 'front';
-
-    // Aguarda animação terminar antes de destruir o modal
-    setTimeout(() => {
-      isModalOpen.value = false;
-      // Remove transparência do card original
-      isAnimating.value = false;
-    }, 300);
-  };
-
-  // Fecha modal com animação reversa
-  const closeModalWithAnimation = () => {
     // Inicia fade-out
     isModalVisible.value = false;
 
@@ -84,11 +68,6 @@ export function useAnimatedModal(cardEl) {
     currentFace.value = currentFace.value === 'front' ? 'back' : 'front';
   };
 
-  // Vira para a face oposta
-  const flipToOpposite = () => {
-    toggleFlip();
-  };
-
   return {
     isModalOpen,
     isModalVisible,
@@ -97,10 +76,8 @@ export function useAnimatedModal(cardEl) {
     isFlipped,
     openAnimatedModal,
     closeModal,
-    closeModalWithAnimation,
     flipToBack,
     flipToFront,
     toggleFlip,
-    flipToOpposite,
   };
 }

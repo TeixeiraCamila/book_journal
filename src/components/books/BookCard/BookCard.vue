@@ -2,16 +2,13 @@
 // Card de livro com efeito flip 3D — face frontal (capa) e verso (detalhes/ações)
 import { ref, onMounted } from 'vue';
 import { useBookStore } from '@/stores/bookStore';
-import { useNotifications } from '@/composables/useNotifications';
 import ConfirmDialog from '@/components/feedback/ConfirmDialog.vue';
 import CardFront from './CardFront.vue';
 import CardBack from './CardBack.vue';
 
 import { useAnimatedModal } from '@/composables/useAnimatedModal.js';
 
-const { addNotification } = useNotifications();
-
-const props = defineProps({
+defineProps({
   book: {
     type: Object,
     required: true,
@@ -33,7 +30,6 @@ const {
   isAnimating,
   openAnimatedModal,
   closeModal,
-  closeModalWithAnimation,
   toggleFlip,
 } = useAnimatedModal(cardEl);
 
@@ -46,16 +42,9 @@ const openDeleteDialog = () => {
   deleteDialog.value?.open();
 };
 
-// Deleta o livro via store e fecha modal após sucesso
-const handleDelete = async () => {
-  try {
-    await bookStore.deleteBook(props.book.id);
-    closeModal(); // Fecha o modal após deletar
-    // Notificação já é exibida no ConfirmDialog após sucesso da operação
-    // Não é necessário duplicar aqui
-  } catch (error) {
-    addNotification('Erro ao deletar livro. Tente novamente.', error);
-  }
+// Deleção roda no ConfirmDialog (via onConfirm); aqui só fecha o modal após sucesso
+const handleDeleteConfirmed = () => {
+  closeModal();
 };
 
 // Fecha modal e emite evento de edição para o componente pai
@@ -115,7 +104,7 @@ const handleEdit = (book) => {
                 :rotate="`rotate(${randomTilt}deg)`"
                 @edit="handleEdit"
                 @delete="openDeleteDialog"
-                @close="closeModalWithAnimation"
+                @close="closeModal"
               />
             </div>
           </div>
@@ -129,8 +118,8 @@ const handleEdit = (book) => {
       :message="`Tem certeza que deseja deletar '${book.title}'? Esta ação não pode ser desfeita.`"
       confirm-text="Deletar"
       :on-confirm="() => bookStore.deleteBook(book.id)"
-      @confirm="handleDelete"
-      @cancel="closeModalWithAnimation"
+      @confirm="handleDeleteConfirmed"
+      @cancel="closeModal"
     />
   </div>
 </template>
