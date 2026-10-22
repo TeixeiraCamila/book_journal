@@ -1,213 +1,343 @@
 # Plano de migração para TypeScript
 
-Roteiro incremental para migrar o `book_journal` de JS para TS, camada por camada. Cada fase fecha um bloco e só é encerrada após `lint + type-check + build` + smoke manual, com atualização de `../analise-melhorias.md` (✅ + data) e do `KANBAN.md` (raiz).
+Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, **sem big bang e sem mudança de comportamento**. 6 fases; cada fecha um bloco e só encerra com o gate verde + smoke + docs.
 
-> Retrato: varredura de `src/` em 15/10/2026: **25 `.vue` + 18 `.js`** (43 arquivos, 6.321 linhas de código; 1.003 linhas são JS puro). Ao final de cada fase, marque o status aqui.
+> Retrato (22/10/2026): **26 `.vue` + 19 `.js`** = 45 arquivos em `src/`, 6.277 linhas (1.098 são JS puro). Atualizado em relação ao snapshot de 15/10: a deduplicação criou `BookCover.vue` e `formLayout.js`, e `BookForm.vue` hoje tem 708 linhas.
+
+## Como funciona (vale para todas as fases)
+
+- **Gate padrão** — rodar no fim de cada fase; só fecha com **0 erros**:
+  ```bash
+  npm run lint && npm run type-check && npm run build
+  ```
+- **Smoke** mínimo por fase: `npm run dev` → login → acervo → criar → editar.
+- **Ao fechar a fase:** marcar ✅ + data nesta tabela, em `../analise-melhorias.md` e no `KANBAN.md` (raiz).
+- **Commits:** só quando pedido; 1 commit atômico por fase (`refactor(ts): ...`).
+- **Erro pré-existente** que o `vue-tsc` descobrir vira item de `analise-melhorias.md` — nunca afrouxar `strict` para passar pano.
 
 ## Decisões já fechadas
 
-1. **Prioridade:** a migração sai de `DEPOIS` no `ROADMAP.md` e passa para `PRÓXIMO` (ação 0.2 abaixo); deixa de esperar o APK.
-2. **Type check no build:** `build` vira `vue-tsc -b && vite build` (padrão dos 2 repos irmãos já em TS). Erro de tipo derruba o deploy na Vercel; por isso o gate local é obrigatório antes de todo push.
-3. **Ritmo:** incremental por camada, ferramenta primeiro, `.vue` por último. Sem big bang.
-
-Registrar estas escolhas em `DECISIONS.md` como **ADR 010** na Fase 7.
+1. **Prioridade:** a migração sai de `DEPOIS` para `PRÓXIMO` no `ROADMAP.md` (Fase 0); deixa de esperar o APK.
+2. **Type check no build:** `build` vira `vue-tsc -b && vite build` (padrão dos irmãos). Erro de tipo derruba o deploy na Vercel → gate local obrigatório antes de todo push.
+3. **Ritmo:** ferramenta primeiro, `.vue` por último.
+4. **ADR 011** (não 010 — o 010 já foi consumido pela dedup/`formLayout.js`): registrar na Fase 5.
+5. **Transição dos `.vue` em JS:** o ESLint ganha um bloco transitório `app/transicao-script-js` (Fase 1) mantendo `vue/block-lang` com `allowNoLang: true` até a Fase 5. A alternativa `scriptLangs: ['ts', 'js']` foi descartada: faria o `scriptLangs` mentir sobre o repo e afetaria a classificação de type-check do helper.
 
 ## Status das fases
 
 | Fase | Escopo | Risco | Esforço | Status |
 |------|--------|-------|---------|--------|
-| 0 | Pré-condições (árvore limpa + prioridade) | ~zero | ~15 min | ⬜ |
+| 0 | Pré-condições (árvore limpa + ROADMAP) | ~zero | ~15 min | ⬜ |
 | 1 | Ferramenta (deps, tsconfig, scripts, ESLint) | baixo | ~1–2 h | ⬜ |
-| 2 | Tipos de contrato (`src/types/`) | baixo | ~1–2 h | ⬜ |
-| 3 | Folhas: `utils`, `constants`, composables, router, barrels | baixo | ~1–2 h | ⬜ |
-| 4 | Camada de serviço (`services/api.ts`) | médio | ~1 h | ⬜ |
-| 5 | Stores Pinia | médio | ~2 h | ⬜ |
-| 6 | 25 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ |
-| 7 | Endurecimento + docs + ADR 010 | baixo | ~1 h | ⬜ |
+| 2 | Tipos de contrato + folhas (`utils`, `constants`, composables, router, barrels) | baixo | ~2–3 h | ⬜ |
+| 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ⬜ |
+| 4 | 26 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ |
+| 5 | Endurecimento + docs + ADR 011 | baixo | ~1 h | ⬜ |
 
-**Total: ~2 dias.** Fase 6 concentra ~50% do esforço.
+**Total: ~2 dias.** A Fase 4 concentra ~50% do esforço.
 
 ---
 
-## Fase 0 — Pré-condições
+## Fase 0 — Pré-condições (~15 min)
 
 | # | Ação | Detalhe |
 |---|------|---------|
-| 0.1 | Limpar a árvore | Hoje há dezenas de arquivos modificados não commitados (`git status`). Terminar/commitar esse trabalho antes; a **migração não pode misturar** com refatoração pendente. Commits só quando pedido. |
+| 0.1 | Árvore limpa | ✅ verificado em 22/10 (working tree limpo, dedup commitada). Se aparecer trabalho no meio da migração, commitar antes de continuar. |
 | 0.2 | Repriorizar | Mover "Migração incremental para TypeScript" de `DEPOIS` para `PRÓXIMO` em `docs/ROADMAP.md`; marcar ✅ o item "Remover `tsconfig.json` órfão (ou migrar de vez)". |
-| 0.3 | Confirmar ordem com a deduplicação | `PLANO_DEDUPLICACAO.md` Fases 2–5 mexem em `BookForm`/`bookStore`/`CardStackView`. **Não há bloqueio:** a Fase 6 migra o `BookForm` por último de qualquer forma. Se as dedups rodarem antes, menos código para tipar. |
+| 0.3 | Deduplicação | ✅ concluída (fases 1–5, 15–16/10/2026). Nenhum bloqueio remanescente. |
 
 ---
 
 ## Fase 1 — Ferramenta (não mexe em `src/`)
 
-Nenhum arquivo de código muda. Objetivo: `npm run type-check` e `npm run build` existem e passam **com o JS atual dentro**.
+**Objetivo:** `npm run type-check` e `npm run build` existem e passam **com o JS atual dentro**.
 
-### 1.1 Dependências
+### 1.1 Rename do vite config (antes de tudo)
 
 ```bash
-npm i -D typescript@~6.0.2 vue-tsc@^3.3.13 @vue/tsconfig@^0.9.1 \
-  @vue/eslint-config-typescript@^14.9.0 @types/node@^24
+git mv vite.config.js vite.config.ts
 ```
 
-- `typescript`/`@types/node` na mesma versão dos irmãos (`dashboard__journal`, `sobrevivendo_ao_mes`).
-- `@vue/eslint-config-typescript` já embute `typescript-eslint` + `vue-eslint-parser` (não instalar `typescript-eslint` avulso).
+- Mesmo caminho dos irmãos; **nenhum ajuste de código** (o conteúdo já é ESM + `import.meta.url`).
+- É pré-requisito, não consequência: o `tsconfig.node.json` nasce com `include: ["vite.config.ts"]` — sem o rename, o primeiro `vue-tsc -b` aborta com *"No inputs were found"*.
 
-### 1.2 `tsconfig` (substituir os órfãos)
+### 1.2 Dependências
 
-Hoje: `tsconfig.json` resquício (referencia `vite.config.ts` **inexistente**, tem `baseUrl` + `ignoreDeprecations: "6.0"`) e `tsconfig.node.json` quebrado.
+```bash
+npm i -D typescript@~6.0.2 vue-tsc@^3.3.13 @vue/eslint-config-typescript@^14.9.0 @types/node@^24
+```
 
-Criar o padrão solução dos irmãos:
+- `typescript`/`@types/node` na mesma versão dos irmãos (`dashboard__journal`: `~6.0.0` / `^24`). **O pin não é cosmético:** o `latest` do npm já é o TypeScript **7.0.2** (port nativo) — sem `~6.0.2`, um `npm i -D typescript` puxa o 7.
+- `vue-tsc` é o único que typea `.vue` (`tsc` puro não resolve o formato).
+- `@vue/eslint-config-typescript` já embute `typescript-eslint` + `vue-eslint-parser` (não instalar avulso).
+- Smoke cedo: `npx vue-tsc -b` logo após o `npm i` isola incompatibilidade `vue-tsc × TS 6` do resto da fase.
 
-- **`tsconfig.json`**: `{"files": [], "references": [app, node]}`
-- **`tsconfig.app.json`**: `extends: "@vue/tsconfig/tsconfig.dom.json"`, `include: ["src/**/*", "src/**/*.vue"]`, `paths: {"@/*": ["./src/*"]}` (sem `baseUrl`, deprecado no TS 6), `tsBuildInfoFile` em `node_modules/.tmp/`, **`allowJs: true` + `checkJs: false`** (transição) e `strict: true`.
-- **`tsconfig.node.json`**: `include: ["vite.config.ts"]`, `types: ["node"]`, `noEmit: true`.
+### 1.3 `tsconfig` — substituir os 2 órfãos
 
-### 1.3 Arquivos de ambiente e config
+Hoje: `tsconfig.json` resquício (tem `baseUrl` + `ignoreDeprecations: "6.0"` + `jsx: "preserve"`) e `tsconfig.node.json` quebrado (inclui `vite.config.ts` inexistente). **Copiar o trio comprovado do `dashboard__journal`** e adaptar.
 
-| Ação | Arquivo |
-|------|---------|
-| Criar `/// <reference types="vite/client" />` (habilita `import.meta.env`, usado em 3 pontos) | `src/vite-env.d.ts` |
-| Renomear `vite.config.js` → `vite.config.ts` (mesmo caminho dos irmãos) | `vite.config.ts` |
-| Manter (remover só na Fase 7) | `jsconfig.json` |
+`tsconfig.json` (raiz, solução):
+
+```jsonc
+{
+  "files": [],
+  "compilerOptions": {
+    "target": "es2023",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "moduleDetection": "force",
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}
+```
+
+Referência lateral a partir de uma raiz `files: []` **não exige `composite`** (comportamento confirmado no `tsc -b` dos irmãos).
+
+`tsconfig.app.json` (cópia do irmão adaptada):
+
+```jsonc
+{
+  "compilerOptions": {
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "target": "es2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "esnext",
+    "types": ["vite/client"],
+    "allowArbitraryExtensions": true,
+    "skipLibCheck": true,
+
+    /* Transição: remove na Fase 5, junto com o bloco de transição do ESLint */
+    "allowJs": true,
+
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "noEmit": true,
+    "paths": { "@/*": ["./src/*"] },
+
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "erasableSyntaxOnly": true,
+    "noFallthroughCasesInSwitch": true
+  },
+  "include": ["src"]
+}
+```
+
+- **Sem `jsx`** (não há TSX aqui), **sem `baseUrl`**, `allowJs: true` só na transição (`checkJs` fica no default `false`), `tsBuildInfoFile` em `node_modules/.tmp/` e `include: ["src"]`.
+- `DOM.Iterable` é a única adição em relação ao irmão (React não usa): paridade com o tsconfig atual do repo, evitando TS2802 se algum dia iterar `NodeList`/`HTMLCollection` (hoje não há `for..of` sobre `NodeList` — só `CardIntro` passando `querySelectorAll` ao GSAP, que aceita `ArrayLike`).
+
+`tsconfig.node.json`: idêntico ao do irmão (`include: ["vite.config.ts"]`, `types: ["node"]` — cobre `node:url` e `import.meta.url` no vite config).
+
+- `types: ["vite/client"]` no `tsconfig.app.json` habilita `import.meta.env` (usado em 3 pontos: `router`, `services/api`, `CardStackView`) **e** os módulos de asset (`*.webp`/`*.png` em `CardIntro` e `CardStatus`) → **não precisa criar `vite-env.d.ts`**.
+- `resolveJsonModule` não faz falta: nenhum import de JSON no repo.
+- `jsconfig.json`: manter por enquanto (o VS Code segue resolvendo `@/*` nos `.js`; apagar na Fase 5).
 
 ### 1.4 Scripts
 
-```json
-"type-check": "vue-tsc -b",
-"build": "vue-tsc -b && vite build"
-```
-
-`vercel-build` já chama `npm run build` → **o gate herda automaticamente**, sem mexer nele.
+| Ação | Detalhe |
+|------|---------|
+| `"type-check": "vue-tsc -b"` | novo script |
+| `"build": "vue-tsc -b && vite build"` | gate herda o `vercel-build` automaticamente (ele chama `npm run build`; o `vercel.json` não sobrescreve `buildCommand`) |
 
 ### 1.5 ESLint
 
-- `files: ['**/*.{js,mjs,jsx,vue}']` → adicionar `ts,mts,tsx`.
-- Envolver com `defineConfigWithVueTs` + `vueTsConfigs.recommended` de `@vue/eslint-config-typescript` (ele resolve o parser `vue-eslint-parser` + TS em `<script lang="ts">`; conferir a ordem dos blocos na instalação).
-- Manter `js.configs.recommended`, `pluginVue.configs['flat/essential']` e `skipFormatting`.
-- Depois da troca: `rm .eslintcache`.
+Config final da fase (a ordem abaixo é fechada — ver nota):
 
-### 1.6 Validação da fase
+```js
+import js from '@eslint/js'
+import globals from 'globals'
+import pluginVue from 'eslint-plugin-vue'
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript'
+import { globalIgnores } from 'eslint/config'
+import skipFormatting from '@vue/eslint-config-prettier/skip-formatting'
 
-`npm run lint` · `npm run type-check` · `npm run build` · smoke `npm run dev` (login → acervo → criar → editar).
+export default defineConfigWithVueTs(
+  {
+    name: 'app/files-to-lint',
+    files: ['**/*.{js,mjs,jsx,ts,mts,vue}'],
+  },
 
-**Risco:** `vue-tsc` acusa o que o Vite ignora (`noUnusedLocals`, import órfão, tipo de props). Resolver na hora; a fase só fecha com **0 erros**. Erro pré-existente descoberto vira item de `analise-melhorias.md`, não desculpa para afrouxar `strict`.
+  globalIgnores(['**/dist/**', '**/dist-ssr/**', '**/coverage/**']),
+
+  {
+    languageOptions: { globals: { ...globals.browser } },
+  },
+
+  js.configs.recommended,
+  ...pluginVue.configs['flat/essential'],
+  vueTsConfigs.recommended,
+
+  // Transição (Fases 1–4): os 26 .vue ainda têm <script setup> sem lang.
+  // Voltar ao default (allowNoLang: false) na Fase 5, junto com o allowJs.
+  {
+    name: 'app/transicao-script-js',
+    files: ['**/*.vue'],
+    rules: {
+      'vue/block-lang': ['error', { script: { lang: 'ts', allowNoLang: true } }],
+    },
+  },
+
+  skipFormatting,
+)
+```
+
+Por quê assim:
+
+- **`ts,mts` no `files` é obrigatório, não cosmético:** as configs do `typescript-eslint` vêm **sem** `files`; se nenhum config casar o padrão, o ESLint nem considera `.ts` lintável (os `.vue` já entram pelo `pluginVue`).
+- **`vue/block-lang`** vem ligada pelo helper com `allowNoLang: false` e derrubaria os 26 `.vue` atuais de uma vez (a regra **não é autofixável** — o `--fix` não salva). O override mantém a regra viva: aceita "sem atributo" (estado atual) e `lang="ts"` (estado da Fase 4), rejeita `lang="js"` — e passa a ser o guarda automático de que a conversão da Fase 4 foi feita com `lang="ts"` de verdade.
+- **Ordem garantida pelo helper** (`insertAndReorderConfigs`): ele injeta `pluginVue flat/base` + `@vue/typescript/setup` **logo depois** do último bloco `vueTs`; o que vier depois disso cai no tail e vence.
+
+  ```
+  [marker files] [globalIgnores] [globals] [js.recommended] [pluginVue essential]
+    [vueTsConfigs.recommended...]              ← último bloco "estendido"
+  --- injetado pelo helper ---
+  [pluginVue flat/base] [@vue/typescript/setup]
+  [app/transicao-script-js] [skipFormatting]   ← tail: vence o setup
+  ```
+
+  Consequência: **qualquer override futuro precisa vir depois de `vueTsConfigs.recommended`.**
+- `js.configs.recommended` fica antes (o `no-unused-vars` do TS o desliga e assume); `no-undef` continua ligado nos `.js` (o `eslint-recommended` do TS só o desliga em `.ts`/`.vue`).
+
+Após a troca:
+
+```bash
+rm -f .eslintcache
+npm run lint        # o script tem --fix
+git diff --stat     # obrigatório: a premissa da fase é não mexer em src/
+```
+
+Risco de autofix já avaliado no repo: 0 `var`; 3 `let` (todos reatribuídos → `prefer-const` não dispara); nenhuma expressão-solta (`no-unused-expressions`); sem `@ts-*`, `new Array(` ou `.apply(`. Se o lint apontar algo novo, é regra TS sobre JS legado → override pontual no **tail** + item em `analise-melhorias.md`, sem reescrever código.
+
+### ✅ Pronto quando
+
+`npm run lint` com 0 erros (a `vue/block-lang` transitória aceitando `lang="ts"`), `type-check` e `build` verdes + smoke (login → acervo → criar → editar). O `vue-tsc` com `allowJs` não deve acusar nada no JS atual; qualquer reclamação se resolve aqui, antes de migrar arquivo algum.
 
 ---
 
-## Fase 2 — Tipos de contrato (`src/types/`)
+## Fase 2 — Tipos de contrato + folhas
 
-Fonte da verdade: **`docs/API.md`** (lado consumidor) espelhando `notion_api/lib/domains/books/schema.js` (Zod). **Espelhar, não importar**: os 5 repos são independentes, não há monorepo compartilhando tipos.
+**Objetivo:** criar o vocabulário de tipos e migrar os arquivos "folha" (sem estado, sem dependência de componentes). Risco baixo: nada consome os tipos ainda.
+
+### 2a. Tipos de contrato (`src/types/`)
+
+Fonte da verdade: **`docs/API.md`** espelhando `notion_api/lib/domains/books/schema.js` (Zod). **Espelhar, não importar**: os 5 repos são independentes.
 
 | Arquivo | Conteúdo |
 |---------|----------|
-| `src/types/book.ts` | `Book` (contrato agrupado: `pages`, `seriesInfo`, `startEnd`; ver Decisão 005), `BookStatus`, `BookType`, `BookOptions`, `CreateBookInput`, `UpdateBookInput` |
+| `src/types/book.ts` | `Book` (contrato agrupado: `pages`, `seriesInfo`, `startEnd` — Decisão 005), `BookStatus`, `BookType`, `BookOptions`, `CreateBookInput`, `UpdateBookInput` |
 | `src/types/auth.ts` | `SessionUser`, `LoginResponse`, `GuestUser` |
-| `src/types/api.ts` | `Envelope<T>`, `Pagination`, `ApiError` (`{ code, message }`), `ListQuery` (`pageSize`, `startCursor`, `search`, `searchBy`, `status`, `wasReadIn`) |
+| `src/types/api.ts` | `Envelope<T>`, `Pagination`, `ApiError` (`{ code, message }`), `ListQuery` |
+| `src/types/store.ts` | `BookLists`, `LoadingStates` (consumido na Fase 3) |
 
-- Opcional no mesmo passo: `src/types/store.ts` com `BookLists`/`LoadingStates` (usado na Fase 5).
-- **Sem enums**: os mapas já são literais (`BOOK_STATUS_MAP`, `BOOK_STATUS_LABELS`): usar `as const` + `satisfies Record<...>` (compatível com `erasableSyntaxOnly` dos irmãos).
-- **Validação:** `lint + type-check + build` (nenhum consumidor ainda; fase silenciosa).
+- **Sem enums** (compatível com `erasableSyntaxOnly`): usar `as const` + `satisfies Record<...>` nos mapas (`BOOK_STATUS_MAP`, `BOOK_STATUS_LABELS`).
 
----
+### 2b. Folhas (ordem exata; sempre `git mv` para preservar histórico)
 
-## Fase 3 — Folhas (mais fáceis, sem dependência de estado)
+| # | Arquivos | Cuidado |
+|---|----------|---------|
+| 1 | `utils/validation.js` → `.ts` | funções puras; assinaturas fáceis |
+| 2 | `utils/errorHandler.js` → `.ts` | `extractErrorMessage`/`logError` aceitam **`unknown`** (padrão TS para erro) |
+| 3 | `constants/book.js`, `toast.js`, `formLayout.js` → `.ts` | `as const`; `TOAST_CONFIG` tipado como `PluginOptions` do vue-toastification |
+| 4 | 4 composables → `.ts` (`useAnimatedModal` é o maior, 83 linhas) | tipar refs e callbacks |
+| 5 | `router/index.js` → `.ts` | guard de auth: `to`/`from` de `RouteLocationNormalized` |
+| 6 | 5 barrels `index.js` → `index.ts` | só renomear (`git mv`) |
 
-Ordem sugerida, `git mv` para preservar histórico:
+### ✅ Pronto quando
 
-| Ordem | Arquivos | Cuidado |
-|-------|----------|---------|
-| 1 | `utils/validation.js` → `.ts` | funções puras; assinaturas fáceis, ganho imediato |
-| 2 | `utils/errorHandler.js` → `.ts` | `extractErrorMessage(error)` e `logError(action, error)` devem aceitar **`unknown`** (padrão TS para erro) |
-| 3 | `constants/book.js`, `constants/toast.js` → `.ts` | `as const`; `TOAST_CONFIG` tipado como `PluginOptions` do vue-toastification |
-| 4 | `composables/useNotifications`, `useBookNavigation`, `useBookFormatters`, `useAnimatedModal` → `.ts` | `useAnimatedModal` é o maior (83 linhas); tipar refs e callbacks |
-| 5 | `router/index.js` → `.ts` | guard de auth: tipar `to`/`from` de `RouteLocationNormalized` |
-| 6 | Barrels `index.js` → `index.ts` (5 arquivos) | só renomear |
-
-**Validação por lote:** `lint + type-check + build`.
+Gate verde após cada lote 2b. Nenhum consumidor muda ainda — fase silenciosa.
 
 ---
 
-## Fase 4 — Camada de serviço (`services/api.js` → `api.ts`)
+## Fase 3 — Dados: serviço + stores
 
-O contrato inteiro passa por aqui; é o maior valor por linha migrada.
+**Objetivo:** tipar o contrato inteiro de I/O. Maior valor por linha migrada; as stores herdam os tipos do serviço.
+
+### 3a. `services/api.js` → `api.ts`
 
 | Item | Ação |
 |------|------|
-| `booksApi.list(options)` | tipar `options: ListQuery`; devolver `Promise<AxiosResponse<Envelope<Book[]>>>` |
-| `listAll` / `get` / `create` / `update` / `delete` / `options` / `finishedThisYear` | genéricos `api.get<...>` por endpoint (espelhar `docs/API.md`: `GET /:id` devolve o book **no topo**, `/all` tem `{data,total}`) |
+| `booksApi.list(options)` | `options: ListQuery`; retorno `Promise<AxiosResponse<Envelope<Book[]>>>` |
+| `listAll` / `get` / `create` / `update` / `delete` / `options` / `finishedThisYear` | genéricos por endpoint (espelhar `docs/API.md`: `GET /:id` devolve o book **no topo**; `/all` tem `{data, total}`) |
 | `authApi.login` / `me` | `LoginResponse` e `{ user: SessionUser }` |
-| Interceptors | `error` em TS não é `any`: tipar como `AxiosError` (response interceptor) e `InternalAxiosRequestConfig` (request) |
-| `params` dinâmico | objeto montado condicionalmente → declarar `Record<string, string>` antes de atribuir chaves |
-| `import.meta.env.VITE_API_URL` | já coberto pelo `vite-env.d.ts` da Fase 1 |
+| Interceptors | `AxiosError` no response, `InternalAxiosRequestConfig` no request (nada de `any`) |
+| `params` dinâmico | declarar `Record<string, string>` antes de atribuir chaves |
+| `import.meta.env.VITE_API_URL` | já coberto pelo `types: ["vite/client"]` da Fase 1 |
 
-**Validação:** `lint + type-check + build` + smoke de busca/paginação (os interceptors de 401 e anexo de token têm que continuar funcionando).
-
----
-
-## Fase 5 — Stores Pinia
-
-`defineStore` com `state` tipado (padrão options API que o projeto já usa; não converter para `setup store` no mesmo passo).
+### 3b. Stores (`defineStore` com `state` tipado — manter padrão options API; **não** converter para setup store)
 
 | Store | Pontos de atenção |
 |-------|-------------------|
-| `bookStore.js` | `bookLists: Record<ListKey, Book[]>`, `pagination` (`currentCursor`/`nextCursor: string \| null`, `previousCursors: string[]`), `searchToken: number`, `bookOptions: BookOptions \| null`, `error: string \| null`; getters `getBookById` com retorno `Book \| undefined` |
-| `userStore.js` | `userActive: SessionUser \| GuestUser \| null`, `token: string \| null`; `GUEST_USER` com `satisfies` (hoje tem `type: 'guest'`, diferente do `SessionUser` do backend; tipar a união direito expõe isso) |
+| `bookStore.js` | `bookLists: Record<ListKey, Book[]>`; `pagination` (`nextCursor: string \| null`, `previousCursors: string[]`); `searchToken: number`; `bookOptions: BookOptions \| null`; getter `getBookById` → `Book \| undefined` |
+| `userStore.js` | `userActive: SessionUser \| GuestUser \| null`; `GUEST_USER` com `satisfies` (tem `type: 'guest'`, diferente do `SessionUser` do backend — a união tipada expõe isso) |
 
-- Actions que consomem `api` herdam os tipos da Fase 4; se `store` reclamar, o problema está no serviço.
-- **Validação:** smoke completo (login, visitante, CRUD, busca com debounce, paginação, 401 → `/login`).
+- Se a store reclamar, o problema está no serviço (3a) — corrigir lá.
+
+### ✅ Pronto quando
+
+Gate verde + smoke completo: login, visitante, CRUD, busca com debounce, paginação, 401 → `/login`.
 
 ---
 
-## Fase 6 — 25 componentes `.vue` (maior bloco)
+## Fase 4 — 26 componentes `.vue` + `main.ts` (maior bloco)
 
-Em cada componente: `<script setup lang="ts">`, props runtime → tipo, emits array → tipo, e **nada de mudança de comportamento**.
-
-### Ordem (primitivas → composição → telas)
-
-| Lote | Arquivos | Esforço |
-|------|----------|---------|
-| 6a — primitivas | `Button`, `LoadingSpinner`, `StateHandler`, `BookCardSkeleton`, `FormSkeleton`, `FormSection`, `FormActions`, `ConfirmDialog`, `CardStatus` | pequeno |
-| 6b — formulário | `FormField.vue` (527 linhas; **sem mexer no bug de emissão dupla do v-model**, é item separado), `Filters`, `Pagination` | médio |
-| 6c — listas | `BookList`, `ReadingList`, `TBRList`, `ThisYearList` | médio |
-| 6d — cartão | `BookCard`, `CardFront`, `CardBack` (props aninhadas + flip 3D via GSAP) | médio |
-| 6e — telas | `BookForm.vue` (701 linhas, maior arquivo do repo; por último de propósito), `LoginView`, `CardStackView`, `App.vue` | alto |
-| 6f — entry | `main.js` → `main.ts`; conferir `app.use(Toast, TOAST_CONFIG)` | pequeno |
+Em cada componente: `<script setup lang="ts">`, props runtime → tipo, emits array → tipo. **Zero mudança de comportamento.**
 
 ### Regras de conversão
 
-- **Props:** `defineProps({ x: { type: String, default: '' } })` → `withDefaults(defineProps<{ x?: string }>(), { x: '' })`. **Só migrar o formato se os defaults continuarem idênticos**; default que muda é bug visual silencioso.
-- **Emits:** `defineEmits(['edit', 'delete'])` → `defineEmits<{ edit: [id: string]; delete: [id: string] }>()` (9 componentes); manter kebab-case no template.
-- Um comentário de 1 linha no topo continua obrigatório (regra do repo).
-- **Validação por lote:** `lint + type-check + build` + smoke visual do lote (modais, flip, listas com capa).
+- **Props:** `defineProps({ x: { type: String, default: '' } })` → `withDefaults(defineProps<{ x?: string }>(), { x: '' })`. Só trocar o formato se os **defaults continuarem idênticos** (default que muda é bug visual silencioso).
+- **Emits:** `defineEmits(['edit', 'delete'])` → `defineEmits<{ edit: [id: string]; delete: [id: string] }>()`; manter kebab-case no template.
+- Comentário de 1 linha no topo continua obrigatório (regra do repo).
+- Quiser mexer em lógica (ex.: emissão dupla do `FormField`), abrir item separado em `analise-melhorias.md` — **não misturar com a migração**.
+
+### Lotes (primitivas → composição → telas)
+
+| Lote | Componentes | Esforço |
+|------|-------------|---------|
+| **4a — primitivas** (10) | `Button`, `LoadingSpinner`, `StateHandler`, `BookCardSkeleton`, `FormSkeleton`, `FormSection`, `FormActions`, `ConfirmDialog`, `CardStatus`, `BookCover` | pequeno |
+| **4b — formulário** (3) | `FormField.vue` (527 linhas; **sem mexer no bug de emissão dupla do v-model**), `Filters`, `Pagination` | médio |
+| **4c — listas** (4) | `BookList`, `ReadingList`, `TBRList`, `ThisYearList` | médio |
+| **4d — cartão/stack** (4) | `BookCard`, `CardFront`, `CardBack` (props aninhadas + flip 3D via GSAP), `CardIntro` (196 linhas) | médio |
+| **4e — telas** (5) | `CreateBookView` (141), `LoginView`, `CardStackView` (265), `App.vue`, e por último `BookForm.vue` (708 linhas, maior arquivo do repo) | alto |
+| **4f — entry** | `main.js` → `main.ts`; conferir `app.use(Toast, TOAST_CONFIG)` | pequeno |
+
+> Inventário corrigido: o plano original esquecia `BookCover`, `CardIntro` e `CreateBookView` nos lotes (23 de 25); os 26 `.vue` estão todos acima.
+
+### ✅ Pronto quando
+
+Gate + smoke visual **por lote** (modais, flip, listas com capa, busca/paginação). Depois do 4f: `find src -name '*.js'` volta vazio.
 
 ---
 
-## Fase 7 — Endurecimento e documentação
+## Fase 5 — Endurecimento e documentação
 
 | # | Ação |
 |---|------|
-| 7.1 | Sem `.js` em `src/` → derrubar `allowJs`/`checkJs` do `tsconfig.app.json` e apagar `jsconfig.json` |
-| 7.2 | (Opcional) ativar `noUncheckedIndexedAccess`: **adiado de propósito**, pois quebra `BOOK_STATUS_LABELS[status]` e `BOOK_SEARCH_PLACEHOLDERS[mode]`; se ativar, corrigir com lookup tipado, não com `!` |
-| 7.3 | Conferir `npm run lint && npm run type-check && npm run build` + smoke dos 6 fluxos de `TESTING.md` §5 |
-| 7.4 | **ADR 010** em `DECISIONS.md`: migração incremental por camada, gating de tipo no build, tipos espelhados (não compartilhados) com o `notion_api` |
-| 7.5 | Docs: `AGENTS.md` raiz (Stack → TypeScript; Comandos → `type-check`; Estrutura → `*.ts`), `CODE_STYLE.md` §10 (Type Checking deixa de ser "Nenhum"), `TESTING.md` §7 (linha do type check), `ARCHITECTURE.md`, `README.md` |
-| 7.6 | `ROADMAP.md` (item da TS ✅ com data) + `../analise-melhorias.md` (linha "Remover `tsconfig.json`" ✅) + `KANBAN.md` (raiz) |
+| 5.1 | Sem `.js` em `src/` → remover `allowJs` do `tsconfig.app.json`, apagar `jsconfig.json` e remover o bloco `app/transicao-script-js` do `eslint.config.js` (a `vue/block-lang` volta ao default `allowNoLang: false`, exigindo `lang="ts"` em todo `.vue`) |
+| 5.2 | (Opcional, adiado de propósito) `noUncheckedIndexedAccess`: quebra `BOOK_STATUS_LABELS[status]` e `BOOK_SEARCH_PLACEHOLDERS[mode]`; se ativar, corrigir com **lookup tipado**, não com `!` |
+| 5.3 | Gate final + smoke dos 6 fluxos de `TESTING.md` §5 |
+| 5.4 | **ADR 011** em `DECISIONS.md`: migração incremental por camada, gating de tipo no build, tipos espelhados (não compartilhados) com o `notion_api` |
+| 5.5 | Docs: `AGENTS.md` raiz (Stack → TypeScript; Comandos → `type-check`; Estrutura → `*.ts`), `CODE_STYLE.md` §10 (Type Checking deixa de ser "Nenhum"), `TESTING.md` §7, `ARCHITECTURE.md`, `README.md` |
+| 5.6 | `ROADMAP.md` (item da TS ✅ com data) + `../analise-melhorias.md` (linha do tsconfig órfão ✅) + `KANBAN.md` (raiz) |
 
 ---
 
 ## Riscos e gotchas
 
-- **Deploy:** com gate no build, `push` com erro de tipo falha na Vercel → rodar `npm run build` local antes de todo push.
-- **Nenhum shim de tipos esperado:** axios, pinia, vue-router, gsap, swiper, lucide-vue-next e vue-toastification (`dist/types/index.d.ts`) publicam tipos próprios. Se algo reclamar, criar `src/types/<lib>.d.ts` dedicado; **nunca `any` contornando o erro**.
-- **`vue-toastification` é `2.0.0-rc.5`**: a lib menos estável do stack; se `TOAST_CONFIG` não casar com `PluginOptions`, ajustar o objeto (não ignorar o erro).
-- **TS 6:** seguir o padrão dos irmãos: `verbatimModuleSyntax`/`erasableSyntaxOnly` (usar `import type`, sem enums) e `paths` **sem** `baseUrl`.
-- **Não misturar refatoração com migração:** `lang="ts"` muda só a tipagem. Quiser mexer na lógica (ex.: emissão dupla do `FormField`), abrir item separado em `analise-melhorias.md`.
-- **Não tocar** no que já está resolvido (`_handleError`, toast, reset, `searchToken`) e respeitar os gotchas do `../AGENTS.md`.
-- **`PLANO_DEDUPLICACAO.md` continua valendo**: as duas frentes não conflitam, mas commitar uma antes de começar a outra.
-
-## Governança
-
-- **Após cada fase:** `npm run lint && npm run type-check && npm run format && npm run build` + smoke em `npm run dev`; marcar ✅ com data nesta tabela e em `../analise-melhorias.md`.
-- **Commits:** só quando pedido explicitamente; sugestão de 1 commit atômico por fase (`refactor(ts): ...`).
-- **Fase 1 primeiro, sempre:** sem a ferramenta passando, nenhuma migração de arquivo começa.
+- **Deploy:** com gate no build, `push` com erro de tipo falha na Vercel → rodar o gate local antes de todo push.
+- **Nenhum shim esperado:** axios, pinia, vue-router, gsap, swiper, lucide-vue-next e vue-toastification publicam tipos próprios. Se algo reclamar, criar `src/types/<lib>.d.ts` dedicado; **nunca `any` contornando o erro**.
+- **`vue-toastification` é `2.0.0-rc.5`**: lib menos estável do stack; se `TOAST_CONFIG` não casar com `PluginOptions`, ajustar o objeto (não ignorar o erro).
+- **TS 6:** `verbatimModuleSyntax`/`erasableSyntaxOnly` → usar `import type`, sem enums; `paths` sem `baseUrl`.
+- **`vue-tsc × TS 6`:** se o `npx vue-tsc -b` da Fase 1 reclamar do compiler, usar `typescript@~5.9` temporário e abrir issue no `vuejs/language-tools`; não adiar nem afrouxar o gate.
+- **Ruído do `vue-tsc` em SFC JS:** se ele reclamar de template nos 26 `.vue` ainda em JS, `strictTemplates` já é `false` por default — não ligar nada novo; erro pré-existente → `analise-melhorias.md`.
+- **Shim de `.vue`:** o `vue-tsc` resolve `.vue` nativamente; se ainda assim aparecer `TS2307: Cannot find module './App.vue'`, criar `src/types/vue-shim.d.ts` (`declare module '*.vue'` com `DefineComponent`) e registrar em `analise-melhorias.md` — **nunca** desligar o type check para passar.
+- **Não tocar** no que já está resolvido (`_handleError`, toast, reset, `searchToken`) e respeitar os gotchas do `../AGENTS.md` (ex.: `publishedBy` é string, não array).
