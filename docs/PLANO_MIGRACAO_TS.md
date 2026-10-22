@@ -2,7 +2,7 @@
 
 Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, **sem big bang e sem mudança de comportamento**. 6 fases; cada fecha um bloco e só encerra com o gate verde + smoke + docs.
 
-> Retrato (22/10/2026): **26 `.vue` + 19 `.js`** = 45 arquivos em `src/`, 6.277 linhas (1.098 são JS puro). Atualizado em relação ao snapshot de 15/10: a deduplicação criou `BookCover.vue` e `formLayout.js`, e `BookForm.vue` hoje tem 708 linhas.
+> Retrato (22/10/2026, pós-Fase 2): **26 .vue + 4 .js + 19 .ts** = 49 arquivos em `src/`, 6.508 linhas. No início da migração eram 26 `.vue` + 19 `.js` = 45 arquivos (1.098 linhas em JS puro); sobraram `main.js`, `services/api.js` e as 2 stores para as Fases 3–4.
 
 ## Como funciona (vale para todas as fases)
 
@@ -29,7 +29,7 @@ Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, *
 |------|--------|-------|---------|--------|
 | 0 | Pré-condições (árvore limpa + ROADMAP) | ~zero | ~15 min | ⬜ |
 | 1 | Ferramenta (deps, tsconfig, scripts, ESLint) | baixo | ~1–2 h | ⬜ |
-| 2 | Tipos de contrato + folhas (`utils`, `constants`, composables, router, barrels) | baixo | ~2–3 h | ⬜ |
+| 2 | Tipos de contrato + folhas (`utils`, `constants`, composables, router, barrels) | baixo | ~2–3 h | ✅ 22/10/2026 |
 | 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ⬜ |
 | 4 | 26 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ |
 | 5 | Endurecimento + docs + ADR 011 | baixo | ~1 h | ⬜ |

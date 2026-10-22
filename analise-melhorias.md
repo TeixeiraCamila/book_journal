@@ -10,6 +10,7 @@
 | `router/index.js` | 52-53 | Falta `return` no navigation guard: execução continua e chama `next()` múltiplas vezes | ✅ |
 | `Header.vue` | 51 | `:to="to="{ name: 'home' }""`: sintaxe Vue malformada (aspas aninhadas) | ✅ (arquivo deletado) |
 | `CardFront.vue` | 20 | `:alt="book.cover[0]"`: alt text é a URL da imagem | ✅ |
+| `BookForm.vue` | ~93 | `genresOptions` lê `bookOptions?.Tags`, mas o domínio books (backend + `API.md`) expõe `Genres` — se o Notion não tiver propriedade "Tags", o multi-select de gêneros cai sempre no `|| []` | ❌ pendente (descoberto na Fase 2 da migração TS, 22/10/2026) |
 
 ---
 
@@ -71,6 +72,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 - Validadores de `utils/validation.js`: sem uso até 16/10/2026 — hoje todos importados pelo `BookForm` (`validateRequired`, `validatePositiveNumber`, `validateYear`, `validatePositiveInteger`, `validateDateRange`)
 - `handleDelete` do `BookCard.vue`: morto até 15/10/2026 (o `ConfirmDialog` não emitia `confirm`) — virou `handleDeleteConfirmed` (só fecha o modal)
 - Dependências não usadas: `@vueuse/motion`, `@biomejs/biome` — ✅ removidas em 2026-10-15 (`chart.js` já tinha saído com a Decisão 009)
+- `progress: true` em `TOAST_CONFIG`: chave inexistente em `PluginOptions` do vue-toastification (a lib só tem `hideProgressBar`, e a barra aparece por padrão) — ✅ removida em 22/10/2026 (Fase 2 da migração TS; nenhuma mudança visual)
 
 ---
 
@@ -82,7 +84,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 | Arquitetura | Criar `src/utils/errorHandler.js` compartilhado entre stores |
 | Performance | Virtual scrolling para BookList se a biblioteca crescer |
 | UX | Lazy loading com blur-up placeholder nas capas |
-| Config | Remover `tsconfig.json` se não for migrar pra TS (ou migrar de vez) |
+| Config | Remover `tsconfig.json` se não for migrar pra TS (ou migrar de vez) — ✅ resolvido em 22/10/2026: os 2 órfãos viraram o trio da migração (`tsconfig.json` solução + `app` + `node`) |
 | Conformidade | Alinhar `.prettierrc.json` com AGENTS.md (semicolons = true, ou atualizar AGENTS.md) |
 
 ---

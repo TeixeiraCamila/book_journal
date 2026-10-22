@@ -6,7 +6,7 @@ import ConfirmDialog from '@/components/feedback/ConfirmDialog.vue';
 import CardFront from './CardFront.vue';
 import CardBack from './CardBack.vue';
 
-import { useAnimatedModal } from '@/composables/useAnimatedModal.js';
+import { useAnimatedModal } from '@/composables/useAnimatedModal';
 
 defineProps({
   book: {

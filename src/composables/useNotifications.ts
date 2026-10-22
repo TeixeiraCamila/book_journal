@@ -1,11 +1,18 @@
 // Composable para notificações toast — abstrai vue-toastification com tipos (success/error/warning/info)
 import { useToast } from 'vue-toastification';
+import type { PluginOptions } from 'vue-toastification';
 import { TOAST_CONFIG } from '@/constants/toast';
+
+export type NotificationType = 'success' | 'error' | 'warning' | 'info';
 
 export function useNotifications() {
   const toast = useToast();
 
-  const addNotification = (message, type = 'info', options = {}) => {
+  const addNotification = (
+    message: string,
+    type: NotificationType = 'info',
+    options: PluginOptions = {},
+  ) => {
     if (!toast) {
       return;
     }
@@ -32,7 +39,7 @@ export function useNotifications() {
     }
   };
 
-  const removeNotification = (id) => {
+  const removeNotification = (id: string) => {
     if (toast && toast.dismiss) {
       toast.dismiss(id);
     }

@@ -1,6 +1,18 @@
 // Layout do formulário de livros — fonte única de seções/campos consumida por BookForm e FormSkeleton
 // kinds: input | number | select | multi-select | date | checkbox (espelham os tipos do FormField)
 
+export type FormFieldKind = 'input' | 'number' | 'select' | 'multi-select' | 'date' | 'checkbox';
+
+export interface BookFormField {
+  label: string;
+  kind: FormFieldKind;
+}
+
+export interface BookFormSection {
+  title: string;
+  fields: BookFormField[];
+}
+
 export const BOOK_FORM_SECTIONS = {
   basicInfo: {
     title: 'Informações Básicas',
@@ -45,10 +57,13 @@ export const BOOK_FORM_SECTIONS = {
       { label: 'Atlas literário', kind: 'input' },
     ],
   },
-};
+} satisfies Record<string, BookFormSection>;
 
 // Campo da coluna de capa (coluna esquerda do form)
-export const BOOK_FORM_COVER_FIELD = { label: 'URL da Capa', kind: 'input' };
+export const BOOK_FORM_COVER_FIELD = { label: 'URL da Capa', kind: 'input' } satisfies BookFormField;
 
 // Textos dos botões de ação
-export const BOOK_FORM_ACTIONS = { submit: 'Salvar Livro', cancel: 'Cancelar' };
+export const BOOK_FORM_ACTIONS: Record<'submit' | 'cancel', string> = {
+  submit: 'Salvar Livro',
+  cancel: 'Cancelar',
+};

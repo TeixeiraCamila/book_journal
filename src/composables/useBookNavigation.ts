@@ -4,7 +4,7 @@ import { useRouter } from 'vue-router';
 export function useBookNavigation() {
   const router = useRouter();
 
-  const navigateToEdit = (bookId) => {
+  const navigateToEdit = (bookId: string) => {
     router.push(`/editar/${bookId}`);
   };
 

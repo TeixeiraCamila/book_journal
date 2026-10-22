@@ -1,10 +1,11 @@
 // Constantes relacionadas a livros: valores de fallback quando o backend não retorna opções
+import type { BookSearchMode, BookStatus, BookType } from '@/types/book';
 
 // Configuração de paginação
 export const DEFAULT_PAGE_SIZE = 20;
 
 // Status dos livros (fallback)
-export const BOOK_STATUS_FALLBACK = ['To be read', 'Reading', 'Read', 'DNF'];
+export const BOOK_STATUS_FALLBACK: BookStatus[] = ['To be read', 'Reading', 'Read', 'DNF'];
 
 // Objeto para mapeamento interno
 export const BOOK_STATUS_MAP = {
@@ -12,7 +13,7 @@ export const BOOK_STATUS_MAP = {
   READING: 'Reading',
   READ: 'Read',
   DNF: 'DNF',
-};
+} as const satisfies Record<string, BookStatus>;
 
 // Mapeamento para exibição em português
 export const BOOK_STATUS_LABELS = {
@@ -20,10 +21,10 @@ export const BOOK_STATUS_LABELS = {
   Reading: 'Lendo',
   Read: 'Completo',
   DNF: 'Abandonado',
-};
+} as const satisfies Record<BookStatus, string>;
 
 // Modos de busca — o value vai na query searchBy do backend
-export const BOOK_SEARCH_MODES = [
+export const BOOK_SEARCH_MODES: { value: BookSearchMode; label: string }[] = [
   { value: 'title', label: 'Título' },
   { value: 'author', label: 'Autor' },
   { value: 'genre', label: 'Gênero' },
@@ -36,13 +37,13 @@ export const BOOK_SEARCH_PLACEHOLDERS = {
   title: 'Buscar por título...',
   author: 'Buscar por autor...',
   genre: 'Buscar por gênero...',
-};
+} as const satisfies Record<BookSearchMode, string>;
 
 // Intervalo do debounce da busca em ms
 export const SEARCH_DEBOUNCE_MS = 400;
 
-// Labels de avaliação
-export const BOOK_RATE_LABELS = {
+// Labels de avaliação — indexação aberta: o valor vem do select dinâmico do Notion
+export const BOOK_RATE_LABELS: Partial<Record<string, string>> = {
   '❤': '❤️',
   '⭐⭐⭐⭐⭐': '*****',
   '⭐⭐⭐⭐': '****',
@@ -52,9 +53,9 @@ export const BOOK_RATE_LABELS = {
 };
 
 // Tipos de livro (fallback) — espelha os valores do banco, sem ícones
-export const BOOK_TYPES_FALLBACK = ['Audiobook', 'Kindle', 'Mangá', 'Paper'];
+export const BOOK_TYPES_FALLBACK: BookType[] = ['Audiobook', 'Kindle', 'Mangá', 'Paper'];
 
 // Tradução pt-BR dos tipos; tipos sem entrada caem no valor cru via `|| t` no CardBack
-export const BOOK_TYPE_LABELS = {
+export const BOOK_TYPE_LABELS: Partial<Record<string, string>> = {
   Paper: 'Papel',
 };

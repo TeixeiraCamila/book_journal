@@ -9,7 +9,7 @@ import { BOOK_STATUS_MAP } from '@/constants/book';
 import { useBookNavigation } from '@/composables/useBookNavigation';
 const bookStore = useBookStore();
 const { navigateToEdit } = useBookNavigation();
-import { useBookFormatters } from '@/composables/useBookFormatters.js';
+import { useBookFormatters } from '@/composables/useBookFormatters';
 
 const { getAuthorString, getPagesString, getPagesProgress, getPublicationString, getTypeString } =
   useBookFormatters();

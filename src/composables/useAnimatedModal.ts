@@ -1,14 +1,15 @@
 // Composable que gerencia modal animado com flip 3D (frente/verso) para visualização de cards
 import { ref, computed } from 'vue';
+import type { Ref } from 'vue';
 
-export function useAnimatedModal(cardEl) {
+export function useAnimatedModal(cardEl: Ref<HTMLElement | null>) {
   // Estados
   const isModalOpen = ref(false);
   const isModalVisible = ref(false);
   const isAnimating = ref(false);
 
   // Estado da face atual: 'front' ou 'back'
-  const currentFace = ref('front');
+  const currentFace = ref<'front' | 'back'>('front');
 
   // Computed para saber se está virado para trás
   const isFlipped = computed(() => currentFace.value === 'back');
