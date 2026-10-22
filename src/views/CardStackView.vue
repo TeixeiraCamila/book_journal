@@ -223,6 +223,14 @@ onMounted(() => {
   padding: 2rem;
 }
 
+/* Cards de lista: cortam o que escapa; a rolagem vertical fica em cada lista */
+.stack-view__book-list,
+.stack-view__now,
+.stack-view__year,
+.stack-view__tbr {
+  overflow: hidden;
+}
+
 .stack-view__intro.stack-view__card {
   background-color: #123d17;
 }

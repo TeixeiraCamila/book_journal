@@ -110,7 +110,8 @@ onMounted(async () => {
 /* ===== ESTADOS (LOADING, ERROR, EMPTY) ===== */
 .book-list-content {
   padding: 1rem 0;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Estado de Loading */

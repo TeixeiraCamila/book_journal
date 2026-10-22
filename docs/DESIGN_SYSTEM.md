@@ -163,6 +163,10 @@ Card de livro (`BookCard`):
 
 Frente = capa (ou placeholder), verso = detalhes (autor, páginas, série, nota, status) com flip 3D no hover. Fundos decorativos em `assets/images/cards/`.
 
+Cards de lista (acervo, leitura, ano, TBR):
+
+O card corta o que escapa (`overflow: hidden`) e a lista rola na vertical quando o conteúdo excede o card (`overflow-y: auto` + `overflow-x: hidden`); nunca `overflow: scroll` (scrollbar permanente nos dois eixos).
+
 ---
 
 ## 11. Navegação

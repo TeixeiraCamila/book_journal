@@ -77,18 +77,16 @@ const { getAuthorString } = useBookFormatters();
 
 <style scoped>
 /* ===== CONTAINER PRINCIPAL ===== */
+/* Rola na vertical quando o conteúdo excede o card (80vh/90vh) */
 .tbr-list {
-  min-height: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ===== HEADER ===== */
 .tbr-list__header {
   text-align: center;
-  /* background-image: url('@/assets/images/cards/card_stats/tape-title.webp'); */
-  background-repeat: no-repeat;
-  background-position: center;
-  background-origin: content-box;
-  width: fit-content;
   padding: 2rem 2rem 1.5rem 1.5rem;
   margin: 0 auto;
   width: 100%;
@@ -122,8 +120,6 @@ const { getAuthorString } = useBookFormatters();
   justify-content: center;
   gap: 7rem;
   padding-top: 2rem;
-  overflow: scroll;
-  height: 100vh;
 }
 
 /* ===== STAMP CARD ===== */

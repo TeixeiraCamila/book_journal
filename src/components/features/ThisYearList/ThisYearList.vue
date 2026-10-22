@@ -64,12 +64,6 @@ const booksByMonth = computed(() => {
       src="@/assets/images/cards/card_this_year/left_top.webp"
       alt=""
     />
-    <!-- <header class="this-year__header">
-      <h1 class="this-year__title">
-        Lidos em <br />
-        {{ currentYear }}
-      </h1>
-    </header> -->
 
     <StateHandler
       :loading="bookStore.loadingStates.thisYear"
@@ -108,9 +102,11 @@ const booksByMonth = computed(() => {
 </template>
 
 <style scoped>
+/* Rola na vertical quando o conteúdo excede o card (80vh/90vh) */
 .this-year {
   height: 100%;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 .this-year img {
   max-width: 300px;
@@ -131,28 +127,6 @@ const booksByMonth = computed(() => {
   top: 0;
   left: 0;
   max-height: 95%;
-}
-.this-year__header {
-  text-align: center;
-  padding: 4rem 2rem;
-  background-image: url('/src/assets/images/cards/card_this_year/this-year__header.png');
-  background-size: auto;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.this-year__title {
-  font-size: 1.5rem;
-  color: var(--black);
-  text-transform: uppercase;
-  font-family: 'Raleway', sans-serif;
-  font-weight: 700;
-}
-
-.this-year__subtitle {
-  font-size: 1.125rem;
-  color: var(--black);
-  margin: 0;
 }
 
 /* ===== ESTADOS (ERROR, LOADING, EMPTY) — estilos no StateHandler ===== */

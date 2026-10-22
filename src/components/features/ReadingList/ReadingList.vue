@@ -181,8 +181,11 @@ const hasPublicationInfo = (book) => {
 </template>
 
 <style scoped>
+/* Rola na vertical quando o conteúdo excede o card (80vh/90vh) */
 .reading-list {
-  min-height: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* ===== HEADER ===== */
