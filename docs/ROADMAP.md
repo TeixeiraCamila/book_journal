@@ -24,7 +24,8 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 - **Composable `usePagination`**: extrair cursor pagination do `bookStore`
 - ~~**Deduplicar `closeModal`/`closeModalWithAnimation`**~~ ✅ feito em 15/10/2026 (corpos idênticos; junto com `flipToOpposite` morto)
 - ~~**Remover dependências não usadas**~~ ✅ `@vueuse/motion` e `@biomejs/biome` removidas em 15/10/2026 (`chart.js` já tinha saído com a Decisão 009)
-- **Remover `tsconfig.json` órfão** (ou migrar de vez, ver DEPOIS)
+- ~~**Remover `tsconfig.json` órfão**~~ ✅ resolvido em 22/10/2026: os 2 órfãos viraram o trio da migração TS (`tsconfig.json` solução + `app` + `node`)
+- **Migração incremental para TypeScript** (`docs/PLANO_MIGRACAO_TS.md`): Fases 1–2 concluídas em 22/10/2026 (toolchain + tipos de contrato/arquivos-folha); **próxima: Fase 3** (`services/api.ts` + stores)
 
 ---
 
@@ -38,7 +39,6 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 - **Sessão em cookie HTTP-only**: reduzir risco do `localStorage` (`SECURITY.md`, `DECISIONS.md` 002)
 - **"Lembrar deste navegador"**: token curto + refresh
 - **App mobile Android (Capacitor)**: plano completo já desenhado (APK via WSL2 + wireless adb); nada implementado
-- **Migração incremental para TypeScript**: fase posterior ao APK
 - **`FormSkeleton.vue` em `<script setup>`**
 
 ---

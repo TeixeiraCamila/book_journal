@@ -27,10 +27,10 @@ Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, *
 
 | Fase | Escopo | Risco | Esforço | Status |
 |------|--------|-------|---------|--------|
-| 0 | Pré-condições (árvore limpa + ROADMAP) | ~zero | ~15 min | ⬜ |
-| 1 | Ferramenta (deps, tsconfig, scripts, ESLint) | baixo | ~1–2 h | ⬜ |
+| 0 | Pré-condições (árvore limpa + ROADMAP) | ~zero | ~15 min | ✅ 25/10/2026 |
+| 1 | Ferramenta (deps, tsconfig, scripts, ESLint) | baixo | ~1–2 h | ✅ 22/10/2026 |
 | 2 | Tipos de contrato + folhas (`utils`, `constants`, composables, router, barrels) | baixo | ~2–3 h | ✅ 22/10/2026 |
-| 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ⬜ |
+| 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ⬜ **próxima** |
 | 4 | 26 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ |
 | 5 | Endurecimento + docs + ADR 011 | baixo | ~1 h | ⬜ |
 
@@ -43,7 +43,7 @@ Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, *
 | # | Ação | Detalhe |
 |---|------|---------|
 | 0.1 | Árvore limpa | ✅ verificado em 22/10 (working tree limpo, dedup commitada). Se aparecer trabalho no meio da migração, commitar antes de continuar. |
-| 0.2 | Repriorizar | Mover "Migração incremental para TypeScript" de `DEPOIS` para `PRÓXIMO` em `docs/ROADMAP.md`; marcar ✅ o item "Remover `tsconfig.json` órfão (ou migrar de vez)". |
+| 0.2 | Repriorizar | ✅ feito em 25/10/2026: "Migração incremental para TypeScript" saiu de `DEPOIS` para `PRÓXIMO` em `docs/ROADMAP.md` (com status das fases) e o item "Remover `tsconfig.json` órfão" foi marcado ✅. |
 | 0.3 | Deduplicação | ✅ concluída (fases 1–5, 15–16/10/2026). Nenhum bloqueio remanescente. |
 
 ---
@@ -260,31 +260,76 @@ Gate verde após cada lote 2b. Nenhum consumidor muda ainda — fase silenciosa.
 
 ## Fase 3 — Dados: serviço + stores
 
-**Objetivo:** tipar o contrato inteiro de I/O. Maior valor por linha migrada; as stores herdam os tipos do serviço.
+**Objetivo:** tipar o contrato inteiro de I/O. Maior valor por linha migrada; as stores herdam os tipos do serviço. Arquivos: `services/api.js` + `stores/bookStore.js` + `stores/userStore.js` (os 3 `.js` restantes; o `main.js` espera a Fase 4f).
+
+**Ordem:** 3a (serviço) → 3b (userStore, menor) → 3b (bookStore). Se a store reclamar, o problema está no serviço (3a) — corrigir lá.
+
+### Tipos novos em `src/types/` (complemento da Fase 2)
+
+| Arquivo | Adição |
+|---------|--------|
+| `types/api.ts` | `DeleteResponse` (`{ success: boolean; id: string }` — API.md §DELETE), `MeResponse` (`{ user: SessionUser }` — API.md §/auth/me) |
+| `types/store.ts` | `BookPagination` (`pageSize: number`, `currentCursor/nextCursor: string \| null`, `previousCursors: string[]`), `BookState` (agrupa listas + loading + pagination + filtros + `bookOptions: BookOptions \| null` + `error: string \| null`), `UserState` (`userActive: SessionUser \| GuestUser \| null`, `token: string \| null`, `isGuest`, `error`) |
 
 ### 3a. `services/api.js` → `api.ts`
 
+`git mv src/services/api.js src/services/api.ts` (preservar histórico). Os tipos de endpoint abaixo já existem na Fase 2 (`Envelope<Book[]>`, `ListAllResponse`, `FinishedThisYearResponse`, `ListQuery`, `LoginResponse`, `BookOptions`); só `DeleteResponse`/`MeResponse` são novos.
+
 | Item | Ação |
 |------|------|
-| `booksApi.list(options)` | `options: ListQuery`; retorno `Promise<AxiosResponse<Envelope<Book[]>>>` |
-| `listAll` / `get` / `create` / `update` / `delete` / `options` / `finishedThisYear` | genéricos por endpoint (espelhar `docs/API.md`: `GET /:id` devolve o book **no topo**; `/all` tem `{data, total}`) |
-| `authApi.login` / `me` | `LoginResponse` e `{ user: SessionUser }` |
-| Interceptors | `AxiosError` no response, `InternalAxiosRequestConfig` no request (nada de `any`) |
-| `params` dinâmico | declarar `Record<string, string>` antes de atribuir chaves |
-| `import.meta.env.VITE_API_URL` | já coberto pelo `types: ["vite/client"]` da Fase 1 |
+| `booksApi.list(options = {})` | `options: ListQuery = {}`; retorno `Promise<AxiosResponse<Envelope<Book[]>>>` |
+| `params` do `list` | `const params: Record<string, string> = { pageSize: pageSize.toString(), search, searchBy, status }` (todos string, condicionais incluídos) |
+| `params` do `finishedThisYear` | `Record<string, string \| number>` — `year`/`pageSize` entram como **number** (diferente do `list`; axios serializa ambos) |
+| `listAll()` | `AxiosResponse<ListAllResponse>` (timeout 60 s mantido) |
+| `get(id: string)` | `AxiosResponse<Book>` — o `:id` devolve o book **no topo**, sem envelope (API.md) |
+| `create(data: CreateBookInput)` / `update(id: string, data: UpdateBookInput)` | `AxiosResponse<Book>` (201/200 + book mapeado) |
+| `delete(id: string)` | `AxiosResponse<DeleteResponse>` (soft delete) |
+| `options()` | `AxiosResponse<BookOptions>` |
+| `finishedThisYear(options = {})` | `AxiosResponse<FinishedThisYearResponse>`; options inline `{ year?: number; pageSize?: number; startCursor?: string }` |
+| `authApi.login(data: LoginBody)` | `LoginBody = { email: string; codigo: string }` (local, no serviço); retorno `AxiosResponse<LoginResponse>` |
+| `authApi.me(config: AxiosRequestConfig = {})` | `AxiosResponse<MeResponse>` |
+| Interceptor de request | `(config: InternalAxiosRequestConfig)` — tipar o parâmetro |
+| Interceptor de response | `(error: AxiosError)` — `error.response?.status` / `error.config?.url` já são seguros com o tipo (nada de `any`) |
 
 ### 3b. Stores (`defineStore` com `state` tipado — manter padrão options API; **não** converter para setup store)
 
-| Store | Pontos de atenção |
-|-------|-------------------|
-| `bookStore.js` | `bookLists: Record<ListKey, Book[]>`; `pagination` (`nextCursor: string \| null`, `previousCursors: string[]`); `searchToken: number`; `bookOptions: BookOptions \| null`; getter `getBookById` → `Book \| undefined` |
-| `userStore.js` | `userActive: SessionUser \| GuestUser \| null`; `GUEST_USER` com `satisfies` (tem `type: 'guest'`, diferente do `SessionUser` do backend — a união tipada expõe isso) |
+**`userStore.js` → `userStore.ts`** (começar por ele — 118 linhas)
 
-- Se a store reclamar, o problema está no serviço (3a) — corrigir lá.
+| Ponto | Ação |
+|-------|------|
+| `GUEST_USER` | `satisfies GuestUser` — o `type: 'guest'` distingue do `SessionUser` do backend; a união tipada em `userActive` expõe isso |
+| `state` | `(): UserState` — `userActive: SessionUser \| GuestUser \| null`, `token: string \| null`, `isGuest: boolean`, `error: string \| null` |
+| `login({ email, codigo })` | tipar o parâmetro destruturado `{ email: string; codigo: string }`; retorno `Promise<SessionUser>` |
+| `catch` do `login` | **gotcha TS:** com `strict`, a variável de `catch` é `unknown` → `error.response?.data?.message` não compila. Usar o guard `isAxiosError(error)` (export do axios) antes de ler `response`; a fallback continua `extractErrorMessage(error)` (já aceita `unknown` desde a Fase 2) |
+| `catch` do `validateSession` | mesmo guard: `isAxiosError(erro) && erro.response?.status === 401` |
+| `loadSession` | `JSON.parse(storedUser)` devolve `any` → `as SessionUser` no ponto de confiança (fronteira `localStorage`; o `validateSession` revalida contra o `/me` no boot, então o cast não é risco) |
+
+**`bookStore.js` → `bookStore.ts`** (315 linhas)
+
+| Ponto | Ação |
+|-------|------|
+| `createInitialState()` | anotar retorno `(): BookState`; `state: () => createInitialState()` e `$reset` (`Object.assign(this, createInitialState())`) herdam o tipo sem duplicar |
+| `pagination` | `BookPagination` (ver tipos novos acima) |
+| `searchBy` / `filterStatus` | `BookSearchMode` / `string` (`'all'` é o sentinel do backend) |
+| `_fetchPaged` | **genérico** `_fetchPaged<T>({...})`: `key: keyof LoadingStates`, `loader: () => Promise<AxiosResponse<T>>`, `apply: (response: AxiosResponse<T>) => void`, `onError?: () => void`, `useToken?: boolean` — o `<T>` absorve `Envelope<Book[]>` (list) e `FinishedThisYearResponse` (thisYear) sem `any` |
+| getter `getBookById` | retornar função exige anotação explícita: `(state) => (bookId: string): Book \| undefined => ...` (sem ela o inference do Pinia quebra) |
+| `fetchBooksReadThisYear` | ⚠️ `apply` hoje faz `response.data.results \|\| response.data.data \|\| []` — com `FinishedThisYearResponse` tipado, `.data` não existe e o TS acusa. O `results` é garantido pelo contrato (API.md); **remover o fallback morto `.data.data`** e registrar em `analise-melhorias.md` (comportamento idêntico) |
+| `createBook` / `updateBook` | `bookData: CreateBookInput` / `UpdateBookInput` |
+| `_applyFilters(patches)` | `Partial<Pick<BookState, 'searchTerm' \| 'searchBy' \| 'filterStatus'>>` (o `Object.assign(this, patches)` continua) |
+| Getters simples | `statusOptions` → `string[]` (o `\|\| BOOK_STATUS_FALLBACK` já fecha o tipo); contagens/flags inferem sozinhos |
 
 ### ✅ Pronto quando
 
-Gate verde + smoke completo: login, visitante, CRUD, busca com debounce, paginação, 401 → `/login`.
+- Gate verde após **cada** arquivo (3a → userStore → bookStore).
+- Smoke completo: login, visitante, CRUD (criar/editar/excluir), busca com debounce, paginação (próxima/anterior), troca de pageSize, 401 → `/login`.
+- `find src -name '*.js'` aponta só `main.js` (fecha a Fase 3; o `main.js` fica para a 4f).
+
+### Gotchas específicos desta fase
+
+- `catch` é `unknown` sob `strict` → guard `isAxiosError` do axios; **nunca** `any` ou `@ts-ignore`.
+- Getter do Pinia que retorna função (`getBookById`) precisa de retorno anotado.
+- `_fetchPaged` genérico é o que evita `any` nos dois envelopes distintos — não "resolver" com cast.
+- Interceptors: `InternalAxiosRequestConfig` (request) e `AxiosError` (response) são os tipos que o próprio axios exporta; não reinventar.
 
 ---
 
