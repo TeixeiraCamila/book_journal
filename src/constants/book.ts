@@ -42,16 +42,6 @@ export const BOOK_SEARCH_PLACEHOLDERS = {
 // Intervalo do debounce da busca em ms
 export const SEARCH_DEBOUNCE_MS = 400;
 
-// Labels de avaliação — indexação aberta: o valor vem do select dinâmico do Notion
-export const BOOK_RATE_LABELS: Partial<Record<string, string>> = {
-  '❤': '❤️',
-  '⭐⭐⭐⭐⭐': '*****',
-  '⭐⭐⭐⭐': '****',
-  '⭐⭐⭐': '***',
-  '⭐⭐': '**',
-  '⭐': '*',
-};
-
 // Tipos de livro (fallback) — espelha os valores do banco, sem ícones
 export const BOOK_TYPES_FALLBACK: BookType[] = ['Audiobook', 'Kindle', 'Mangá', 'Paper'];
 

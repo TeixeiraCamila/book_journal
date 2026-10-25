@@ -91,7 +91,7 @@ Response `200`: objeto **flat** (chave = propriedade do Notion, valor = `string[
 }
 ```
 
-Cacheadas no backend (300 s). Fallback local em `constants/book.js` quando falha.
+Cacheadas no backend (300 s). Fallback local em `constants/book.ts` para **Status** e **Type** quando falha; **Rate não tem fallback** — o catálogo do Notion é a fonte única (Decisão 004, atualização de 22/10/2026).
 
 ### `GET /api/books/stats`
 

@@ -73,6 +73,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 - `handleDelete` do `BookCard.vue`: morto até 15/10/2026 (o `ConfirmDialog` não emitia `confirm`) — virou `handleDeleteConfirmed` (só fecha o modal)
 - Dependências não usadas: `@vueuse/motion`, `@biomejs/biome` — ✅ removidas em 2026-10-15 (`chart.js` já tinha saído com a Decisão 009)
 - `progress: true` em `TOAST_CONFIG`: chave inexistente em `PluginOptions` do vue-toastification (a lib só tem `hideProgressBar`, e a barra aparece por padrão) — ✅ removida em 22/10/2026 (Fase 2 da migração TS; nenhuma mudança visual)
+- Prop `labels` do `FormField.vue` (declaração + ternário no template): órfão desde 25/10/2026 — o `BookForm` era o único consumidor e parou de passá-lo com a remoção do `BOOK_RATE_LABELS` (Rate sem fallback); remover prop e ternário junto com a migração TS do componente (Fase 4b)
 
 ---
 

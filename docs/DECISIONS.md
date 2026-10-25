@@ -101,6 +101,8 @@ Consequências:
 - Positivo: UI nunca fica sem opções
 - Trade-off: catálogo duplicado; se mudar no Notion, o fallback fica defasado (aceito; é só fallback)
 
+Atualização (22/10/2026): `BOOK_RATE_LABELS` foi removido — em `Rate`, o catálogo do Notion passou a ser a fonte única (`bookOptions?.Rate ?? []`). Motivo: a interseção entre mapa local e API escondia do dropdown opções novas criadas no Notion e deixava o select em branco ao editar livro já avaliado com elas; além disso o valor exibido no form agora é o cru do Notion (`⭐⭐⭐⭐⭐` em vez do alias `*****`). `Status` e `Type` mantêm o fallback.
+
 ---
 
 ## Decisão 005 — Contrato agrupado do livro (`pages`, `seriesInfo`, `startEnd`)

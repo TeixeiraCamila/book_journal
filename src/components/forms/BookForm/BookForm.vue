@@ -4,7 +4,6 @@ import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { useBookStore } from '@/stores/bookStore';
 import {
   BOOK_STATUS_FALLBACK,
-  BOOK_RATE_LABELS,
   BOOK_TYPES_FALLBACK,
   BOOK_STATUS_MAP,
 } from '@/constants/book';
@@ -74,11 +73,8 @@ const isSubmitting = ref(false);
 
 // Opções carregadas do Notion via API, com fallback para valores locais
 const statusOptions = computed(() => bookStore.bookOptions?.Status || BOOK_STATUS_FALLBACK);
-const rateOptions = computed(() =>
-  bookStore.bookOptions?.Rate
-    ? Object.keys(BOOK_RATE_LABELS).filter((r) => bookStore.bookOptions.Rate.includes(r))
-    : Object.keys(BOOK_RATE_LABELS),
-);
+// Nota não tem fallback local: o catálogo do Notion é a fonte única (Decisão 004)
+const rateOptions = computed(() => bookStore.bookOptions?.Rate ?? []);
 const typeOptions = computed(() => bookStore.bookOptions?.Type || BOOK_TYPES_FALLBACK);
 const atlasOptions = computed(() => bookStore.bookOptions?.Atlas || []);
 const seriesOptions = computed(() => bookStore.bookOptions?.['Book Series Name'] || []);
@@ -516,7 +512,6 @@ const handleCancel = () => {
                 label="Avaliação"
                 type="select"
                 :options="rateOptions"
-                :labels="BOOK_RATE_LABELS"
                 placeholder="Selecione uma avaliação"
                 :error="fieldErrors.rate"
               />
