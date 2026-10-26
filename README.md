@@ -6,7 +6,7 @@ Web app for personal library management. You can add books, track reading progre
 
 Book Journal is a SPA for cataloging and tracking your reading. You add books manually, mark progress, rate with stars, and favorite them.
 
-It consumes the API backend in `backend__final`, **Books** domain.
+It consumes the API backend in `notion_api`, **Books** domain.
 
 ## Tech Stack
 
@@ -146,18 +146,22 @@ Views → Pinia Stores → services/api.js (Axios) → Backend API → Notion CM
 
 ## API Consumption
 
-The app consumes these endpoints from the `backend__final` backend:
+The app consumes these endpoints from the `notion_api` backend:
 
 | Endpoint | Usage |
 |---|---|
-| `GET /api/books` | List books (paginated); accepts `search`, `searchBy` (`title`/`author`/`genre`) and `status` |
+| `GET /api/books` | List books (paginated); accepts `search`, `searchBy` (`title`/`author`/`genre`), `status`, `wasReadIn` and `genres` |
 | `GET /api/books/all` | All books |
 | `GET /api/books/:id` | Book details |
 | `GET /api/books/options` | Filter options (status, authors, genres) |
-| `POST /api/books` | Create book |
-| `PATCH /api/books/:id` | Update book |
-| `DELETE /api/books/:id` | Archive book |
+| `GET /api/books/finished-this-year` | Books finished in a year, with year-wide stats |
+| `POST /api/books` | Create book (auth) |
+| `PATCH /api/books/:id` | Update book (auth) |
+| `DELETE /api/books/:id` | Archive book (auth) |
 | `POST /api/auth/login` | Sign in (email + access code) |
+| `GET /api/auth/me` | Revalidate the current session (auth) |
+
+Reads are public; writes require `Authorization: Bearer <token>`. Full contract in `docs/API.md`.
 
 ## Responsiveness
 

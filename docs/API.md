@@ -2,7 +2,7 @@
 
 Fonte de verdade dos contratos consumidos pelo `book_journal`. Backend: **`notion_api`** (repositório irmão). Este documento cobre o **lado do consumidor**; a referência completa do backend vive em `notion_api/docs/api-reference.md`.
 
-Cliente Axios: `src/services/api.js`; baseURL `VITE_API_URL` (vazio + proxy `/api` em dev), timeout 10 s (`/all` 60 s, `/auth/me` 5 s), header `Content-Type: application/json`, `Authorization: Bearer <token>` quando há sessão.
+Cliente Axios: `src/services/api.ts`; baseURL `VITE_API_URL` (vazio + proxy `/api` em dev), timeout 10 s (`/all` 60 s, `/auth/me` 5 s), header `Content-Type: application/json`, `Authorization: Bearer <token>` quando há sessão.
 
 ---
 
@@ -43,6 +43,8 @@ Response `200`:
 ```
 
 Uso no front: revalidação única no boot (`userStore.validateSession`, timeout 5 s). Só `401` derruba a sessão.
+
+Mensagens de `401` do backend: `Autenticação necessária` (sem header), `Token inválido` (assinatura não bate) e `Sessão expirada` (JWT com 30 dias). Escritas sem sessão respondem `401` — o `400` de validação só chega depois do `require_auth`.
 
 ---
 
@@ -103,17 +105,36 @@ Response `200` (objeto direto): `totalBooks`, `currentlyReading` (array), `statu
 
 Query: `year` (obrigatório, 1900–2100), `pageSize`, `startCursor` (cursor **numérico como string**)
 
-Response `200`: atenção, o formato é **snake_case, diferente do list**:
+Response `200`: atenção, o formato é **snake_case, diferente do list**, e traz `stats` do ano inteiro (independe da página pedida):
 
 ```json
 {
+  "year": 2026,
+  "stats": {
+    "totalBooks": 29,
+    "totalPagesRead": 11287,
+    "booksWithPages": 29,
+    "averagePagesRead": 389,
+    "averageRating": "3.3",
+    "booksWithRating": 27,
+    "ratingDistribution": { "⭐⭐⭐": 16 },
+    "authorsMostRead": [{ "name": "…", "count": 3 }],
+    "genresDistribution": [{ "name": "…", "count": 5 }],
+    "formatCounts": [{ "name": "Kindle", "count": 10 }],
+    "statusCounts": { "Read": 28, "DNF": 1 },
+    "monthlyFinished": [{ "month": "2026-01", "count": 5 }],
+    "iHaveCopyCount": 13,
+    "longestBook": { "id": "…", "title": "…", "pages": 984 },
+    "averageReadingDays": 9
+  },
   "results": [book],
   "has_more": false,
   "next_cursor": null,
-  "total_count": 12,
-  "year": 2026
+  "total_count": 12
 }
 ```
+
+Os campos de `stats` podem ser `null` (`longestBook`, `averageReadingDays`) quando não há base de cálculo; `averageRating` é `string` (`.toFixed(1)`). Detalhe campo a campo: `notion_api/docs/api-reference.md`.
 
 ### `POST /api/books`
 
@@ -177,7 +198,7 @@ Validação Zod (400):
 }
 ```
 
-O frontend lê `error.response.data.message` e, se a chave faltar, usa a mensagem padrão do status (`utils/errorHandler.js`).
+O frontend lê `error.response.data.message` e, se a chave faltar, usa a mensagem padrão do status (`src/utils/errorHandler.ts`).
 
 ---
 
@@ -187,6 +208,20 @@ O frontend lê `error.response.data.message` e, se a chave faltar, usa a mensage
 - Nunca assumir presença de campos no `book` (vazios são apagados)
 - Autorizar escritas no servidor; no cliente, apenas ocultar a UI do visitante
 - Respostas de erro seguem o formato acima; não expor detalhes internos
-- Rate limit no backend: 3 req/s por IP; não fazer polling agressivo
+- Rate limit no backend: 3 req/s **por domínio de integração** (limite do Notion, não por IP); não fazer polling agressivo
 - `GET /books` (sem `/api`) redireciona para `/api/books`
 - Não existe `PATCH /:id/status` no domínio books (só em entertainment)
+
+---
+
+## Quando a API muda
+
+| Mudança | Atualizar |
+|---|---|
+| Rota nova/alterada | este arquivo + `src/services/api.ts` + store correspondente |
+| DTO novo/removido | este arquivo + `src/types/book.ts` / `api.ts` + `DATABASE.md` |
+| Opções do schema (Status/Type/…) | `constants/` só se houver fallback local; o `/options` muda sozinho |
+| Formato de erro | este arquivo + `src/utils/errorHandler.ts` |
+| Auth (login, token, sessão) | este arquivo + `SECURITY.md` + `../AGENTS.md` |
+
+A fonte da verdade do contrato é `notion_api/docs/api-reference.md`; o checklist de propagação para os 5 repositórios está em `notion_api/docs/atualizar-documentacao.md`.
