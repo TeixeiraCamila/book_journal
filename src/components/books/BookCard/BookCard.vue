@@ -272,6 +272,8 @@ const handleEdit = (book) => {
   }
 
   .book-card {
+    /* Menor que os 150px do desktop: cabem 2 por linha na largura do celular */
+    width: 110px;
     max-width: 100%;
   }
 }

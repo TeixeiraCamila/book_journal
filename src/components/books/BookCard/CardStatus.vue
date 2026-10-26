@@ -72,6 +72,21 @@ defineProps({
 .card-status--tight > img {
   max-width: 100px;
 }
+
+/* ===== MOBILE: card da listagem menor — fita e texto acompanham ===== */
+@media (max-width: 768px) {
+  .book-card--list .card-status__tape {
+    top: -21px;
+  }
+
+  .book-card--list .card-status__tape > img {
+    width: 90px;
+  }
+
+  .book-card--list .card-status__tape .card-status__text {
+    font-size: 0.7rem;
+  }
+}
 </style>
 
 <style>

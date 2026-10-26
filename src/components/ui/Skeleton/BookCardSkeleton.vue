@@ -83,18 +83,15 @@
 }
 
 @media (max-width: 768px) {
+  /* Mesmas medidas do .book-card mobile: esqueleto e card ocupam o mesmo espaço */
   .book-card-skeleton {
-    width: 90vw;
-    max-width: 320px;
-    height: 480px;
+    width: 110px;
+    height: 210px;
+    padding: 0.5rem;
   }
-}
 
-@media (max-width: 480px) {
-  .book-card-skeleton {
-    width: 95vw;
-    max-width: 280px;
-    height: 420px;
+  .book-card-skeleton__tape {
+    width: 100px;
   }
 }
 </style>
