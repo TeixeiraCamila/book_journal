@@ -163,12 +163,28 @@ onMounted(async () => {
 
 @media (max-width: 768px) {
   .book-list {
-    gap: 1rem;
+    /* Fita e gaveta dos filtros viram overlay da lista, sem espaço próprio no fluxo */
+    gap: 0;
     flex-direction: column;
+    /* Gaveta fechada sai pela esquerda: o card corta o que escapa */
+    overflow: hidden;
   }
 
-  .filters {
-    height: fit-content;
+  /* Altura presa ao card: garante a rolagem e que nenhum livro fique cortado */
+  .book-list-content {
+    flex: 1 1 auto;
+    min-height: 0;
+    /* Folga para a fita de filtros que flutua no canto superior do card */
+    padding: 3rem 0 1rem;
+  }
+
+  .book-list__grid {
+    gap: 2.5rem 1rem;
+    padding: 1.5rem 1rem;
+  }
+
+  .book-list__skeletons {
+    gap: 1.5rem 1rem;
   }
 }
 </style>

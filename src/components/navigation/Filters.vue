@@ -1,8 +1,9 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup>
-// Barra de filtros — busca por título/autor/gênero e status em radio, com botão limpar
+// Painel de filtros — busca, status e ações; no mobile vira gaveta aberta por uma fita
 import { computed, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { SlidersHorizontal } from 'lucide-vue-next';
 import { useBookStore } from '@/stores/bookStore';
 import { useUserStore } from '@/stores/userStore';
 import {
@@ -20,6 +21,8 @@ const router = useRouter();
 const localSearch = ref(bookStore.searchTerm);
 const localSearchBy = ref(bookStore.searchBy);
 const localStatus = ref(bookStore.filterStatus);
+// Só faz efeito no mobile: no desktop o painel é fixo e não tem estado fechado
+const isDrawerOpen = ref(false);
 
 let searchTimer = null;
 
@@ -67,6 +70,23 @@ const clearFilters = () => {
   bookStore.filterByStatus('all');
 };
 
+/** Abre a gaveta de filtros (mobile) */
+const openFilters = () => {
+  isDrawerOpen.value = true;
+};
+
+/** Fecha a gaveta de filtros (mobile) */
+const closeFilters = () => {
+  isDrawerOpen.value = false;
+};
+
+/** Aplica a busca ainda pendente no debounce e fecha a gaveta */
+const applyFilters = () => {
+  clearTimeout(searchTimer);
+  handleSearch();
+  closeFilters();
+};
+
 // Debounce manual: o projeto não usa @vueuse (dependência removida em 15/10/2026),
 // então watchDebounced não está disponível aqui.
 watch(localSearch, () => {
@@ -78,65 +98,91 @@ onUnmounted(() => clearTimeout(searchTimer));
 </script>
 
 <template>
-  <div class="filters">
-    <div class="filters__row">
-      <input
-        type="text"
-        :placeholder="searchPlaceholder"
-        v-model="localSearch"
-        @keyup.enter="handleSearch"
-        class="filters__input"
-      />
+  <div class="filters-scope" @keydown.esc="closeFilters">
+    <!-- Fita de abertura dos filtros — existe só no mobile -->
+    <button
+      type="button"
+      class="filters-scope__toggle"
+      :aria-expanded="isDrawerOpen"
+      aria-controls="book-filters"
+      @click="openFilters"
+    >
+      <SlidersHorizontal :size="14" aria-hidden="true" />
+      Filtros
+    </button>
 
-      <div class="select_wrapper">
-        <select v-model="localSearchBy" @change="handleSearchByChange">
-          <option v-for="mode in BOOK_SEARCH_MODES" :key="mode.value" :value="mode.value">
-            {{ mode.label }}
-          </option>
-        </select>
+    <div id="book-filters" class="filters" :class="{ 'filters--open': isDrawerOpen }">
+      <div class="filters__row">
+        <input
+          type="text"
+          :placeholder="searchPlaceholder"
+          v-model="localSearch"
+          @keyup.enter="handleSearch"
+          class="filters__input"
+        />
+
+        <div class="select_wrapper">
+          <select v-model="localSearchBy" @change="handleSearchByChange">
+            <option v-for="mode in BOOK_SEARCH_MODES" :key="mode.value" :value="mode.value">
+              {{ mode.label }}
+            </option>
+          </select>
+        </div>
+
+        <fieldset class="filters__group">
+          <legend class="filters__legend">Status</legend>
+          <label v-for="option in statusRadioOptions" :key="option.value" class="filters__option">
+            <input
+              type="radio"
+              class="filters__radio"
+              name="book-status"
+              :value="option.value"
+              v-model="localStatus"
+              @change="handleFilterChange"
+            />
+            <span>{{ option.label }}</span>
+          </label>
+        </fieldset>
+
+        <Button v-if="hasActiveFilters" @click="clearFilters" variant="secondary">
+          Limpar filtros
+        </Button>
       </div>
 
-      <fieldset class="filters__group">
-        <legend class="filters__legend">Status</legend>
-        <label v-for="option in statusRadioOptions" :key="option.value" class="filters__option">
-          <input
-            type="radio"
-            class="filters__radio"
-            name="book-status"
-            :value="option.value"
-            v-model="localStatus"
-            @change="handleFilterChange"
-          />
-          <span>{{ option.label }}</span>
-        </label>
-      </fieldset>
+      <div class="filters__row">
+        <Button v-if="!userStore.isGuest" @click="navigateToCreate">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <path
+              d="M12 4V20M4 12H20"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+          Adicionar Livro
+        </Button>
+      </div>
 
-      <Button v-if="hasActiveFilters" @click="clearFilters" variant="secondary">
-        Limpar filtros
-      </Button>
+      <!-- Fecha a gaveta no mobile; no desktop o painel não tem fechamento -->
+      <div class="filters__row filters__row--apply">
+        <Button @click="applyFilters">Aplicar filtros</Button>
+      </div>
     </div>
 
-    <div class="filters__row">
-      <Button v-if="!userStore.isGuest" @click="navigateToCreate">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M12 4V20M4 12H20"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
-        Adicionar Livro
-      </Button>
-    </div>
+    <div
+      v-if="isDrawerOpen"
+      class="filters-scope__backdrop"
+      aria-hidden="true"
+      @click="closeFilters"
+    ></div>
   </div>
 </template>
 
@@ -229,5 +275,100 @@ onUnmounted(() => clearTimeout(searchTimer));
 .filters__radio:active {
   transform: none;
   box-shadow: none;
+}
+
+/* Fita, backdrop e "Aplicar filtros" só existem na gaveta mobile */
+.filters-scope__toggle,
+.filters-scope__backdrop,
+.filters__row--apply {
+  display: none;
+}
+
+/* ===== MOBILE: filtros viram gaveta que desliza da esquerda ===== */
+@media (max-width: 768px) {
+  /* Fita colada no canto superior esquerdo do card (o card faz de contexto de posicionamento) */
+  .filters-scope__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    position: absolute;
+    top: 0.5rem;
+    left: 0.75rem;
+    z-index: 5;
+    width: auto;
+    height: auto;
+    padding: 0.35em 1em;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--black);
+    background: url('@/assets/images/tape.webp') center / 100% 100% no-repeat;
+    box-shadow: none;
+    transform: rotate(-2deg);
+  }
+
+  .filters-scope__toggle:hover,
+  .filters-scope__toggle:active {
+    transform: rotate(-2deg) translate(-2px, -2px);
+    box-shadow: none;
+  }
+
+  .filters-scope__backdrop {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .filters {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    width: min(300px, 85%);
+    height: 100%;
+    min-height: 0;
+    /* Reserva a borda direita para a renda */
+    padding: 1rem 3.5rem 1rem 1rem;
+    gap: 1rem;
+    justify-content: flex-start;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* Fechada sai pela borda esquerda; o overflow do card impede o estouro */
+    transform: translateX(-100%);
+    visibility: hidden;
+    transition:
+      transform 0.3s ease,
+      visibility 0.3s;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+  }
+
+  .filters--open {
+    transform: translateX(0);
+    visibility: visible;
+  }
+
+  /* Renda na borda direita do painel: dentro do painel ela não é
+     cortada pelo scroll da gaveta nem pelo overflow do card */
+  .filters::after {
+    right: 0;
+  }
+
+  .filters__row {
+    /* O min-width do desktop estouraria a gaveta em telas de ~320px */
+    min-width: 0;
+  }
+
+  .filters__row--apply {
+    display: flex;
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .filters {
+    transition: none;
+  }
 }
 </style>
