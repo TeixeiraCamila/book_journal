@@ -58,6 +58,10 @@ defineEmits(['retry']);
 
 .state-handler--loading {
   padding: 2rem;
+  /* Ocupa a altura da área de conteúdo: com justify-content:center o spinner
+     sai centralizado no card; min-height (não height) evita estourar quando
+     o slot de loading é maior que a tela (ex.: FormSkeleton) */
+  min-height: 100%;
 }
 
 .state-handler--error {

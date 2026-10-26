@@ -223,6 +223,14 @@ onMounted(() => {
   padding: 2rem;
 }
 
+/* Spinner do chunk assíncrono: centralizado no card enquanto a lista carrega.
+   `>` (filho direto) para não capturar o spinner de dentro do StateHandler */
+.stack-view__card:has(> .loading) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 /* Cards de lista: cortam o que escapa; a rolagem vertical fica em cada lista */
 .stack-view__book-list,
 .stack-view__now,
