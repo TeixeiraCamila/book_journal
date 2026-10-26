@@ -1,5 +1,9 @@
-// Pinia store de livros — gerencia listas, paginação, filtros e operações CRUD
+// Store de livros: existe porque as 4 listas (principal, TBR, leitura, ano), a
+// paginação por cursor e os filtros de busca são estado compartilhado entre
+// views — sem ela cada view refetcharia e as listas divergiriam entre si.
+
 import { defineStore } from 'pinia';
+import type { AxiosResponse } from 'axios';
 import { booksApi } from '../services/api';
 import {
   BOOK_STATUS_FALLBACK,
@@ -8,9 +12,28 @@ import {
   DEFAULT_SEARCH_MODE,
 } from '../constants/book';
 import { extractErrorMessage, logError } from '@/utils/errorHandler';
+import type {
+  Book,
+  BookSearchMode,
+  BookStatus,
+  CreateBookInput,
+  UpdateBookInput,
+} from '@/types/book';
+import type { BookState, LoadingStates } from '@/types/store';
+
+// Argumentos do esqueleto comum de fetch; <T> absorve os 2 envelopes distintos
+// (Envelope<Book[]> do list e FinishedThisYearResponse do thisYear) sem `any`
+interface FetchPagedArgs<T> {
+  key: keyof LoadingStates;
+  action: string;
+  loader: () => Promise<AxiosResponse<T>>;
+  apply: (response: AxiosResponse<T>) => void;
+  onError?: () => void;
+  useToken?: boolean;
+}
 
 // Estado inicial — fonte única de state() e $reset() (evita os dois divergirem)
-const createInitialState = () => ({
+const createInitialState = (): BookState => ({
   bookLists: { main: [], tbr: [], reading: [], thisYear: [] },
   loadingStates: { main: false, tbr: false, reading: false, thisYear: false },
   error: null,
@@ -46,13 +69,17 @@ export const useBookStore = defineStore('books', {
     hasPreviousPage: (state) => state.pagination.previousCursors.length > 0,
 
     // Busca livro por ID em todas as listas
-    getBookById: (state) => (bookId) => {
-      return (
-        state.bookLists.main.find((book) => book.id === bookId) ||
-        state.bookLists.reading.find((book) => book.id === bookId) ||
-        state.bookLists.tbr.find((book) => book.id === bookId)
-      );
-    },
+    // (retorno anotado: getter que devolve função precisa dele, senão o
+    // inference do Pinia quebra)
+    getBookById:
+      (state) =>
+      (bookId: string): Book | undefined => {
+        return (
+          state.bookLists.main.find((book) => book.id === bookId) ||
+          state.bookLists.reading.find((book) => book.id === bookId) ||
+          state.bookLists.tbr.find((book) => book.id === bookId)
+        );
+      },
 
     hasError: (state) => state.error !== null,
 
@@ -61,13 +88,20 @@ export const useBookStore = defineStore('books', {
 
   actions: {
     // Registra o erro no console e expõe a mensagem para as views via `hasError`
-    _handleError(action, error) {
+    _handleError(action: string, error: unknown): void {
       logError(action, error);
       this.error = extractErrorMessage(error);
     },
 
     // Esqueleto comum de fetch: loading → token anti-corrida → aplicação → erro → finally
-    async _fetchPaged({ key, action, loader, apply, onError, useToken = true }) {
+    async _fetchPaged<T>({
+      key,
+      action,
+      loader,
+      apply,
+      onError,
+      useToken = true,
+    }: FetchPagedArgs<T>) {
       this.loadingStates[key] = true;
       this.error = null;
       const token = this.searchToken;
@@ -86,7 +120,7 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async fetchBookById(bookId) {
+    async fetchBookById(bookId: string): Promise<Book> {
       try {
         const response = await booksApi.get(bookId);
 
@@ -102,14 +136,16 @@ export const useBookStore = defineStore('books', {
     },
 
     // BUSCAR LIVROS (COM CURSOR PAGINATION)
-    async fetchBooks(startCursor = undefined) {
+    async fetchBooks(startCursor?: string | null): Promise<void> {
       await this._fetchPaged({
         key: 'main',
         action: 'fetchBooks',
         loader: () =>
           booksApi.list({
             pageSize: this.pagination.pageSize,
-            startCursor: startCursor,
+            // null (cursor inicial) vira undefined: o list só aceita string e
+            // ambos resultam na query sem startCursor
+            startCursor: startCursor ?? undefined,
             search: this.searchTerm,
             searchBy: this.searchBy,
             status: this.filterStatus,
@@ -132,7 +168,7 @@ export const useBookStore = defineStore('books', {
       });
     },
 
-    async createBook(bookData) {
+    async createBook(bookData: CreateBookInput) {
       try {
         const result = await booksApi.create(bookData);
 
@@ -152,14 +188,14 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async reloadCurrentPage() {
+    async reloadCurrentPage(): Promise<void> {
       await Promise.allSettled([
         this.fetchBooks(this.pagination.currentCursor),
         this.fetchBooksByStatus(),
       ]);
     },
 
-    async updateBook(bookId, bookData) {
+    async updateBook(bookId: string, bookData: UpdateBookInput) {
       if (!bookId || !bookData) throw new Error('bookId e bookData são obrigatórios');
 
       this.error = null;
@@ -174,7 +210,7 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async deleteBook(bookId) {
+    async deleteBook(bookId: string) {
       if (!bookId) throw new Error('bookId é obrigatório');
 
       this.error = null;
@@ -189,7 +225,10 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async fetchBooksByStatus(startCursor = undefined, status = BOOK_STATUS_MAP.TO_BE_READ) {
+    async fetchBooksByStatus(
+      startCursor?: string,
+      status: BookStatus = BOOK_STATUS_MAP.TO_BE_READ,
+    ): Promise<void> {
       // Cada status tem sua própria flag: TBR e leitura carregam em paralelo sem se sobrescrever
       const loadingKey = status === BOOK_STATUS_MAP.READING ? 'reading' : 'tbr';
       // Só TBR e leitura têm lista própria; outros status apenas giram o loading
@@ -204,7 +243,7 @@ export const useBookStore = defineStore('books', {
         loader: () =>
           booksApi.list({
             pageSize: 40,
-            startCursor: startCursor,
+            startCursor,
             search: this.searchTerm,
             searchBy: this.searchBy,
             status: status,
@@ -221,7 +260,7 @@ export const useBookStore = defineStore('books', {
     /**
      * Busca livros com data de término no ano atual
      */
-    async fetchBooksReadThisYear() {
+    async fetchBooksReadThisYear(): Promise<void> {
       await this._fetchPaged({
         key: 'thisYear',
         action: 'fetchBooksReadThisYear',
@@ -233,7 +272,9 @@ export const useBookStore = defineStore('books', {
             pageSize: 100,
           }),
         apply: (response) => {
-          this.bookLists.thisYear = response.data.results || response.data.data || [];
+          // O contrato (API.md) garante `results` — o fallback antigo
+          // `|| response.data.data` era morto (snake_case não tem `data`)
+          this.bookLists.thisYear = response.data.results || [];
         },
         onError: () => {
           this.bookLists.thisYear = [];
@@ -241,7 +282,7 @@ export const useBookStore = defineStore('books', {
       });
     },
 
-    async fetchBookOptions() {
+    async fetchBookOptions(): Promise<void> {
       try {
         const response = await booksApi.options();
         if (response?.data) {
@@ -252,7 +293,7 @@ export const useBookStore = defineStore('books', {
       }
     },
 
-    async nextPage() {
+    async nextPage(): Promise<void> {
       if (!this.pagination.nextCursor) {
         return;
       }
@@ -262,7 +303,7 @@ export const useBookStore = defineStore('books', {
       await this.fetchBooks(this.pagination.nextCursor);
     },
 
-    async previousPage() {
+    async previousPage(): Promise<void> {
       if (this.pagination.previousCursors.length === 0) {
         return;
       }
@@ -276,7 +317,7 @@ export const useBookStore = defineStore('books', {
       await this.fetchBooks(previousCursor);
     },
 
-    async changePageSize(size) {
+    async changePageSize(size: number): Promise<void> {
       this.pagination.pageSize = size;
       this.pagination.previousCursors = [];
 
@@ -284,7 +325,9 @@ export const useBookStore = defineStore('books', {
     },
 
     // Recarrega a lista principal com os filtros atualizados (corpo comum de search/setSearchBy/filterByStatus)
-    async _applyFilters(patches) {
+    async _applyFilters(
+      patches: Partial<Pick<BookState, 'searchTerm' | 'searchBy' | 'filterStatus'>>,
+    ): Promise<void> {
       this.searchToken += 1; // Invalida respostas antigas
       Object.assign(this, patches);
       this.pagination.previousCursors = [];
@@ -292,23 +335,23 @@ export const useBookStore = defineStore('books', {
       await this.fetchBooks();
     },
 
-    async search(term) {
+    async search(term: string): Promise<void> {
       await this._applyFilters({ searchTerm: term });
     },
 
-    async setSearchBy(mode) {
+    async setSearchBy(mode: BookSearchMode): Promise<void> {
       await this._applyFilters({ searchBy: mode });
     },
 
-    async filterByStatus(status) {
+    async filterByStatus(status: string): Promise<void> {
       await this._applyFilters({ filterStatus: status });
     },
 
-    $reset() {
+    $reset(): void {
       Object.assign(this, createInitialState());
     },
 
-    clearError() {
+    clearError(): void {
       this.error = null;
     },
   },

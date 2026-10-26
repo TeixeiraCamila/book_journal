@@ -1,6 +1,9 @@
-// Tipos dos envelopes HTTP consumidos do notion_api (espelhados de docs/API.md)
+// Tipos dos envelopes HTTP — existem para a camada de serviço assinar contrato
+// em vez de `any`: shapes espelhados de docs/API.md (fonte: notion_api), nunca
+// importados dos outros repos (são independentes).
 
 import type { Book, BookOptions, BookSearchMode } from './book';
+import type { SessionUser } from './auth';
 
 // Paginação por cursor de GET /books
 export interface Pagination {
@@ -47,6 +50,17 @@ export interface FinishedThisYearResponse {
   next_cursor: string | null;
   total_count: number;
   year: number;
+}
+
+// DELETE /books/:id — soft delete (archived), response 200
+export interface DeleteResponse {
+  success: boolean;
+  id: string;
+}
+
+// GET /auth/me — envelope do `/me`; o login devolve LoginResponse direto
+export interface MeResponse {
+  user: SessionUser;
 }
 
 export type { BookOptions };

@@ -1,14 +1,23 @@
-// Pinia store de sessão — login/saída/visitante. Não guarda lista de usuários:
+// Store de sessão: existe porque login/saída/visitante são estado global que
+// sobrevive a navegação — o guard do router, o App e o LoginView precisam ler
+// o mesmo `userActive`/`token` sem prop-drilling. Não guarda lista de usuários:
 // o backend valida o email contra o workspace e o front não conhece essa lista.
+
 import { defineStore } from 'pinia';
+import { isAxiosError } from 'axios';
 import { authApi } from '../services/api';
 import { extractErrorMessage } from '@/utils/errorHandler';
+import type { ApiError } from '@/types/api';
+import type { GuestUser, SessionUser } from '@/types/auth';
+import type { UserState } from '@/types/store';
 
+// Visitante: `satisfies` garante o shape GuestUser sem widiar os literais
+// ('guest' fica literal, diferente do id: string do SessionUser do backend)
 const GUEST_USER = {
   id: 'guest',
   name: 'Visitante',
   type: 'guest',
-};
+} satisfies GuestUser;
 
 const STORAGE_KEYS = {
   TOKEN: 'SESSION_TOKEN',
@@ -17,7 +26,7 @@ const STORAGE_KEYS = {
 };
 
 export const useUserStore = defineStore('user', {
-  state: () => ({
+  state: (): UserState => ({
     userActive: null,
     error: null,
     isGuest: false,
@@ -30,7 +39,7 @@ export const useUserStore = defineStore('user', {
 
   actions: {
     // Autentica no backend: email + código de acesso → token de sessão
-    async login({ email, codigo }) {
+    async login({ email, codigo }: { email: string; codigo: string }) {
       this.error = null;
 
       try {
@@ -47,20 +56,24 @@ export const useUserStore = defineStore('user', {
         return data.user;
       } catch (error) {
         // Mensagem específica do backend (ex: "O código não confere.")
-        this.error = error.response?.data?.message || extractErrorMessage(error);
+        this.error = isAxiosError<ApiError>(error)
+          ? error.response?.data?.message || extractErrorMessage(error)
+          : extractErrorMessage(error);
         throw error;
       }
     },
 
     // Restaura a sessão persistida (token ou modo visitante)
-    loadSession() {
+    loadSession(): boolean {
       const token = localStorage.getItem(STORAGE_KEYS.TOKEN);
       const storedUser = localStorage.getItem(STORAGE_KEYS.USER);
 
       if (token && storedUser) {
         try {
           this.token = token;
-          this.userActive = JSON.parse(storedUser);
+          // Fronteira não-validável do lado do cliente (localStorage);
+          // o /me do validateSession revalida contra o backend no boot
+          this.userActive = JSON.parse(storedUser) as SessionUser;
           this.isGuest = false;
           return true;
         } catch {
@@ -78,14 +91,14 @@ export const useUserStore = defineStore('user', {
 
     // Revalida o token guardado contra o /me no boot; só 401 derruba a sessão
     // (rede/timeout/5xx não provam nada sobre o token, então mantêm o login)
-    async validateSession() {
+    async validateSession(): Promise<boolean> {
       if (!this.token) return true;
 
       try {
         await authApi.me({ timeout: 5000 });
         return true;
       } catch (erro) {
-        if (erro.response?.status === 401) {
+        if (isAxiosError(erro) && erro.response?.status === 401) {
           this.logout();
           return false;
         }
@@ -94,7 +107,7 @@ export const useUserStore = defineStore('user', {
     },
 
     // Modo visitante: acesso de leitura sem conta
-    setGuestUser() {
+    setGuestUser(): void {
       this.userActive = { ...GUEST_USER };
       this.isGuest = true;
       this.token = null;
@@ -105,7 +118,7 @@ export const useUserStore = defineStore('user', {
     },
 
     // Encerra a sessão (login ou visitante) e limpa o armazenamento
-    logout() {
+    logout(): void {
       this.token = null;
       this.userActive = null;
       this.isGuest = false;

@@ -25,7 +25,7 @@ Prioridades do `book_journal`. Fonte complementar: `../KANBAN.md` (raiz, board d
 - ~~**Deduplicar `closeModal`/`closeModalWithAnimation`**~~ ✅ feito em 15/10/2026 (corpos idênticos; junto com `flipToOpposite` morto)
 - ~~**Remover dependências não usadas**~~ ✅ `@vueuse/motion` e `@biomejs/biome` removidas em 15/10/2026 (`chart.js` já tinha saído com a Decisão 009)
 - ~~**Remover `tsconfig.json` órfão**~~ ✅ resolvido em 22/10/2026: os 2 órfãos viraram o trio da migração TS (`tsconfig.json` solução + `app` + `node`)
-- **Migração incremental para TypeScript** (`docs/PLANO_MIGRACAO_TS.md`): Fases 1–2 concluídas em 22/10/2026 (toolchain + tipos de contrato/arquivos-folha); **próxima: Fase 3** (`services/api.ts` + stores)
+- **Migração incremental para TypeScript** (`docs/PLANO_MIGRACAO_TS.md`): Fases 1–3 concluídas (22–25/10/2026; Fase 3 = serviço + stores tipados, só `main.js` de JS puro); **próxima: Fase 4** (26 `.vue` + `main.ts`)
 
 ---
 

@@ -2,7 +2,7 @@
 
 Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, **sem big bang e sem mudança de comportamento**. 6 fases; cada fecha um bloco e só encerra com o gate verde + smoke + docs.
 
-> Retrato (22/10/2026, pós-Fase 2): **26 .vue + 4 .js + 19 .ts** = 49 arquivos em `src/`, 6.508 linhas. No início da migração eram 26 `.vue` + 19 `.js` = 45 arquivos (1.098 linhas em JS puro); sobraram `main.js`, `services/api.js` e as 2 stores para as Fases 3–4.
+> Retrato (25/10/2026, pós-Fase 3): **26 .vue + 1 .js + 22 .ts** = 49 arquivos em `src/`, 6.605 linhas. No início da migração eram 26 `.vue` + 19 `.js` = 45 arquivos (1.098 linhas em JS puro); sobrou só `main.js` (Fase 4f) e os 26 `.vue` (Fase 4).
 
 ## Como funciona (vale para todas as fases)
 
@@ -30,8 +30,8 @@ Roteiro incremental: migrar o `book_journal` de JS para TS, camada por camada, *
 | 0 | Pré-condições (árvore limpa + ROADMAP) | ~zero | ~15 min | ✅ 25/10/2026 |
 | 1 | Ferramenta (deps, tsconfig, scripts, ESLint) | baixo | ~1–2 h | ✅ 22/10/2026 |
 | 2 | Tipos de contrato + folhas (`utils`, `constants`, composables, router, barrels) | baixo | ~2–3 h | ✅ 22/10/2026 |
-| 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ⬜ **próxima** |
-| 4 | 26 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ |
+| 3 | Dados: `services/api.ts` + stores Pinia | médio | ~2–3 h | ✅ 25/10/2026 |
+| 4 | 26 componentes `.vue` + `main.ts` | alto | ~4–6 h | ⬜ **próxima** |
 | 5 | Endurecimento + docs + ADR 011 | baixo | ~1 h | ⬜ |
 
 **Total: ~2 dias.** A Fase 4 concentra ~50% do esforço.
@@ -236,7 +236,7 @@ Fonte da verdade: **`docs/API.md`** espelhando `notion_api/lib/domains/books/sch
 |---------|----------|
 | `src/types/book.ts` | `Book` (contrato agrupado: `pages`, `seriesInfo`, `startEnd` — Decisão 005), `BookStatus`, `BookType`, `BookOptions`, `CreateBookInput`, `UpdateBookInput` |
 | `src/types/auth.ts` | `SessionUser`, `LoginResponse`, `GuestUser` |
-| `src/types/api.ts` | `Envelope<T>`, `Pagination`, `ApiError` (`{ code, message }`), `ListQuery` |
+| `src/types/api.ts` | `Envelope<T>`, `Pagination`, `ApiError` (`{ error?, message, code?, details? }` — `code` só nos erros de aplicação: o 400 de Zod vem sem `code`, só com `details`; em `types/api.ts` ficou `code: string` → pendência em `../analise-melhorias.md`), `ListQuery` |
 | `src/types/store.ts` | `BookLists`, `LoadingStates` (consumido na Fase 3) |
 
 - **Sem enums** (compatível com `erasableSyntaxOnly`): usar `as const` + `satisfies Record<...>` nos mapas (`BOOK_STATUS_MAP`, `BOOK_STATUS_LABELS`).
@@ -275,6 +275,8 @@ Gate verde após cada lote 2b. Nenhum consumidor muda ainda — fase silenciosa.
 
 `git mv src/services/api.js src/services/api.ts` (preservar histórico). Os tipos de endpoint abaixo já existem na Fase 2 (`Envelope<Book[]>`, `ListAllResponse`, `FinishedThisYearResponse`, `ListQuery`, `LoginResponse`, `BookOptions`); só `DeleteResponse`/`MeResponse` são novos.
 
+> `FinishedThisYearResponse` espelha só o que o front usa (`results`, `has_more`, `next_cursor`, `total_count`, `year`); o contrato também traz `stats` do ano inteiro (API.md §finished-this-year) — espelhar em `types/api.ts` se um dia o app consumir (pendência em `../analise-melhorias.md`).
+
 | Item | Ação |
 |------|------|
 | `booksApi.list(options = {})` | `options: ListQuery = {}`; retorno `Promise<AxiosResponse<Envelope<Book[]>>>` |
@@ -285,7 +287,7 @@ Gate verde após cada lote 2b. Nenhum consumidor muda ainda — fase silenciosa.
 | `create(data: CreateBookInput)` / `update(id: string, data: UpdateBookInput)` | `AxiosResponse<Book>` (201/200 + book mapeado) |
 | `delete(id: string)` | `AxiosResponse<DeleteResponse>` (soft delete) |
 | `options()` | `AxiosResponse<BookOptions>` |
-| `finishedThisYear(options = {})` | `AxiosResponse<FinishedThisYearResponse>`; options inline `{ year?: number; pageSize?: number; startCursor?: string }` |
+| `finishedThisYear(options = {})` | `AxiosResponse<FinishedThisYearResponse>`; options inline `{ year?: number; pageSize?: number; startCursor?: string }` — `year` é **obrigatório no contrato** (sem ano o backend responde `400`): a store sempre envia o ano atual; a opcionalidade do tipo é pendência em `../analise-melhorias.md` |
 | `authApi.login(data: LoginBody)` | `LoginBody = { email: string; codigo: string }` (local, no serviço); retorno `AxiosResponse<LoginResponse>` |
 | `authApi.me(config: AxiosRequestConfig = {})` | `AxiosResponse<MeResponse>` |
 | Interceptor de request | `(config: InternalAxiosRequestConfig)` — tipar o parâmetro |

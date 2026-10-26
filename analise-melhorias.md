@@ -58,6 +58,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 | `CardStackView.vue` (197 linhas) | Extrair lógica de prefetch e data loading para composable | ✅ (16/10/2026: viraram `registry listComponents` + `loadLists()` internos — composable à parte dispensado, a lógica é específica do Swiper) |
 | `FormField.vue` (527 linhas) | Consertar dual v-model emission; considerar subcomponentes por tipo | ❌ |
 | `FormSkeleton.vue` | Converter para `<script setup>` (atualmente sem setup) | ✅ (já estava em `<script setup>` — status defasado; em 16/10/2026 o markup passou a renderizar de `constants/formLayout.js`) |
+| `src/types/api.ts` + `finishedThisYear` | Alinhar os tipos espelhados ao contrato (API.md): `ApiError.code` → `code?: string` (o 400 de Zod vem sem `code`, só `details`) e `year` obrigatório no tipo de `finishedThisYear` (a store já sempre envia o ano atual) | ❌ pendente (26/10/2026; correção só de tipo, sem mudança de comportamento) |
 | `ConfirmDialog.vue` | Usar callback prop para confirm em vez de `await emit()` | ✅ |
 | `HomeView.vue` | Remover (legacy, importa componente inexistente) | ✅ (removido em 15/10/2026) |
 
@@ -74,6 +75,7 @@ Retrato revisado em 15/10/2026 (varredura dos 42 arquivos de `src/`, 6,5 mil lin
 - Dependências não usadas: `@vueuse/motion`, `@biomejs/biome` — ✅ removidas em 2026-10-15 (`chart.js` já tinha saído com a Decisão 009)
 - `progress: true` em `TOAST_CONFIG`: chave inexistente em `PluginOptions` do vue-toastification (a lib só tem `hideProgressBar`, e a barra aparece por padrão) — ✅ removida em 22/10/2026 (Fase 2 da migração TS; nenhuma mudança visual)
 - Prop `labels` do `FormField.vue` (declaração + ternário no template): órfão desde 25/10/2026 — o `BookForm` era o único consumidor e parou de passá-lo com a remoção do `BOOK_RATE_LABELS` (Rate sem fallback); remover prop e ternário junto com a migração TS do componente (Fase 4b)
+- Fallback `|| response.data.data` no `fetchBooksReadThisYear` do `bookStore`: morto — o endpoint `finished-this-year` devolve snake_case (`results`), nunca `data` (API.md) — ✅ removido em 25/10/2026 (Fase 3 da migração TS; o `FinishedThisYearResponse` tipado expôs o erro)
 
 ---
 
