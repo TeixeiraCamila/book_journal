@@ -2,11 +2,7 @@
 // Formulário de criação/edição de livros — validação, hidratação e envio para API
 import { reactive, ref, onMounted, watch, computed } from 'vue';
 import { useBookStore } from '@/stores/bookStore';
-import {
-  BOOK_STATUS_FALLBACK,
-  BOOK_TYPES_FALLBACK,
-  BOOK_STATUS_MAP,
-} from '@/constants/book';
+import { BOOK_STATUS_FALLBACK, BOOK_TYPES_FALLBACK, BOOK_STATUS_MAP } from '@/constants/book';
 import { BOOK_FORM_SECTIONS, BOOK_FORM_ACTIONS } from '@/constants/formLayout';
 
 import {

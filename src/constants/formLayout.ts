@@ -60,7 +60,10 @@ export const BOOK_FORM_SECTIONS = {
 } satisfies Record<string, BookFormSection>;
 
 // Campo da coluna de capa (coluna esquerda do form)
-export const BOOK_FORM_COVER_FIELD = { label: 'URL da Capa', kind: 'input' } satisfies BookFormField;
+export const BOOK_FORM_COVER_FIELD = {
+  label: 'URL da Capa',
+  kind: 'input',
+} satisfies BookFormField;
 
 // Textos dos botões de ação
 export const BOOK_FORM_ACTIONS: Record<'submit' | 'cancel', string> = {
