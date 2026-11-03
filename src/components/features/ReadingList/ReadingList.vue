@@ -255,12 +255,11 @@ const hasPublicationInfo = (book) => {
 }
 
 .reading-card__image {
-  width: 100%;
   height: 100%;
   max-height: 200px;
   object-fit: cover;
   transition: transform 0.3s ease;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px var(--shadow);
 }
 
 .reading-card__content {
@@ -293,7 +292,7 @@ const hasPublicationInfo = (book) => {
 }
 
 .reading-card__type {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 20px var(--shadow);
   padding: 0.5rem;
 }
 
