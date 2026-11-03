@@ -6,7 +6,8 @@ SPA Vue 3 para catalogar e acompanhar leituras (biblioteca pessoal). Consome o `
 
 ### Idioma
 
-- Código de produção, comentários e erros retornados ao cliente: **pt-BR**.
+- Funções, métodos, variáveis, parâmetros e nomes de rotas/requests: **inglês**.
+- Código de produção (lógica), comentários e erros retornados ao cliente: **pt-BR**.
 - README.md é o único arquivo de documentação em **inglês** (onde aplicável); o restante (`docs/`, `AGENTS.md`, comentários) é pt-BR.
 
 ### Commits (Conventional Commits)
