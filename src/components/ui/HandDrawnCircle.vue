@@ -2,6 +2,11 @@
 // Traço de caneta em canvas que circula um elemento-alvo e se redesenha ao ativar o slide
 import { onBeforeUnmount, ref, watch } from 'vue';
 
+const STROKE_SEGMENTS = 160;
+const STROKE_START_ANGLE = -Math.PI * 0.75; // canto superior esquerdo
+const STROKE_SWEEP = Math.PI * 2 * 1.08; // overshoot: a caneta passa do ponto de chegada
+const DRAW_BLOCK_SIZE = 8; // blocos curtos: a espessura varia como pressão de caneta
+
 const props = defineProps({
   /** Elemento a ser circulado (blocos de texto) */
   target: { type: Object, default: null },
@@ -19,18 +24,20 @@ let rafId = null;
 let stroke = [];
 let progress = 0;
 
+/** easeOutQuad: a caneta desacelera no fim do traço */
+function easeOutQuad(t) {
+  return 1 - (1 - t) ** 2;
+}
+
 /**
  * Gera os pontos do traço: uma elipse com tremida sutil e overshoot —
  * a caneta passa um pouco do ponto de partida, como num círculo à mão
  */
 function buildStroke(cx, cy, rx, ry) {
-  const segments = 160;
-  const startAngle = -Math.PI * 0.75; // canto superior esquerdo
-  const sweep = Math.PI * 2 * 1.08;
   const points = [];
-  for (let i = 0; i <= segments; i++) {
-    const t = i / segments;
-    const angle = startAngle + sweep * t;
+  for (let i = 0; i <= STROKE_SEGMENTS; i++) {
+    const t = i / STROKE_SEGMENTS;
+    const angle = STROKE_START_ANGLE + STROKE_SWEEP * t;
     // Ruído determinístico: um resize não pode "pular" o desenho
     const wobble = 1 + Math.sin(angle * 3 + 1.7) * 0.02 + Math.sin(angle * 6.1) * 0.012;
     const grow = 1 + t * 0.03; // a caneta se afasta levemente no fim do traço
@@ -42,10 +49,7 @@ function buildStroke(cx, cy, rx, ry) {
   return points;
 }
 
-/**
- * Posiciona o canvas sobre o alvo e recalcula o traço. Usa offsetLeft/Top
- * (coords de layout), imune ao transform dos slides do Swiper
- */
+/** Posiciona o canvas sobre o alvo e recalcula o traço. Usa offsetLeft/Top (coords de layout), imune ao transform dos slides do Swiper */
 function measure() {
   const canvas = canvasEl.value;
   const target = props.target;
@@ -68,12 +72,10 @@ function measure() {
   const height = Math.min(offsetTop + offsetHeight + inset, parent.offsetHeight) - top;
 
   const dpr = window.devicePixelRatio || 1;
-  Object.assign(canvas.style, {
-    left: `${left}px`,
-    top: `${top}px`,
-    width: `${width}px`,
-    height: `${height}px`,
-  });
+  canvas.style.left = `${left}px`;
+  canvas.style.top = `${top}px`;
+  canvas.style.width = `${width}px`;
+  canvas.style.height = `${height}px`;
   canvas.width = Math.round(width * dpr);
   canvas.height = Math.round(height * dpr);
   // Redefinir canvas.width zera o contexto, por isso o transform vem depois
@@ -95,16 +97,15 @@ function drawStroke() {
   ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
 
   const visible = Math.max(2, Math.round(stroke.length * progress));
-  const block = 8; // blocos curtos: a espessura varia como pressão de caneta
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
   ctx.strokeStyle = props.color;
-  for (let start = 1; start < visible; start += block) {
-    const end = Math.min(start + block, visible);
+  for (let blockStart = 1; blockStart < visible; blockStart += DRAW_BLOCK_SIZE) {
+    const blockEnd = Math.min(blockStart + DRAW_BLOCK_SIZE, visible);
     ctx.beginPath();
-    ctx.moveTo(stroke[start - 1].x, stroke[start - 1].y);
-    for (let i = start; i < end; i++) ctx.lineTo(stroke[i].x, stroke[i].y);
-    ctx.lineWidth = props.lineWidth * (1 + Math.sin(((start + end) / 2) * 0.12) * 0.22);
+    ctx.moveTo(stroke[blockStart - 1].x, stroke[blockStart - 1].y);
+    for (let i = blockStart; i < blockEnd; i++) ctx.lineTo(stroke[i].x, stroke[i].y);
+    ctx.lineWidth = props.lineWidth * (1 + Math.sin(((blockStart + blockEnd) / 2) * 0.12) * 0.22);
     ctx.stroke();
   }
 }
@@ -120,7 +121,7 @@ function animate() {
   const startedAt = performance.now();
   const step = (now) => {
     const t = Math.min(1, (now - startedAt) / props.duration);
-    progress = 1 - (1 - t) ** 2; // easeOutQuad: a caneta desacelera no fim
+    progress = easeOutQuad(t);
     drawStroke();
     if (t < 1) rafId = requestAnimationFrame(step);
   };
@@ -143,7 +144,8 @@ function setup() {
   };
 
   // Alvo ou card redimensionou: recalcula mantendo o quadro atual da animação
-  const resizeObserver = new ResizeObserver(() => measure() && drawStroke());
+  const handleResize = () => measure() && drawStroke();
+  const resizeObserver = new ResizeObserver(handleResize);
   resizeObserver.observe(props.target);
   resizeObserver.observe(canvas.parentElement);
   observers.push(resizeObserver);
