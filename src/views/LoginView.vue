@@ -123,7 +123,7 @@ const handleLogin = async () => {
   z-index: 2;
   width: min(250px, 82vw);
   /* proporção real de login_bg.png: se o asset mudar, revisar aqui */
-  aspect-ratio: 434 / 626;
+  aspect-ratio: 400 / 626;
   background: url('../assets/images/login/login_bg.png') no-repeat center center;
   background-size: cover;
   color: var(--black);
@@ -243,7 +243,7 @@ const handleLogin = async () => {
   }
 
   70% {
-    transform: translateY(-30px);
+    transform: translateY(-5px);
     opacity: 1;
   }
 
